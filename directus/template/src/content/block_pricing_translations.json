@@ -1,0 +1,16 @@
+[
+  {
+    "id": 1,
+    "block_pricing_id": "48cf2543-15e0-454f-9b31-cbf3c2406712",
+    "langues_code": "fr-FR",
+    "tagline": "Pricing",
+    "headline": "Plans to fit every budget"
+  },
+  {
+    "id": 2,
+    "block_pricing_id": "48cf2543-15e0-454f-9b31-cbf3c2406712",
+    "langues_code": null,
+    "tagline": "Pricing",
+    "headline": "Plans to fit every budget"
+  }
+]

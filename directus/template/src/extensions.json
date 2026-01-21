@@ -10,7 +10,7 @@
       "bundle": null
     },
     "schema": {
-      "path": "/directus/node_modules/.directus/extensions/.registry/467d87ba-5246-41b7-be33-2bd0aa9c6c5e",
+      "path": "/directus/extensions/.registry/467d87ba-5246-41b7-be33-2bd0aa9c6c5e",
       "name": "@directus-labs/ai-image-generation-operation",
       "version": "1.0.1",
       "type": "operation",
@@ -47,7 +47,7 @@
       "bundle": null
     },
     "schema": {
-      "path": "/directus/node_modules/.directus/extensions/.registry/0d7cb634-82f9-42e7-88c6-da74e1456db0",
+      "path": "/directus/extensions/.registry/0d7cb634-82f9-42e7-88c6-da74e1456db0",
       "name": "@directus-labs/experimental-m2a-interface",
       "version": "1.3.0",
       "type": "interface",
@@ -67,7 +67,7 @@
       "bundle": null
     },
     "schema": {
-      "path": "/directus/node_modules/.directus/extensions/.registry/751fe55c-d76a-4373-a6ea-babe206ea790",
+      "path": "/directus/extensions/.registry/751fe55c-d76a-4373-a6ea-babe206ea790",
       "name": "@directus-labs/super-header-interface",
       "version": "1.2.0",
       "type": "interface",
@@ -87,7 +87,7 @@
       "bundle": null
     },
     "schema": {
-      "path": "/directus/node_modules/.directus/extensions/.registry/932c6373-4be9-4902-9deb-f147778b3cfd",
+      "path": "/directus/extensions/.registry/932c6373-4be9-4902-9deb-f147778b3cfd",
       "name": "@directus-labs/inline-repeater-interface",
       "version": "1.0.1",
       "type": "interface",
@@ -107,7 +107,7 @@
       "bundle": null
     },
     "schema": {
-      "path": "/directus/node_modules/.directus/extensions/.registry/056a27cf-3806-4bc6-b4bb-f7362851634d",
+      "path": "/directus/extensions/.registry/056a27cf-3806-4bc6-b4bb-f7362851634d",
       "name": "@directus-labs/seo-plugin",
       "version": "1.1.0",
       "type": "bundle",
@@ -130,6 +130,38 @@
     }
   },
   {
+    "id": "707c5750-5437-4d0c-985d-0bf42017f0bb",
+    "bundle": null,
+    "meta": {
+      "enabled": false,
+      "id": "707c5750-5437-4d0c-985d-0bf42017f0bb",
+      "folder": "booking-calendar",
+      "source": "local",
+      "bundle": null
+    },
+    "schema": null
+  },
+  {
+    "id": "8593fdce-90e0-4748-8784-040552f227b6",
+    "bundle": null,
+    "meta": {
+      "enabled": true,
+      "id": "8593fdce-90e0-4748-8784-040552f227b6",
+      "folder": "booking-timeline",
+      "source": "local",
+      "bundle": null
+    },
+    "schema": {
+      "path": "/directus/extensions/booking-timeline",
+      "name": "booking-timeline",
+      "version": "1.0.8",
+      "type": "panel",
+      "entrypoint": "dist/index.js",
+      "host": "^10.10.0",
+      "local": true
+    }
+  },
+  {
     "id": "8a827d6a-f820-4814-8803-9bcf398282d4",
     "bundle": null,
     "meta": {
@@ -140,7 +172,7 @@
       "bundle": null
     },
     "schema": {
-      "path": "/directus/node_modules/.directus/extensions/.registry/9bde3cf6-c3bd-4bbf-befe-e65294d4b632",
+      "path": "/directus/extensions/.registry/9bde3cf6-c3bd-4bbf-befe-e65294d4b632",
       "name": "directus-extension-wpslug-interface",
       "version": "1.1.0",
       "type": "interface",
@@ -160,7 +192,7 @@
       "bundle": null
     },
     "schema": {
-      "path": "/directus/node_modules/.directus/extensions/.registry/cc0eacb9-614c-48b5-9853-986f5cc25bd8",
+      "path": "/directus/extensions/.registry/cc0eacb9-614c-48b5-9853-986f5cc25bd8",
       "name": "@directus-labs/ai-writer-operation",
       "version": "1.4.2",
       "type": "operation",
@@ -201,7 +233,7 @@
       "bundle": null
     },
     "schema": {
-      "path": "/directus/node_modules/.directus/extensions/.registry/f4a3f40f-0f08-45d1-9ccf-183e8ff030ab",
+      "path": "/directus/extensions/.registry/f4a3f40f-0f08-45d1-9ccf-183e8ff030ab",
       "name": "@directus-labs/liquidjs-operation",
       "version": "1.2.0",
       "type": "operation",
@@ -239,7 +271,7 @@
       "bundle": null
     },
     "schema": {
-      "path": "/directus/node_modules/.directus/extensions/.registry/3f627cf9-4079-4880-b32a-3848829c93dc",
+      "path": "/directus/extensions/.registry/3f627cf9-4079-4880-b32a-3848829c93dc",
       "name": "@directus-labs/card-select-interfaces",
       "version": "1.0.0",
       "type": "bundle",
@@ -276,10 +308,30 @@
       "bundle": null
     },
     "schema": {
-      "path": "/directus/node_modules/.directus/extensions/.registry/3b80b125-4f65-4a6f-96c6-4ede2ed9f506",
+      "path": "/directus/extensions/.registry/3b80b125-4f65-4a6f-96c6-4ede2ed9f506",
       "name": "@directus-labs/simple-list-interface",
       "version": "1.0.0",
       "type": "interface",
+      "entrypoint": "dist/index.js",
+      "host": "^10.10.0",
+      "local": true
+    }
+  },
+  {
+    "id": "c05b309e-4a05-41dd-b0dd-c4e07eb48bd5",
+    "bundle": null,
+    "meta": {
+      "enabled": true,
+      "id": "c05b309e-4a05-41dd-b0dd-c4e07eb48bd5",
+      "folder": "booking-validator",
+      "source": "local",
+      "bundle": null
+    },
+    "schema": {
+      "path": "/directus/extensions/booking-validator",
+      "name": "booking-validator",
+      "version": "1.0.0",
+      "type": "hook",
       "entrypoint": "dist/index.js",
       "host": "^10.10.0",
       "local": true
@@ -296,7 +348,7 @@
       "bundle": null
     },
     "schema": {
-      "path": "/directus/node_modules/.directus/extensions/.registry/b5913ec2-e23c-47d7-ba58-d359334d75f4",
+      "path": "/directus/extensions/.registry/b5913ec2-e23c-47d7-ba58-d359334d75f4",
       "name": "@directus-labs/command-palette-module",
       "version": "1.1.0",
       "type": "module",
@@ -316,7 +368,7 @@
       "bundle": null
     },
     "schema": {
-      "path": "/directus/node_modules/.directus/extensions/.registry/9621987d-012d-475a-bd7f-e293cac7b077",
+      "path": "/directus/extensions/.registry/9621987d-012d-475a-bd7f-e293cac7b077",
       "name": "directus-extension-group-tabs-interface",
       "version": "2.1.0",
       "type": "interface",
@@ -326,26 +378,26 @@
     }
   },
   {
-    "id": "0fe9b997-3aac-4fbf-8d36-fea91ddb883f",
-    "bundle": "af053cdb-242e-4142-a053-e3e23d7658e5",
+    "id": "3d672a4c-2c7a-4026-a39b-893158964db6",
+    "bundle": "6d5e25af-4c3e-4c81-8a42-d7b6f66c9703",
     "meta": {
       "enabled": true,
-      "id": "0fe9b997-3aac-4fbf-8d36-fea91ddb883f",
-      "folder": "image-uuid-interface",
+      "id": "3d672a4c-2c7a-4026-a39b-893158964db6",
+      "folder": "seo-display",
       "source": "registry",
-      "bundle": "af053cdb-242e-4142-a053-e3e23d7658e5"
+      "bundle": "6d5e25af-4c3e-4c81-8a42-d7b6f66c9703"
     },
     "schema": {
-      "name": "image-uuid-interface",
-      "type": "interface"
+      "name": "seo-display",
+      "type": "display"
     }
   },
   {
-    "id": "3b327243-154b-4040-8cc6-284bff1e61ff",
+    "id": "828b3ff8-36fd-4938-a62e-c65617a11bc9",
     "bundle": "af053cdb-242e-4142-a053-e3e23d7658e5",
     "meta": {
       "enabled": true,
-      "id": "3b327243-154b-4040-8cc6-284bff1e61ff",
+      "id": "828b3ff8-36fd-4938-a62e-c65617a11bc9",
       "folder": "radio-cards-interface",
       "source": "registry",
       "bundle": "af053cdb-242e-4142-a053-e3e23d7658e5"
@@ -356,26 +408,11 @@
     }
   },
   {
-    "id": "63358553-e313-4fe4-bed0-2a3787387d3f",
-    "bundle": "6d5e25af-4c3e-4c81-8a42-d7b6f66c9703",
-    "meta": {
-      "enabled": true,
-      "id": "63358553-e313-4fe4-bed0-2a3787387d3f",
-      "folder": "seo-interface",
-      "source": "registry",
-      "bundle": "6d5e25af-4c3e-4c81-8a42-d7b6f66c9703"
-    },
-    "schema": {
-      "name": "seo-interface",
-      "type": "interface"
-    }
-  },
-  {
-    "id": "cfe77abd-a824-4930-a113-b77d458e786b",
+    "id": "8d9154a6-84cb-4d4d-bcc1-3ede75aedb96",
     "bundle": "af053cdb-242e-4142-a053-e3e23d7658e5",
     "meta": {
       "enabled": true,
-      "id": "cfe77abd-a824-4930-a113-b77d458e786b",
+      "id": "8d9154a6-84cb-4d4d-bcc1-3ede75aedb96",
       "folder": "checkbox-cards-interface",
       "source": "registry",
       "bundle": "af053cdb-242e-4142-a053-e3e23d7658e5"
@@ -386,18 +423,33 @@
     }
   },
   {
-    "id": "ec56b24d-46a4-4668-97e3-48c844aecd26",
+    "id": "b67409fd-1b60-4788-8489-47066e8b58f9",
     "bundle": "6d5e25af-4c3e-4c81-8a42-d7b6f66c9703",
     "meta": {
       "enabled": true,
-      "id": "ec56b24d-46a4-4668-97e3-48c844aecd26",
-      "folder": "seo-display",
+      "id": "b67409fd-1b60-4788-8489-47066e8b58f9",
+      "folder": "seo-interface",
       "source": "registry",
       "bundle": "6d5e25af-4c3e-4c81-8a42-d7b6f66c9703"
     },
     "schema": {
-      "name": "seo-display",
-      "type": "display"
+      "name": "seo-interface",
+      "type": "interface"
+    }
+  },
+  {
+    "id": "c86e9648-ad3f-419f-a115-ca1a163516db",
+    "bundle": "af053cdb-242e-4142-a053-e3e23d7658e5",
+    "meta": {
+      "enabled": true,
+      "id": "c86e9648-ad3f-419f-a115-ca1a163516db",
+      "folder": "image-uuid-interface",
+      "source": "registry",
+      "bundle": "af053cdb-242e-4142-a053-e3e23d7658e5"
+    },
+    "schema": {
+      "name": "image-uuid-interface",
+      "type": "interface"
     }
   }
 ]

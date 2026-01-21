@@ -1,0 +1,44 @@
+[
+  {
+    "id": 1,
+    "block_form_id": "1419faec-e263-431c-bd5f-a57f394c39f6",
+    "langues_code": "fr-FR",
+    "tagline": "Newsletter",
+    "headline": "Prenez de nos nouvelles !"
+  },
+  {
+    "id": 2,
+    "block_form_id": "1419faec-e263-431c-bd5f-a57f394c39f6",
+    "langues_code": null,
+    "tagline": "Newsletter",
+    "headline": "Get all the goodness, right in your inbox"
+  },
+  {
+    "id": 3,
+    "block_form_id": "3e262b2d-48fc-4816-b5e8-c991817d56fc",
+    "langues_code": "fr-FR",
+    "tagline": "Newsletter",
+    "headline": "Prenez de nous nouvelles !"
+  },
+  {
+    "id": 4,
+    "block_form_id": "3e262b2d-48fc-4816-b5e8-c991817d56fc",
+    "langues_code": null,
+    "tagline": "Newsletter",
+    "headline": "Subscribe to get updates"
+  },
+  {
+    "id": 5,
+    "block_form_id": "185eca12-4af1-4a1c-bfd7-4bc2fab52097",
+    "langues_code": null,
+    "tagline": "Contact",
+    "headline": "Let's talk about your project"
+  },
+  {
+    "id": 6,
+    "block_form_id": "185eca12-4af1-4a1c-bfd7-4bc2fab52097",
+    "langues_code": "fr-FR",
+    "tagline": "Nous Contacter",
+    "headline": "Qu'avez vous a nous dire ?"
+  }
+]

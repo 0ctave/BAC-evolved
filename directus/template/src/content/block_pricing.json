@@ -1,25 +1,26 @@
 [
   {
     "id": "48cf2543-15e0-454f-9b31-cbf3c2406712",
-    "headline": "Plans to fit every budget",
-    "tagline": "Pricing",
     "date_created": "2025-05-07T01:25:09.836Z",
-    "user_created": null,
-    "date_updated": "2025-05-07T01:25:09.929Z",
-    "user_updated": null,
+    "user_created": "8464becf-b8ed-404b-94c1-42dbd8d2c9f0",
+    "date_updated": "2026-01-19T17:39:12.081Z",
+    "user_updated": "8464becf-b8ed-404b-94c1-42dbd8d2c9f0",
+    "traductions": [
+      1,
+      2
+    ],
     "pricing_cards": [
-      "83972d2a-742e-4a6c-8698-563d01dde54d",
-      "388404db-1703-4b10-b12b-e5d4385f1530"
+      "388404db-1703-4b10-b12b-e5d4385f1530",
+      "83972d2a-742e-4a6c-8698-563d01dde54d"
     ]
   },
   {
     "id": "a15ef6f7-4f44-4705-820e-5fc76e9489f1",
-    "headline": "Plans to fit every budget",
-    "tagline": "Pricing",
     "date_created": "2025-05-07T01:25:09.836Z",
-    "user_created": null,
-    "date_updated": "2025-05-07T01:25:09.929Z",
-    "user_updated": null,
+    "user_created": "8464becf-b8ed-404b-94c1-42dbd8d2c9f0",
+    "date_updated": "2026-01-15T19:25:09.425Z",
+    "user_updated": "8464becf-b8ed-404b-94c1-42dbd8d2c9f0",
+    "traductions": [],
     "pricing_cards": []
   }
 ]

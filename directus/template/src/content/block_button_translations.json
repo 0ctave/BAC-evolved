@@ -1,0 +1,56 @@
+[
+  {
+    "id": 1,
+    "block_button_id": "dda7d91c-b449-4ab3-9d9d-84d4e8c09caf",
+    "langues_code": "fr-FR",
+    "label": "Get Started"
+  },
+  {
+    "id": 2,
+    "block_button_id": "dda7d91c-b449-4ab3-9d9d-84d4e8c09caf",
+    "langues_code": null,
+    "label": "Get Started"
+  },
+  {
+    "id": 3,
+    "block_button_id": "efb97ae9-d95e-4f9d-bf00-9df9966c65ec",
+    "langues_code": "fr-FR",
+    "label": "Talk to Sales"
+  },
+  {
+    "id": 4,
+    "block_button_id": "efb97ae9-d95e-4f9d-bf00-9df9966c65ec",
+    "langues_code": null,
+    "label": "Talk to Sales"
+  },
+  {
+    "id": 5,
+    "block_button_id": "9a0a58f6-987c-4fa9-8487-7472ea580965",
+    "langues_code": "fr-FR",
+    "label": "Nous contacter"
+  },
+  {
+    "id": 6,
+    "block_button_id": "9a0a58f6-987c-4fa9-8487-7472ea580965",
+    "langues_code": null,
+    "label": "Contact Us"
+  },
+  {
+    "id": 7,
+    "block_button_id": "a6627c2c-3ac0-4916-aae4-d0a24e70951d",
+    "langues_code": "fr-FR",
+    "label": "Reserver"
+  },
+  {
+    "id": 8,
+    "block_button_id": "a6627c2c-3ac0-4916-aae4-d0a24e70951d",
+    "langues_code": null,
+    "label": "Contact Us"
+  },
+  {
+    "id": 9,
+    "block_button_id": "a6627c2c-3ac0-4916-aae4-d0a24e70951d",
+    "langues_code": "de-DE",
+    "label": "Book"
+  }
+]

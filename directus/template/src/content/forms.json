@@ -1,34 +1,8 @@
 [
   {
-    "id": "36493b64-2bad-4c58-9d70-785ccb12ee26",
-    "on_success": "message",
-    "sort": null,
-    "submit_label": "Get Started",
-    "success_message": null,
-    "title": "Contact Us",
-    "success_redirect_url": null,
-    "is_active": true,
-    "emails": null,
-    "date_created": "2025-05-07T01:00:24.531Z",
-    "user_created": null,
-    "date_updated": null,
-    "user_updated": null,
-    "fields": [
-      "eef0eb77-ecab-4fba-9903-c46d6ad6d85b",
-      "bbc7b1c6-304e-4ee1-9afa-c5cffda6af27",
-      "a3d87bc0-f143-44ca-bea0-9eaf56b67783",
-      "a5222af8-f9a2-4d1a-9713-7ce0e2d5edc5",
-      "56c64efd-520f-4578-acca-e0565e247681"
-    ],
-    "submissions": []
-  },
-  {
     "id": "5da3d356-d818-434f-b225-db35c418bbb6",
     "on_success": "message",
     "sort": null,
-    "submit_label": "Subscribe",
-    "success_message": "Thanks for subscribing to our newsletter! Please check your inbox for confirmation.",
-    "title": "Newsletter",
     "success_redirect_url": null,
     "is_active": true,
     "emails": [
@@ -41,15 +15,43 @@
       }
     ],
     "date_created": "2025-05-07T01:00:24.531Z",
-    "user_created": null,
-    "date_updated": null,
-    "user_updated": null,
+    "user_created": "8464becf-b8ed-404b-94c1-42dbd8d2c9f0",
+    "date_updated": "2026-01-19T17:02:19.023Z",
+    "user_updated": "8464becf-b8ed-404b-94c1-42dbd8d2c9f0",
+    "submissions": [
+      "3805e2c0-ebba-4070-a1b3-b39ba1b4932b"
+    ],
     "fields": [
       "0f3deba1-9d6b-44a0-aa87-a9b38e834beb",
       "d37bc00f-bfb5-4496-85c3-70190b21b707"
     ],
-    "submissions": [
-      "3805e2c0-ebba-4070-a1b3-b39ba1b4932b"
+    "traductions": [
+      1,
+      2
+    ]
+  },
+  {
+    "id": "36493b64-2bad-4c58-9d70-785ccb12ee26",
+    "on_success": "message",
+    "sort": null,
+    "success_redirect_url": null,
+    "is_active": true,
+    "emails": null,
+    "date_created": "2025-05-07T01:00:24.531Z",
+    "user_created": "8464becf-b8ed-404b-94c1-42dbd8d2c9f0",
+    "date_updated": "2026-01-19T17:04:29.474Z",
+    "user_updated": "8464becf-b8ed-404b-94c1-42dbd8d2c9f0",
+    "submissions": [],
+    "fields": [
+      "eef0eb77-ecab-4fba-9903-c46d6ad6d85b",
+      "bbc7b1c6-304e-4ee1-9afa-c5cffda6af27",
+      "a3d87bc0-f143-44ca-bea0-9eaf56b67783",
+      "a5222af8-f9a2-4d1a-9713-7ce0e2d5edc5",
+      "56c64efd-520f-4578-acca-e0565e247681"
+    ],
+    "traductions": [
+      3,
+      4
     ]
   }
 ]

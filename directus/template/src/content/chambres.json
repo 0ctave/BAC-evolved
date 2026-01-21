@@ -1,0 +1,28 @@
+[
+  {
+    "id": 2,
+    "description": "<p>Insonoris&eacute;e et climatis&eacute;e, la chambre Louise, de 15 m2, est situ&eacute;e au deuxi&egrave;me &eacute;tage de la maison. La d&eacute;coration est sobre et moderne et la chambre, &eacute;clair&eacute;e largement par une fen&ecirc;tre de toit, donne sur une cour int&eacute;rieure, ce qui vous garantit le calme pour la nuit.</p>\n<p>Elle peut accueillir jusqu&rsquo;&agrave; 3 adultes et un b&eacute;b&eacute; (1 lit de 140 x 190 cm ; une chauffeuse BZ de 90 x 190 cm ; un lit-parapluie pour enfant &lt; 3 ans sur demande). Vous disposez ainsi d&rsquo;une literie confortable (sommiers &agrave; lattes et matelas Bultex anti-allergiques, lit de relaxation &agrave; t&ecirc;te relevable), du wifi illimit&eacute;, d&rsquo;une console avec plateau de courtoisie et d&rsquo;une armoire avec penderie et &eacute;tag&egrave;res.</p>\n<p>Vous trouverez sur le m&ecirc;me palier une vaste salle d&rsquo;eau r&eacute;serv&eacute;e &agrave; votre usage (draps de bain, tapis de bain, savon, shampoing, s&egrave;che-cheveux fournis) et des WC s&eacute;par&eacute;s.</p>",
+    "nom": "La Chambre Louise",
+    "prix_nuit": 97,
+    "capacite_adultes": 3,
+    "capacite_enfants": 1,
+    "capacite_max": 4,
+    "statut": "disponible",
+    "image": "9316491a-5e4f-4ffa-bf56-b1ca11c37eb2",
+    "images": [
+      1
+    ]
+  },
+  {
+    "id": 3,
+    "description": "<p>La chambre Marceline, au 1er &eacute;tage de la maison, dispose d&rsquo;une fen&ecirc;tre lumineuse sur la cour int&eacute;rieure, ce qui vous garantit le calme apr&egrave;s une journ&eacute;e de visites ou de travail. En cas de fortes chaleurs, outre un volet roulant &eacute;lectrique, un ventilateur est mis &agrave; votre disposition dans la chambre. Vous avez acc&egrave;s, au rez-de-chauss&eacute;e, &agrave; une petite cour verdoyante et fleurie selon la saison, o&ugrave; vous pouvez d&eacute;guster tranquillement une boisson chaude (bouilloire, dosettes et g&acirc;teaux &agrave; votre disposition) ou vous d&eacute;tendre. La maison &eacute;tant enti&egrave;rement &ldquo;non fumeur&rdquo;, un cendrier est &agrave; votre disposition dans la cour.</p>",
+    "nom": "La Chambre Marceline",
+    "prix_nuit": 97,
+    "capacite_adultes": 2,
+    "capacite_enfants": 0,
+    "capacite_max": 2,
+    "statut": "disponible",
+    "image": null,
+    "images": []
+  }
+]

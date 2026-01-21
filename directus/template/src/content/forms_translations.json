@@ -1,0 +1,34 @@
+[
+  {
+    "id": 1,
+    "forms_id": "5da3d356-d818-434f-b225-db35c418bbb6",
+    "langues_code": null,
+    "title": "Newsletter",
+    "submit_label": "Submit",
+    "success_message": null
+  },
+  {
+    "id": 2,
+    "forms_id": "5da3d356-d818-434f-b225-db35c418bbb6",
+    "langues_code": "fr-FR",
+    "title": "Newsletter",
+    "submit_label": "Envoyer",
+    "success_message": null
+  },
+  {
+    "id": 3,
+    "forms_id": "36493b64-2bad-4c58-9d70-785ccb12ee26",
+    "langues_code": "fr-FR",
+    "title": "Nous Contacter",
+    "submit_label": "C'est parti",
+    "success_message": null
+  },
+  {
+    "id": 4,
+    "forms_id": "36493b64-2bad-4c58-9d70-785ccb12ee26",
+    "langues_code": null,
+    "title": "Contact Us",
+    "submit_label": "Get Started",
+    "success_message": null
+  }
+]

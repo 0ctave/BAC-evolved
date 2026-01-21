@@ -4,5 +4,11 @@
     "language": "en-US",
     "key": "help",
     "value": "Help"
+  },
+  {
+    "id": "e7fa3290-82ef-4ba1-8b1e-cd3ff742d9cb",
+    "language": "fr-FR",
+    "key": "Français",
+    "value": "French"
   }
 ]

@@ -1,0 +1,26 @@
+[
+  {
+    "id": 1,
+    "form_field_choices_id": 1,
+    "langues_code": "fr-FR",
+    "text": "Visites"
+  },
+  {
+    "id": 2,
+    "form_field_choices_id": 1,
+    "langues_code": null,
+    "text": "Visits"
+  },
+  {
+    "id": 3,
+    "form_field_choices_id": 2,
+    "langues_code": "fr-FR",
+    "text": "Chambre"
+  },
+  {
+    "id": 4,
+    "form_field_choices_id": 2,
+    "langues_code": null,
+    "text": "Room"
+  }
+]

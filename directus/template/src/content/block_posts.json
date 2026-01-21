@@ -1,13 +1,15 @@
 [
   {
     "id": "060b632d-d70d-4db1-8b95-4fbab7a52ae8",
-    "headline": "All rabbits, all the time",
     "collection": "posts",
-    "tagline": "Blog",
     "limit": 6,
     "date_created": "2025-05-07T01:22:46.276Z",
-    "user_created": null,
-    "date_updated": "2025-05-07T01:22:46.369Z",
-    "user_updated": null
+    "user_created": "8464becf-b8ed-404b-94c1-42dbd8d2c9f0",
+    "date_updated": "2026-01-19T16:42:39.180Z",
+    "user_updated": "8464becf-b8ed-404b-94c1-42dbd8d2c9f0",
+    "traductions": [
+      1,
+      2
+    ]
   }
 ]

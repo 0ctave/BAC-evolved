@@ -1,15 +1,56 @@
 [
   {
-    "headline": "Headless. Not Brainless.",
     "id": "0e09d473-7f86-4e70-a199-e81e6c04c3c6",
-    "image": "ea743e20-e6e9-4be8-a949-3771cd182810",
-    "button_group": "00024c32-7123-4342-8350-44d09ca6827a",
-    "description": "Directus gives you a backend that is perfect for Headless CMS use cases but also everything beyond. Authentication, user permissions.",
-    "tagline": "CMS",
-    "layout": "image_right",
+    "image": "bfb7991b-3aef-4b65-8cbb-03a61ee21663",
+    "layout": "image_center",
     "date_created": "2025-05-07T01:22:17.909Z",
-    "user_created": null,
-    "date_updated": "2025-05-09T18:36:03.684Z",
-    "user_updated": "d56956bf-6ed0-465e-bb4a-ec9bde65c5f0"
+    "user_created": "8464becf-b8ed-404b-94c1-42dbd8d2c9f0",
+    "date_updated": "2026-01-21T11:58:03.312Z",
+    "user_updated": "8464becf-b8ed-404b-94c1-42dbd8d2c9f0",
+    "button_group": null,
+    "traductions": [
+      1,
+      2,
+      3
+    ]
+  },
+  {
+    "id": "625259d2-88b0-461a-b5b4-82e6a70e7cad",
+    "image": "7dabef7e-f29e-4684-a175-ca73a57214ae",
+    "layout": "image_right",
+    "date_created": "2026-01-20T18:34:16.290Z",
+    "user_created": "8464becf-b8ed-404b-94c1-42dbd8d2c9f0",
+    "date_updated": null,
+    "user_updated": null,
+    "button_group": null,
+    "traductions": [
+      5
+    ]
+  },
+  {
+    "id": "ad1c081b-989e-4830-968b-e5101bae5577",
+    "image": null,
+    "layout": "image_center",
+    "date_created": "2026-01-21T11:42:53.700Z",
+    "user_created": "8464becf-b8ed-404b-94c1-42dbd8d2c9f0",
+    "date_updated": "2026-01-21T11:43:13.880Z",
+    "user_updated": "8464becf-b8ed-404b-94c1-42dbd8d2c9f0",
+    "button_group": "a43dd82f-532f-4407-ab54-bd84f1d33551",
+    "traductions": [
+      6
+    ]
+  },
+  {
+    "id": "f2806264-1671-4c28-a538-f893231fbc16",
+    "image": "fd600467-b551-471e-9809-e2770cfcb74b",
+    "layout": "image_right",
+    "date_created": "2026-01-20T18:34:16.271Z",
+    "user_created": "8464becf-b8ed-404b-94c1-42dbd8d2c9f0",
+    "date_updated": null,
+    "user_updated": null,
+    "button_group": null,
+    "traductions": [
+      4
+    ]
   }
 ]

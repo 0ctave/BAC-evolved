@@ -2,41 +2,55 @@
   {
     "id": "1419faec-e263-431c-bd5f-a57f394c39f6",
     "form": "5da3d356-d818-434f-b225-db35c418bbb6",
-    "headline": "Get all the goodness, right in your inbox",
-    "tagline": "Newsletter",
     "date_created": "2025-05-07T01:22:45.902Z",
-    "user_created": null,
-    "date_updated": "2025-05-07T01:22:45.993Z",
-    "user_updated": null
+    "user_created": "8464becf-b8ed-404b-94c1-42dbd8d2c9f0",
+    "date_updated": "2026-01-19T14:32:24.116Z",
+    "user_updated": "8464becf-b8ed-404b-94c1-42dbd8d2c9f0",
+    "traductions": [
+      1,
+      2
+    ]
+  },
+  {
+    "id": "167141b5-b306-4080-90a9-43af122b1161",
+    "form": null,
+    "date_created": "2026-01-15T23:28:11.987Z",
+    "user_created": "8464becf-b8ed-404b-94c1-42dbd8d2c9f0",
+    "date_updated": null,
+    "user_updated": null,
+    "traductions": []
   },
   {
     "id": "185eca12-4af1-4a1c-bfd7-4bc2fab52097",
     "form": "36493b64-2bad-4c58-9d70-785ccb12ee26",
-    "headline": "Let's talk about your project",
-    "tagline": "Contact",
     "date_created": "2025-05-07T01:22:45.902Z",
-    "user_created": null,
-    "date_updated": "2025-05-07T01:22:45.993Z",
-    "user_updated": null
+    "user_created": "8464becf-b8ed-404b-94c1-42dbd8d2c9f0",
+    "date_updated": "2026-01-19T14:33:19.232Z",
+    "user_updated": "8464becf-b8ed-404b-94c1-42dbd8d2c9f0",
+    "traductions": [
+      5,
+      6
+    ]
   },
   {
     "id": "388fb972-bb44-4eac-a2d6-89c99927a4cb",
     "form": "5da3d356-d818-434f-b225-db35c418bbb6",
-    "headline": "Get all the goodness, right in your inbox",
-    "tagline": "Newsletter",
     "date_created": "2025-05-07T01:22:45.902Z",
-    "user_created": null,
-    "date_updated": "2025-05-07T01:22:45.993Z",
-    "user_updated": null
+    "user_created": "8464becf-b8ed-404b-94c1-42dbd8d2c9f0",
+    "date_updated": "2026-01-15T19:25:08.920Z",
+    "user_updated": "8464becf-b8ed-404b-94c1-42dbd8d2c9f0",
+    "traductions": []
   },
   {
     "id": "3e262b2d-48fc-4816-b5e8-c991817d56fc",
     "form": "5da3d356-d818-434f-b225-db35c418bbb6",
-    "headline": "Subscribe to get updates",
-    "tagline": "Newsletter",
     "date_created": "2025-05-07T01:22:45.902Z",
-    "user_created": null,
-    "date_updated": "2025-05-07T01:22:45.993Z",
-    "user_updated": null
+    "user_created": "8464becf-b8ed-404b-94c1-42dbd8d2c9f0",
+    "date_updated": "2026-01-19T14:32:43.881Z",
+    "user_updated": "8464becf-b8ed-404b-94c1-42dbd8d2c9f0",
+    "traductions": [
+      3,
+      4
+    ]
   }
 ]

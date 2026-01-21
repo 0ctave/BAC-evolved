@@ -1,0 +1,42 @@
+[
+  {
+    "id": 1,
+    "date_created": "2026-01-16T04:00:43.654Z",
+    "chambre": 2,
+    "client": 1,
+    "date_arrivee": "2026-01-23",
+    "date_depart": "2026-02-05",
+    "statut": "confirmee",
+    "parking": null
+  },
+  {
+    "id": 2,
+    "date_created": "2026-01-16T04:13:39.029Z",
+    "chambre": 2,
+    "client": 1,
+    "date_arrivee": "2026-02-20",
+    "date_depart": "2026-02-28",
+    "statut": "confirmee",
+    "parking": null
+  },
+  {
+    "id": 3,
+    "date_created": "2026-01-16T04:59:42.511Z",
+    "chambre": 3,
+    "client": 1,
+    "date_arrivee": "2026-01-22",
+    "date_depart": "2026-01-29",
+    "statut": "confirmee",
+    "parking": null
+  },
+  {
+    "id": 4,
+    "date_created": "2026-01-16T21:23:29.619Z",
+    "chambre": 3,
+    "client": 1,
+    "date_arrivee": "2026-02-06",
+    "date_depart": "2026-02-09",
+    "statut": "confirmee",
+    "parking": "true"
+  }
+]

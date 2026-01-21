@@ -4,26 +4,22 @@
     "title": "Footer Navigation",
     "is_active": true,
     "date_created": "2025-05-07T01:05:28.716Z",
-    "user_created": null,
-    "date_updated": null,
-    "user_updated": null,
-    "items": [
-      "dc0870f8-e316-48b0-b34d-ca5c4394344c",
-      "e096f25c-a549-4fe5-a284-17b0a347037a",
-      "c732b100-1f5a-4ce1-8fde-b0072d09623f"
-    ]
+    "user_created": "8464becf-b8ed-404b-94c1-42dbd8d2c9f0",
+    "date_updated": "2026-01-18T21:27:36.502Z",
+    "user_updated": "8464becf-b8ed-404b-94c1-42dbd8d2c9f0",
+    "items": []
   },
   {
     "id": "main",
     "title": "Main Navigation",
     "is_active": true,
     "date_created": "2025-05-07T01:05:28.716Z",
-    "user_created": null,
-    "date_updated": null,
-    "user_updated": null,
+    "user_created": "8464becf-b8ed-404b-94c1-42dbd8d2c9f0",
+    "date_updated": "2026-01-21T12:37:06.176Z",
+    "user_updated": "8464becf-b8ed-404b-94c1-42dbd8d2c9f0",
     "items": [
-      "192a490a-bbb9-4794-b82f-619a01463723",
-      "0ca39155-c212-4b6e-8156-5a4322731c07"
+      "5fbf515f-53f1-4c0f-860b-bb1ed2ccdf6d",
+      "99a60674-2e09-4e6b-bcb8-826247b4c1a4"
     ]
   }
 ]

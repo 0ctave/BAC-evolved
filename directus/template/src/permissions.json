@@ -146,15 +146,12 @@
     "fields": [
       "id",
       "sort",
-      "title",
       "is_active",
-      "meta_tabs",
       "meta_fields",
       "fields",
-      "submit_label",
       "on_success",
-      "success_message",
-      "success_redirect_url"
+      "success_redirect_url",
+      "traductions"
     ],
     "policy": "abf8a154-5b1c-4a46-ac9c-7300570f4f17"
   },
@@ -1981,5 +1978,456 @@
       "*"
     ],
     "policy": "52598a64-071d-4071-96fa-4b620d6189b5"
+  },
+  {
+    "collection": "clients",
+    "action": "create",
+    "permissions": null,
+    "validation": null,
+    "presets": null,
+    "fields": [
+      "*"
+    ],
+    "policy": "08b10d2a-bcbc-4886-b665-422842891ae2"
+  },
+  {
+    "collection": "clients",
+    "action": "read",
+    "permissions": null,
+    "validation": null,
+    "presets": null,
+    "fields": [
+      "*"
+    ],
+    "policy": "08b10d2a-bcbc-4886-b665-422842891ae2"
+  },
+  {
+    "collection": "reservations_chambre",
+    "action": "create",
+    "permissions": null,
+    "validation": null,
+    "presets": null,
+    "fields": [
+      "*"
+    ],
+    "policy": "08b10d2a-bcbc-4886-b665-422842891ae2"
+  },
+  {
+    "collection": "reservations_visite",
+    "action": "create",
+    "permissions": null,
+    "validation": null,
+    "presets": null,
+    "fields": [
+      "*"
+    ],
+    "policy": "08b10d2a-bcbc-4886-b665-422842891ae2"
+  },
+  {
+    "collection": "creneaux_visites",
+    "action": "read",
+    "permissions": null,
+    "validation": null,
+    "presets": null,
+    "fields": [
+      "*"
+    ],
+    "policy": "08b10d2a-bcbc-4886-b665-422842891ae2"
+  },
+  {
+    "collection": "chambres",
+    "action": "read",
+    "permissions": null,
+    "validation": null,
+    "presets": null,
+    "fields": [
+      "*"
+    ],
+    "policy": "08b10d2a-bcbc-4886-b665-422842891ae2"
+  },
+  {
+    "collection": "visites",
+    "action": "read",
+    "permissions": null,
+    "validation": null,
+    "presets": null,
+    "fields": [
+      "*"
+    ],
+    "policy": "08b10d2a-bcbc-4886-b665-422842891ae2"
+  },
+  {
+    "collection": "reservations_chambre",
+    "action": "create",
+    "permissions": null,
+    "validation": null,
+    "presets": null,
+    "fields": [
+      "*"
+    ],
+    "policy": "8ba4ed6f-d330-4675-ae46-119c533a0928"
+  },
+  {
+    "collection": "reservations_chambre",
+    "action": "read",
+    "permissions": null,
+    "validation": null,
+    "presets": null,
+    "fields": [
+      "*"
+    ],
+    "policy": "8ba4ed6f-d330-4675-ae46-119c533a0928"
+  },
+  {
+    "collection": "reservations_chambre",
+    "action": "update",
+    "permissions": null,
+    "validation": null,
+    "presets": null,
+    "fields": [
+      "*"
+    ],
+    "policy": "8ba4ed6f-d330-4675-ae46-119c533a0928"
+  },
+  {
+    "collection": "reservations_chambre",
+    "action": "delete",
+    "permissions": null,
+    "validation": null,
+    "presets": null,
+    "fields": [
+      "*"
+    ],
+    "policy": "8ba4ed6f-d330-4675-ae46-119c533a0928"
+  },
+  {
+    "collection": "reservations_visite",
+    "action": "create",
+    "permissions": null,
+    "validation": null,
+    "presets": null,
+    "fields": [
+      "*"
+    ],
+    "policy": "8ba4ed6f-d330-4675-ae46-119c533a0928"
+  },
+  {
+    "collection": "reservations_visite",
+    "action": "read",
+    "permissions": null,
+    "validation": null,
+    "presets": null,
+    "fields": [
+      "*"
+    ],
+    "policy": "8ba4ed6f-d330-4675-ae46-119c533a0928"
+  },
+  {
+    "collection": "reservations_visite",
+    "action": "update",
+    "permissions": null,
+    "validation": null,
+    "presets": null,
+    "fields": [
+      "*"
+    ],
+    "policy": "8ba4ed6f-d330-4675-ae46-119c533a0928"
+  },
+  {
+    "collection": "reservations_visite",
+    "action": "delete",
+    "permissions": null,
+    "validation": null,
+    "presets": null,
+    "fields": [
+      "*"
+    ],
+    "policy": "8ba4ed6f-d330-4675-ae46-119c533a0928"
+  },
+  {
+    "collection": "clients",
+    "action": "create",
+    "permissions": null,
+    "validation": null,
+    "presets": null,
+    "fields": [
+      "*"
+    ],
+    "policy": "8ba4ed6f-d330-4675-ae46-119c533a0928"
+  },
+  {
+    "collection": "clients",
+    "action": "read",
+    "permissions": null,
+    "validation": null,
+    "presets": null,
+    "fields": [
+      "*"
+    ],
+    "policy": "8ba4ed6f-d330-4675-ae46-119c533a0928"
+  },
+  {
+    "collection": "clients",
+    "action": "update",
+    "permissions": null,
+    "validation": null,
+    "presets": null,
+    "fields": [
+      "*"
+    ],
+    "policy": "8ba4ed6f-d330-4675-ae46-119c533a0928"
+  },
+  {
+    "collection": "clients",
+    "action": "delete",
+    "permissions": null,
+    "validation": null,
+    "presets": null,
+    "fields": [
+      "*"
+    ],
+    "policy": "8ba4ed6f-d330-4675-ae46-119c533a0928"
+  },
+  {
+    "collection": "reservations_chambre",
+    "action": "read",
+    "permissions": null,
+    "validation": null,
+    "presets": null,
+    "fields": [
+      "*"
+    ],
+    "policy": "08b10d2a-bcbc-4886-b665-422842891ae2"
+  },
+  {
+    "collection": "reservations_visite",
+    "action": "read",
+    "permissions": null,
+    "validation": null,
+    "presets": null,
+    "fields": [
+      "*"
+    ],
+    "policy": "08b10d2a-bcbc-4886-b665-422842891ae2"
+  },
+  {
+    "collection": "tarifs_speciaux",
+    "action": "read",
+    "permissions": null,
+    "validation": null,
+    "presets": null,
+    "fields": [
+      "*"
+    ],
+    "policy": "08b10d2a-bcbc-4886-b665-422842891ae2"
+  },
+  {
+    "collection": "tarifs_speciaux_chambres",
+    "action": "read",
+    "permissions": null,
+    "validation": null,
+    "presets": null,
+    "fields": [
+      "*"
+    ],
+    "policy": "08b10d2a-bcbc-4886-b665-422842891ae2"
+  },
+  {
+    "collection": "block_hero_translations",
+    "action": "read",
+    "permissions": null,
+    "validation": null,
+    "presets": null,
+    "fields": [
+      "*"
+    ],
+    "policy": "abf8a154-5b1c-4a46-ac9c-7300570f4f17"
+  },
+  {
+    "collection": "pages_translations",
+    "action": "read",
+    "permissions": null,
+    "validation": null,
+    "presets": null,
+    "fields": [
+      "*"
+    ],
+    "policy": "abf8a154-5b1c-4a46-ac9c-7300570f4f17"
+  },
+  {
+    "collection": "langues",
+    "action": "read",
+    "permissions": null,
+    "validation": null,
+    "presets": null,
+    "fields": [
+      "*"
+    ],
+    "policy": "abf8a154-5b1c-4a46-ac9c-7300570f4f17"
+  },
+  {
+    "collection": "navigation_items_translations",
+    "action": "read",
+    "permissions": null,
+    "validation": null,
+    "presets": null,
+    "fields": [
+      "*"
+    ],
+    "policy": "abf8a154-5b1c-4a46-ac9c-7300570f4f17"
+  },
+  {
+    "collection": "block_richtext_translations",
+    "action": "read",
+    "permissions": null,
+    "validation": null,
+    "presets": null,
+    "fields": [
+      "*"
+    ],
+    "policy": "abf8a154-5b1c-4a46-ac9c-7300570f4f17"
+  },
+  {
+    "collection": "forms_translations",
+    "action": "read",
+    "permissions": null,
+    "validation": null,
+    "presets": null,
+    "fields": [
+      "*"
+    ],
+    "policy": "abf8a154-5b1c-4a46-ac9c-7300570f4f17"
+  },
+  {
+    "collection": "block_form_translations",
+    "action": "read",
+    "permissions": null,
+    "validation": null,
+    "presets": null,
+    "fields": [
+      "*"
+    ],
+    "policy": "abf8a154-5b1c-4a46-ac9c-7300570f4f17"
+  },
+  {
+    "collection": "form_fields_translations",
+    "action": "read",
+    "permissions": null,
+    "validation": null,
+    "presets": null,
+    "fields": [
+      "*"
+    ],
+    "policy": "abf8a154-5b1c-4a46-ac9c-7300570f4f17"
+  },
+  {
+    "collection": "form_field_choices_translations",
+    "action": "read",
+    "permissions": null,
+    "validation": null,
+    "presets": null,
+    "fields": [
+      "*"
+    ],
+    "policy": "abf8a154-5b1c-4a46-ac9c-7300570f4f17"
+  },
+  {
+    "collection": "block_pricing_translations",
+    "action": "read",
+    "permissions": null,
+    "validation": null,
+    "presets": null,
+    "fields": [
+      "*"
+    ],
+    "policy": "abf8a154-5b1c-4a46-ac9c-7300570f4f17"
+  },
+  {
+    "collection": "block_pricing_cards_translations",
+    "action": "read",
+    "permissions": null,
+    "validation": null,
+    "presets": null,
+    "fields": [
+      "*"
+    ],
+    "policy": "abf8a154-5b1c-4a46-ac9c-7300570f4f17"
+  },
+  {
+    "collection": "block_posts_translations",
+    "action": "read",
+    "permissions": null,
+    "validation": null,
+    "presets": null,
+    "fields": [
+      "*"
+    ],
+    "policy": "abf8a154-5b1c-4a46-ac9c-7300570f4f17"
+  },
+  {
+    "collection": "block_gallery_translations",
+    "action": "read",
+    "permissions": null,
+    "validation": null,
+    "presets": null,
+    "fields": [
+      "*"
+    ],
+    "policy": "abf8a154-5b1c-4a46-ac9c-7300570f4f17"
+  },
+  {
+    "collection": "block_button_translations",
+    "action": "read",
+    "permissions": null,
+    "validation": null,
+    "presets": null,
+    "fields": [
+      "*"
+    ],
+    "policy": "abf8a154-5b1c-4a46-ac9c-7300570f4f17"
+  },
+  {
+    "collection": "block_booking_translations",
+    "action": "read",
+    "permissions": null,
+    "validation": null,
+    "presets": null,
+    "fields": [
+      "*"
+    ],
+    "policy": "abf8a154-5b1c-4a46-ac9c-7300570f4f17"
+  },
+  {
+    "collection": "block_booking",
+    "action": "read",
+    "permissions": null,
+    "validation": null,
+    "presets": null,
+    "fields": [
+      "*"
+    ],
+    "policy": "abf8a154-5b1c-4a46-ac9c-7300570f4f17"
+  },
+  {
+    "collection": "block_split",
+    "action": "read",
+    "permissions": null,
+    "validation": null,
+    "presets": null,
+    "fields": [
+      "*"
+    ],
+    "policy": "abf8a154-5b1c-4a46-ac9c-7300570f4f17"
+  },
+  {
+    "collection": "block_split_translations",
+    "action": "read",
+    "permissions": null,
+    "validation": null,
+    "presets": null,
+    "fields": [
+      "*"
+    ],
+    "policy": "abf8a154-5b1c-4a46-ac9c-7300570f4f17"
   }
 ]

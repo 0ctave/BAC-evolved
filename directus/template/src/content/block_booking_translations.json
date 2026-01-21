@@ -1,0 +1,20 @@
+[
+  {
+    "id": 1,
+    "block_booking_id": 1,
+    "langues_code": "fr-FR",
+    "step_1_label": "Séjour",
+    "step_2_label": "Calendrier",
+    "step_3_label": "Infos",
+    "step_4_label": "Reservation"
+  },
+  {
+    "id": 2,
+    "block_booking_id": 1,
+    "langues_code": "en-GB",
+    "step_1_label": "Stay",
+    "step_2_label": "Calendar",
+    "step_3_label": "Infos",
+    "step_4_label": "Booking"
+  }
+]

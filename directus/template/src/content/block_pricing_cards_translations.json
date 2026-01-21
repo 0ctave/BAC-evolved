@@ -1,0 +1,30 @@
+[
+  {
+    "id": 1,
+    "block_pricing_cards_id": "388404db-1703-4b10-b12b-e5d4385f1530",
+    "langues_code": "fr-FR",
+    "title": "Starter Plan",
+    "description": "zdqdzqd"
+  },
+  {
+    "id": 2,
+    "block_pricing_cards_id": "388404db-1703-4b10-b12b-e5d4385f1530",
+    "langues_code": null,
+    "title": "Starter Plan",
+    "description": "Perfect for your small busines"
+  },
+  {
+    "id": 3,
+    "block_pricing_cards_id": "83972d2a-742e-4a6c-8698-563d01dde54d",
+    "langues_code": "fr-FR",
+    "title": "Enterprise Plan",
+    "description": "dzqdqzdzqdzq"
+  },
+  {
+    "id": 4,
+    "block_pricing_cards_id": "83972d2a-742e-4a6c-8698-563d01dde54d",
+    "langues_code": null,
+    "title": "Enterprise Plan",
+    "description": "The best plan with all the best features"
+  }
+]

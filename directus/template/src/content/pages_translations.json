@@ -1,0 +1,170 @@
+[
+  {
+    "id": 1,
+    "pages_id": "636dc283-e634-4d5d-aada-e6743db46036",
+    "langues_code": "fr-FR",
+    "title": "Accueil",
+    "permalink": "/"
+  },
+  {
+    "id": 2,
+    "pages_id": "636dc283-e634-4d5d-aada-e6743db46036",
+    "langues_code": null,
+    "title": "Home",
+    "permalink": "/"
+  },
+  {
+    "id": 3,
+    "pages_id": "1ce02298-817a-46bc-ac92-6a6c10c20f88",
+    "langues_code": "fr-FR",
+    "title": "Blog",
+    "permalink": "/blog"
+  },
+  {
+    "id": 4,
+    "pages_id": "1ce02298-817a-46bc-ac92-6a6c10c20f88",
+    "langues_code": null,
+    "title": "Blog",
+    "permalink": "/blog"
+  },
+  {
+    "id": 5,
+    "pages_id": "9821199f-4b05-49fb-8407-fbfe9b866ef0",
+    "langues_code": "fr-FR",
+    "title": "Contact",
+    "permalink": "/contact"
+  },
+  {
+    "id": 6,
+    "pages_id": "9821199f-4b05-49fb-8407-fbfe9b866ef0",
+    "langues_code": null,
+    "title": "Contact",
+    "permalink": "/contact"
+  },
+  {
+    "id": 7,
+    "pages_id": "2a62887e-2384-4bd2-a919-7665d85fed07",
+    "langues_code": "fr-FR",
+    "title": "A propos",
+    "permalink": "/a-propos"
+  },
+  {
+    "id": 8,
+    "pages_id": "2a62887e-2384-4bd2-a919-7665d85fed07",
+    "langues_code": null,
+    "title": "About Us",
+    "permalink": "/about-us"
+  },
+  {
+    "id": 9,
+    "pages_id": "93023385-f574-4040-9ead-42b717db2015",
+    "langues_code": "fr-FR",
+    "title": "Politique de Confidentialité",
+    "permalink": "/politique-de-confidentialite"
+  },
+  {
+    "id": 10,
+    "pages_id": "93023385-f574-4040-9ead-42b717db2015",
+    "langues_code": null,
+    "title": "Privacy Policy",
+    "permalink": "/privacy-policy"
+  },
+  {
+    "id": 11,
+    "pages_id": "dfab583b-09e7-4156-b86b-80d47c2885d4",
+    "langues_code": "fr-FR",
+    "title": "Reservation",
+    "permalink": "/reserver"
+  },
+  {
+    "id": 12,
+    "pages_id": "dfab583b-09e7-4156-b86b-80d47c2885d4",
+    "langues_code": "en-GB",
+    "title": "Booking",
+    "permalink": "/book"
+  },
+  {
+    "id": 13,
+    "pages_id": "636dc283-e634-4d5d-aada-e6743db46036",
+    "langues_code": "de-DE",
+    "title": "Willkommen",
+    "permalink": "/"
+  },
+  {
+    "id": 14,
+    "pages_id": "636dc283-e634-4d5d-aada-e6743db46036",
+    "langues_code": "en-GB",
+    "title": "Home",
+    "permalink": "/"
+  },
+  {
+    "id": 15,
+    "pages_id": "636dc283-e634-4d5d-aada-e6743db46036",
+    "langues_code": "es-ES",
+    "title": "Bienvenido",
+    "permalink": "/"
+  },
+  {
+    "id": 16,
+    "pages_id": "1ce02298-817a-46bc-ac92-6a6c10c20f88",
+    "langues_code": "de-DE",
+    "title": "Blog",
+    "permalink": "/blog"
+  },
+  {
+    "id": 17,
+    "pages_id": "1ce02298-817a-46bc-ac92-6a6c10c20f88",
+    "langues_code": "en-GB",
+    "title": "Blog",
+    "permalink": "/blog"
+  },
+  {
+    "id": 18,
+    "pages_id": "1ce02298-817a-46bc-ac92-6a6c10c20f88",
+    "langues_code": "es-ES",
+    "title": "Blog",
+    "permalink": "/blog"
+  },
+  {
+    "id": 19,
+    "pages_id": "dfab583b-09e7-4156-b86b-80d47c2885d4",
+    "langues_code": "de-DE",
+    "title": "Termon",
+    "permalink": "/termin"
+  },
+  {
+    "id": 20,
+    "pages_id": "dfab583b-09e7-4156-b86b-80d47c2885d4",
+    "langues_code": "es-ES",
+    "title": "Reserva",
+    "permalink": "/reservado"
+  },
+  {
+    "id": 21,
+    "pages_id": "9821199f-4b05-49fb-8407-fbfe9b866ef0",
+    "langues_code": "de-DE",
+    "title": "Contact",
+    "permalink": "/contactito"
+  },
+  {
+    "id": 22,
+    "pages_id": "9821199f-4b05-49fb-8407-fbfe9b866ef0",
+    "langues_code": "en-GB",
+    "title": "Contact",
+    "permalink": "/contactdzqdq"
+  },
+  {
+    "id": 23,
+    "pages_id": "9821199f-4b05-49fb-8407-fbfe9b866ef0",
+    "langues_code": "es-ES",
+    "title": "Contact",
+    "permalink": "/contact"
+  },
+  {
+    "id": 24,
+    "pages_id": "786204b7-2de2-4900-9198-d08ecc633933",
+    "langues_code": "fr-FR",
+    "title": "Chambres",
+    "permalink": "/chambres"
+  }
+]

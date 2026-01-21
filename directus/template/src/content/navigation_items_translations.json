@@ -1,0 +1,122 @@
+[
+  {
+    "id": 1,
+    "navigation_items_id": "dc0870f8-e316-48b0-b34d-ca5c4394344c",
+    "langues_code": null,
+    "title": "Privacy Policy"
+  },
+  {
+    "id": 2,
+    "navigation_items_id": "dc0870f8-e316-48b0-b34d-ca5c4394344c",
+    "langues_code": "fr-FR",
+    "title": "Politique de Confidentialité"
+  },
+  {
+    "id": 3,
+    "navigation_items_id": "83dbeb50-973e-4228-a4d1-f11fb93d2c7e",
+    "langues_code": null,
+    "title": "Privacy Policy"
+  },
+  {
+    "id": 4,
+    "navigation_items_id": "83dbeb50-973e-4228-a4d1-f11fb93d2c7e",
+    "langues_code": "fr-FR",
+    "title": "Politique de Confidentialité"
+  },
+  {
+    "id": 5,
+    "navigation_items_id": "708d88b5-8239-4e1e-acf2-ccff55eb92aa",
+    "langues_code": "fr-FR",
+    "title": "Contactez Nous"
+  },
+  {
+    "id": 6,
+    "navigation_items_id": "708d88b5-8239-4e1e-acf2-ccff55eb92aa",
+    "langues_code": null,
+    "title": "Contact Us"
+  },
+  {
+    "id": 7,
+    "navigation_items_id": "222cb7ca-69de-4b93-9d1d-730aa82d761f",
+    "langues_code": "fr-FR",
+    "title": "Blog"
+  },
+  {
+    "id": 8,
+    "navigation_items_id": "222cb7ca-69de-4b93-9d1d-730aa82d761f",
+    "langues_code": null,
+    "title": "Blog"
+  },
+  {
+    "id": 9,
+    "navigation_items_id": "d7faf7b1-95c6-49b9-b8b9-1cf6fe133850",
+    "langues_code": "fr-FR",
+    "title": "Contact"
+  },
+  {
+    "id": 10,
+    "navigation_items_id": "d7faf7b1-95c6-49b9-b8b9-1cf6fe133850",
+    "langues_code": null,
+    "title": "Contact"
+  },
+  {
+    "id": 11,
+    "navigation_items_id": "0947f711-952d-4d06-b616-d320e6ada315",
+    "langues_code": "fr-FR",
+    "title": "Nous Contacter"
+  },
+  {
+    "id": 12,
+    "navigation_items_id": "0947f711-952d-4d06-b616-d320e6ada315",
+    "langues_code": null,
+    "title": "Contact Us"
+  },
+  {
+    "id": 13,
+    "navigation_items_id": "814f01bd-980d-4759-8822-809012cc8f76",
+    "langues_code": "fr-FR",
+    "title": "Politique de Confidentialité"
+  },
+  {
+    "id": 14,
+    "navigation_items_id": "814f01bd-980d-4759-8822-809012cc8f76",
+    "langues_code": null,
+    "title": "Privacy Policy"
+  },
+  {
+    "id": 15,
+    "navigation_items_id": "b5ef823b-8cef-490c-9c3a-c425245357aa",
+    "langues_code": "fr-FR",
+    "title": "A Propos"
+  },
+  {
+    "id": 16,
+    "navigation_items_id": "b5ef823b-8cef-490c-9c3a-c425245357aa",
+    "langues_code": null,
+    "title": "About"
+  },
+  {
+    "id": 17,
+    "navigation_items_id": "5cf96b3c-9cba-4fd9-810f-b61db76b979f",
+    "langues_code": "fr-FR",
+    "title": "Nous Contacter"
+  },
+  {
+    "id": 18,
+    "navigation_items_id": "5cf96b3c-9cba-4fd9-810f-b61db76b979f",
+    "langues_code": null,
+    "title": "Contact Us"
+  },
+  {
+    "id": 19,
+    "navigation_items_id": "5cf96b3c-9cba-4fd9-810f-b61db76b979f",
+    "langues_code": "en-GB",
+    "title": "Contact Us"
+  },
+  {
+    "id": 20,
+    "navigation_items_id": "5fbf515f-53f1-4c0f-860b-bb1ed2ccdf6d",
+    "langues_code": "fr-FR",
+    "title": "Le Chambre d'Hôte"
+  }
+]

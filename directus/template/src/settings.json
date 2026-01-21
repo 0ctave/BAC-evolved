@@ -1,8 +1,8 @@
 {
   "id": 1,
-  "project_name": "CMS",
+  "project_name": "Directus",
   "project_url": null,
-  "project_color": "#6644FF",
+  "project_color": "#F55677",
   "project_logo": null,
   "public_foreground": null,
   "public_background": null,
@@ -85,7 +85,7 @@
   "default_language": "en-US",
   "custom_aspect_ratios": null,
   "public_favicon": null,
-  "default_appearance": "auto",
+  "default_appearance": "dark",
   "default_theme_light": "Directus Default",
   "theme_light_overrides": {
     "form": {
@@ -225,6 +225,28 @@
   "public_registration_verify_email": true,
   "public_registration_role": null,
   "public_registration_email_filter": null,
+  "visual_editor_urls": [
+    {
+      "url": "http://localhost:3000?visual-editing=true"
+    },
+    {
+      "url": "http://localhost:3000/blog?visual-editing=true"
+    }
+  ],
+  "project_id": "019bc259-a8f4-710b-84e6-ecdbd003cef4",
+  "mcp_enabled": false,
+  "mcp_allow_deletes": false,
+  "mcp_prompts_collection": "ai_prompts",
+  "mcp_system_prompt_enabled": true,
+  "mcp_system_prompt": null,
+  "project_owner": "octave.boelle@gmail.com",
+  "project_usage": "personal",
+  "org_name": null,
+  "product_updates": false,
+  "project_status": null,
+  "ai_openai_api_key": null,
+  "ai_anthropic_api_key": null,
+  "ai_system_prompt": null,
   "command_palette_settings": {
     "searchMode": "as_you_type",
     "collections": [
@@ -264,20 +286,5 @@
     ],
     "triggerRate": 250,
     "commandPaletteEnabled": true
-  },
-  "visual_editor_urls": [
-    {
-      "url": "http://localhost:3000?visual-editing=true"
-    },
-    {
-      "url": "http://localhost:3000/blog?visual-editing=true"
-    }
-  ],
-  "accepted_terms": true,
-  "project_id": "018de2a3-baf7-7798-ab21-7009ba6fc84e",
-  "mcp_enabled": true,
-  "mcp_allow_deletes": false,
-  "mcp_prompts_collection": "ai_prompts",
-  "mcp_system_prompt_enabled": true,
-  "mcp_system_prompt": null
+  }
 }

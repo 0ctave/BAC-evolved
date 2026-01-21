@@ -1,0 +1,18 @@
+[
+  {
+    "id": 1,
+    "block_split_id": 1,
+    "langues_code": "fr-FR",
+    "tagline": null,
+    "headline": "La Chambre d'Hôte",
+    "content": "<p>Ma maison d'h&ocirc;te situ&eacute;e en plein c&oelig;ur de Bordeaux, &agrave; seulement 2 minutes de la <strong>Place de la Victoire,</strong> est id&eacute;alement plac&eacute;e pour visiter Bordeaux et ses environs</p>\n<p>Elle est compos&eacute;e de deux chambres spacieuses :&nbsp;</p>\n<ul>\n<li>La Chambre Louise</li>\n<li>La Chambre Marceline</li>\n</ul>\n<p>Chaque Chambre est accompagn&eacute; de sa salle de bain et de ses toilettes priv&eacute;s.</p>\n<p>Entre <strong>7h30</strong> et <strong>9h00</strong>, vous pourrez d&eacute;guster un petit-d&eacute;jeuner confectionn&eacute; avec soin : boisson chaude selon votre choix, plusieurs vari&eacute;t&eacute;s de pains, p&acirc;tisseries et confitures maison, jus de pommes local et naturel&hellip;</p>\n<p>Vous serez install&eacute;s soit dans la salle &agrave; manger, soit dans la cour int&eacute;rieure, calme et fleurie selon la saison.</p>\n<figure class=\"wp-block-image size-large\"></figure>"
+  },
+  {
+    "id": 2,
+    "block_split_id": 2,
+    "langues_code": "fr-FR",
+    "tagline": null,
+    "headline": "Visites de Bordeaux",
+    "content": "<p>Je propose des visites de Bordeaux etc...</p>"
+  }
+]

@@ -1,0 +1,16 @@
+[
+  {
+    "id": 1,
+    "block_posts_id": "060b632d-d70d-4db1-8b95-4fbab7a52ae8",
+    "langues_code": null,
+    "tagline": "Blog",
+    "headline": "All rabbits, all the time"
+  },
+  {
+    "id": 2,
+    "block_posts_id": "060b632d-d70d-4db1-8b95-4fbab7a52ae8",
+    "langues_code": "fr-FR",
+    "tagline": "Blog",
+    "headline": "Des lapins partout"
+  }
+]

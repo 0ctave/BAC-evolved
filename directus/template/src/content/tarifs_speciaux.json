@@ -1,0 +1,102 @@
+[
+  {
+    "id": 1,
+    "nom": "2 Personnes",
+    "type": [
+      "fix_nuit"
+    ],
+    "date_debut": null,
+    "date_fin": null,
+    "statut": "actif",
+    "description": null,
+    "valeur": 10,
+    "jours_application": null,
+    "duree_min": null,
+    "duree_max": null,
+    "personnes_min": 2,
+    "personnes_max": 2,
+    "parking": false,
+    "parent": null,
+    "chambres_concernees": []
+  },
+  {
+    "id": 2,
+    "nom": "3 Personnes",
+    "type": [
+      "fix_nuit"
+    ],
+    "date_debut": null,
+    "date_fin": null,
+    "statut": "actif",
+    "description": null,
+    "valeur": 20,
+    "jours_application": null,
+    "duree_min": null,
+    "duree_max": null,
+    "personnes_min": 3,
+    "personnes_max": 3,
+    "parking": false,
+    "parent": null,
+    "chambres_concernees": []
+  },
+  {
+    "id": 3,
+    "nom": "Parking",
+    "type": [
+      "fix_nuit"
+    ],
+    "date_debut": null,
+    "date_fin": null,
+    "statut": "actif",
+    "description": null,
+    "valeur": 15,
+    "jours_application": null,
+    "duree_min": null,
+    "duree_max": null,
+    "personnes_min": null,
+    "personnes_max": null,
+    "parking": true,
+    "parent": null,
+    "chambres_concernees": []
+  },
+  {
+    "id": 4,
+    "nom": "Parking 2+ Nuits",
+    "type": [
+      "fix_nuit"
+    ],
+    "date_debut": null,
+    "date_fin": null,
+    "statut": "actif",
+    "description": null,
+    "valeur": 5,
+    "jours_application": null,
+    "duree_min": 2,
+    "duree_max": null,
+    "personnes_min": null,
+    "personnes_max": null,
+    "parking": true,
+    "parent": 3,
+    "chambres_concernees": []
+  },
+  {
+    "id": 5,
+    "nom": "Réduction 2+ Nuit",
+    "type": [
+      "fix_nuit"
+    ],
+    "date_debut": null,
+    "date_fin": null,
+    "statut": "actif",
+    "description": null,
+    "valeur": -5,
+    "jours_application": null,
+    "duree_min": 2,
+    "duree_max": null,
+    "personnes_min": null,
+    "personnes_max": null,
+    "parking": false,
+    "parent": null,
+    "chambres_concernees": []
+  }
+]

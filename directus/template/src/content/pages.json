@@ -2,8 +2,6 @@
   {
     "id": "636dc283-e634-4d5d-aada-e6743db46036",
     "sort": 1,
-    "title": "Home",
-    "permalink": "/",
     "status": "published",
     "published_at": "2025-04-07T18:17:00.000Z",
     "seo": {
@@ -14,22 +12,29 @@
       "og_image": "ea743e20-e6e9-4be8-a949-3771cd182810.png"
     },
     "date_created": "2025-05-07T00:49:42.958Z",
-    "user_created": null,
-    "date_updated": "2025-05-09T18:16:12.793Z",
-    "user_updated": "d56956bf-6ed0-465e-bb4a-ec9bde65c5f0",
+    "user_created": "8464becf-b8ed-404b-94c1-42dbd8d2c9f0",
+    "date_updated": "2026-01-21T12:57:59.869Z",
+    "user_updated": "8464becf-b8ed-404b-94c1-42dbd8d2c9f0",
     "blocks": [
-      "2b757f25-9c2f-446c-980f-87fb138c6766",
-      "7e1ce212-3f8a-43b4-aff7-131bf4241e30",
       "2d9abe8f-a7ad-480d-8fc7-603c712e2f40",
+      "2b757f25-9c2f-446c-980f-87fb138c6766",
+      "febf4228-f720-45d0-a54b-1bda93f070cf",
+      "fcc3bdc4-cb85-4ce8-9eb7-8883c136f01a",
+      "f1649210-62d5-43cf-9aef-80fc9e5e9274",
       "529e6408-7372-4195-b82d-e444c06ac492",
-      "39d02b18-18d2-4c29-9268-038f72ea05fe"
+      "7e1ce212-3f8a-43b4-aff7-131bf4241e30"
+    ],
+    "traductions": [
+      1,
+      2,
+      13,
+      14,
+      15
     ]
   },
   {
     "id": "1ce02298-817a-46bc-ac92-6a6c10c20f88",
     "sort": 2,
-    "title": "Blog",
-    "permalink": "/blog",
     "status": "published",
     "published_at": "2024-09-01T16:00:00.000Z",
     "seo": {
@@ -37,19 +42,24 @@
       "meta_description": "All the tips and advice we've learned about working with headless CMS over the years."
     },
     "date_created": "2025-05-07T00:49:42.958Z",
-    "user_created": null,
-    "date_updated": null,
-    "user_updated": null,
+    "user_created": "8464becf-b8ed-404b-94c1-42dbd8d2c9f0",
+    "date_updated": "2026-01-19T21:11:45.920Z",
+    "user_updated": "8464becf-b8ed-404b-94c1-42dbd8d2c9f0",
     "blocks": [
       "45227f61-5ff1-431c-8dee-1a50d369325f",
       "2b017efb-ce7c-4b90-9f59-a39236ffe571"
+    ],
+    "traductions": [
+      3,
+      4,
+      16,
+      17,
+      18
     ]
   },
   {
     "id": "9821199f-4b05-49fb-8407-fbfe9b866ef0",
     "sort": 3,
-    "title": "Contact",
-    "permalink": "/contact",
     "status": "published",
     "published_at": "2024-07-01T16:00:00.000Z",
     "seo": {
@@ -57,18 +67,23 @@
       "title": "Contact Us | Reach out to our team if you need help"
     },
     "date_created": "2025-05-07T00:49:42.958Z",
-    "user_created": null,
-    "date_updated": null,
-    "user_updated": null,
+    "user_created": "8464becf-b8ed-404b-94c1-42dbd8d2c9f0",
+    "date_updated": "2026-01-20T01:47:07.229Z",
+    "user_updated": "8464becf-b8ed-404b-94c1-42dbd8d2c9f0",
     "blocks": [
       "1f774f44-3e33-4b0f-93f4-fdd6df898438"
+    ],
+    "traductions": [
+      5,
+      6,
+      21,
+      22,
+      23
     ]
   },
   {
     "id": "2a62887e-2384-4bd2-a919-7665d85fed07",
     "sort": 4,
-    "title": "About Us",
-    "permalink": "/about-us",
     "status": "published",
     "published_at": "2024-12-01T17:00:00.000Z",
     "seo": {
@@ -76,18 +91,20 @@
       "no_index": true
     },
     "date_created": "2025-05-07T00:49:42.958Z",
-    "user_created": null,
-    "date_updated": "2025-05-07T17:28:42.847Z",
-    "user_updated": "d56956bf-6ed0-465e-bb4a-ec9bde65c5f0",
+    "user_created": "8464becf-b8ed-404b-94c1-42dbd8d2c9f0",
+    "date_updated": "2026-01-19T14:28:44.560Z",
+    "user_updated": "8464becf-b8ed-404b-94c1-42dbd8d2c9f0",
     "blocks": [
       "0ff1d6c4-ff77-46c6-ad02-f9ae31484505"
+    ],
+    "traductions": [
+      7,
+      8
     ]
   },
   {
     "id": "93023385-f574-4040-9ead-42b717db2015",
     "sort": 5,
-    "title": "Privacy Policy",
-    "permalink": "/privacy-policy",
     "status": "published",
     "published_at": "2024-05-01T16:00:00.000Z",
     "seo": {
@@ -95,11 +112,53 @@
       "meta_description": "Here's all the fine print for our website. You can read it all. There's nothing secret. It's just words to fill up the page. You'll want to change them later."
     },
     "date_created": "2025-05-07T00:49:42.958Z",
-    "user_created": null,
+    "user_created": "8464becf-b8ed-404b-94c1-42dbd8d2c9f0",
+    "date_updated": "2026-01-19T17:55:01.020Z",
+    "user_updated": "8464becf-b8ed-404b-94c1-42dbd8d2c9f0",
+    "blocks": [
+      "bc826e30-4988-4035-98bd-5ffc4799e5fc"
+    ],
+    "traductions": [
+      9,
+      10
+    ]
+  },
+  {
+    "id": "786204b7-2de2-4900-9198-d08ecc633933",
+    "sort": null,
+    "status": "published",
+    "published_at": null,
+    "seo": null,
+    "date_created": "2026-01-20T18:34:16.263Z",
+    "user_created": "8464becf-b8ed-404b-94c1-42dbd8d2c9f0",
     "date_updated": null,
     "user_updated": null,
     "blocks": [
-      "bc826e30-4988-4035-98bd-5ffc4799e5fc"
+      "f570744d-42a5-47d7-bf69-76fb6f1cc485",
+      "550f59b1-6177-4d3c-9a2e-9428af846658"
+    ],
+    "traductions": [
+      24
+    ]
+  },
+  {
+    "id": "dfab583b-09e7-4156-b86b-80d47c2885d4",
+    "sort": null,
+    "status": "published",
+    "published_at": null,
+    "seo": null,
+    "date_created": "2026-01-19T21:01:44.686Z",
+    "user_created": "8464becf-b8ed-404b-94c1-42dbd8d2c9f0",
+    "date_updated": "2026-01-20T14:29:29.483Z",
+    "user_updated": "8464becf-b8ed-404b-94c1-42dbd8d2c9f0",
+    "blocks": [
+      "af7c1cd5-c775-45d3-8ce1-bb0aaf1f1652"
+    ],
+    "traductions": [
+      11,
+      12,
+      19,
+      20
     ]
   }
 ]

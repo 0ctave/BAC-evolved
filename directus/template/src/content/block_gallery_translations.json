@@ -1,0 +1,16 @@
+[
+  {
+    "id": 1,
+    "block_gallery_id": "34fdcf0e-cc5d-4c40-b61f-4f0a5e167306",
+    "langues_code": "fr-FR",
+    "tagline": null,
+    "headline": "Petit apperçu"
+  },
+  {
+    "id": 2,
+    "block_gallery_id": "34fdcf0e-cc5d-4c40-b61f-4f0a5e167306",
+    "langues_code": null,
+    "tagline": "Template Gallery",
+    "headline": "Check out some of our latest templates"
+  }
+]

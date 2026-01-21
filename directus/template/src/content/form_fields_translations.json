@@ -1,0 +1,114 @@
+[
+  {
+    "id": 1,
+    "form_fields_id": "0f3deba1-9d6b-44a0-aa87-a9b38e834beb",
+    "langues_code": null,
+    "label": "First Name",
+    "placeholder": null,
+    "help": null
+  },
+  {
+    "id": 2,
+    "form_fields_id": "0f3deba1-9d6b-44a0-aa87-a9b38e834beb",
+    "langues_code": "fr-FR",
+    "label": "Prénom",
+    "placeholder": null,
+    "help": null
+  },
+  {
+    "id": 3,
+    "form_fields_id": "d37bc00f-bfb5-4496-85c3-70190b21b707",
+    "langues_code": null,
+    "label": "Email",
+    "placeholder": null,
+    "help": null
+  },
+  {
+    "id": 4,
+    "form_fields_id": "d37bc00f-bfb5-4496-85c3-70190b21b707",
+    "langues_code": "fr-FR",
+    "label": "Email",
+    "placeholder": null,
+    "help": null
+  },
+  {
+    "id": 5,
+    "form_fields_id": "eef0eb77-ecab-4fba-9903-c46d6ad6d85b",
+    "langues_code": null,
+    "label": "First Name",
+    "placeholder": "John",
+    "help": null
+  },
+  {
+    "id": 6,
+    "form_fields_id": "eef0eb77-ecab-4fba-9903-c46d6ad6d85b",
+    "langues_code": "fr-FR",
+    "label": "First Name",
+    "placeholder": "John",
+    "help": null
+  },
+  {
+    "id": 7,
+    "form_fields_id": "bbc7b1c6-304e-4ee1-9afa-c5cffda6af27",
+    "langues_code": "fr-FR",
+    "label": "Last Name",
+    "placeholder": "Doe",
+    "help": null
+  },
+  {
+    "id": 8,
+    "form_fields_id": "bbc7b1c6-304e-4ee1-9afa-c5cffda6af27",
+    "langues_code": null,
+    "label": "Last Name",
+    "placeholder": "Doe",
+    "help": null
+  },
+  {
+    "id": 9,
+    "form_fields_id": "a3d87bc0-f143-44ca-bea0-9eaf56b67783",
+    "langues_code": "fr-FR",
+    "label": "Email",
+    "placeholder": "test",
+    "help": null
+  },
+  {
+    "id": 10,
+    "form_fields_id": "a3d87bc0-f143-44ca-bea0-9eaf56b67783",
+    "langues_code": null,
+    "label": "Email",
+    "placeholder": null,
+    "help": null
+  },
+  {
+    "id": 11,
+    "form_fields_id": "a5222af8-f9a2-4d1a-9713-7ce0e2d5edc5",
+    "langues_code": null,
+    "label": "Which team would you like to speak with?",
+    "placeholder": null,
+    "help": null
+  },
+  {
+    "id": 12,
+    "form_fields_id": "a5222af8-f9a2-4d1a-9713-7ce0e2d5edc5",
+    "langues_code": "fr-FR",
+    "label": "Which team would you like to speak with?",
+    "placeholder": null,
+    "help": null
+  },
+  {
+    "id": 13,
+    "form_fields_id": "56c64efd-520f-4578-acca-e0565e247681",
+    "langues_code": null,
+    "label": "How can we help?",
+    "placeholder": "Give us the scoop right here.",
+    "help": null
+  },
+  {
+    "id": 14,
+    "form_fields_id": "56c64efd-520f-4578-acca-e0565e247681",
+    "langues_code": "fr-FR",
+    "label": "How can we help?",
+    "placeholder": "Give us thdzqdzqdqght here.",
+    "help": null
+  }
+]

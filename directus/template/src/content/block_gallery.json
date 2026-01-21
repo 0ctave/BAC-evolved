@@ -1,19 +1,28 @@
 [
   {
-    "headline": "Check out some of our latest templates",
     "id": "34fdcf0e-cc5d-4c40-b61f-4f0a5e167306",
-    "tagline": "Template Gallery",
     "date_created": "2025-05-07T01:25:08.962Z",
-    "user_created": null,
-    "date_updated": "2025-05-07T01:25:09.096Z",
-    "user_updated": null,
+    "user_created": "8464becf-b8ed-404b-94c1-42dbd8d2c9f0",
+    "date_updated": "2026-01-21T02:11:28.115Z",
+    "user_updated": "8464becf-b8ed-404b-94c1-42dbd8d2c9f0",
     "items": [
-      "1dbac868-e2cc-4930-9f21-5e0dd1b40e52",
-      "2a0369dc-1b43-4d5a-9832-d180a0aa0295",
-      "46f226f4-6d13-4783-878f-3ae0eafcfd5d",
-      "02bb1bbf-c10d-462e-be09-c4556b3ea087",
-      "d3481aae-7dc4-446f-8b68-50e77aab58da",
-      "1f520e55-4054-47f9-896a-baf2787ec007"
+      "54d15d7b-a8d2-46a4-9ebd-04c48fa647e6",
+      "24c5d0b6-4b95-48e5-93e9-70f50edbb3bb",
+      "6c21897b-85b5-493b-a4b5-fb10f89bc7e4",
+      "fb353cdb-51d4-4d56-87a7-bfc605fc3168",
+      "e268c98b-4dba-4fb3-a8bf-f03fe0b933ca",
+      "e6b09090-5420-459d-9426-6e3ec2262228",
+      "8d930ebf-ffe9-43db-82a2-2251e13be0f7",
+      "2dece692-56af-4ccc-a592-106939cc19fc",
+      "25e0eff8-b3f6-406d-bca5-2eddaf3fd24c",
+      "a0805457-609d-48f4-b452-cfae6e5f81c3",
+      "dbe6939b-6440-443f-b038-d3133cca3f45",
+      "e4471bcb-437d-47ab-a5b1-5e28fd0e190e",
+      "7011cc2d-d639-40f0-8794-c04934bbffa8"
+    ],
+    "traductions": [
+      1,
+      2
     ]
   }
 ]

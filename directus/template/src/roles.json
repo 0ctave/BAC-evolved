@@ -20,20 +20,30 @@
     "users": null
   },
   {
-    "id": "d70780bd-f3ed-418b-98c2-f5354fd3fa68",
-    "name": "Content Admin",
-    "icon": "admin_panel_settings",
-    "description": "Role with full rights to edit all content. Useful for simple sites or those without publishing approval workflows.",
+    "id": "7e92c34a-f0fb-4e0b-8487-69f634089150",
+    "name": "Bot Réservation",
+    "icon": "supervised_user_circle",
+    "description": null,
     "parent": null,
     "children": null,
     "policies": null,
     "users": null
   },
   {
-    "id": "ef049c8b-546b-4bbc-9cd7-b05d77e58b66",
+    "id": "b9966cb4-9677-4c1b-8262-944bceeefcfb",
     "name": "Administrator",
     "icon": "verified",
     "description": "$t:admin_description",
+    "parent": null,
+    "children": null,
+    "policies": null,
+    "users": null
+  },
+  {
+    "id": "d70780bd-f3ed-418b-98c2-f5354fd3fa68",
+    "name": "Content Admin",
+    "icon": "admin_panel_settings",
+    "description": "Role with full rights to edit all content. Useful for simple sites or those without publishing approval workflows.",
     "parent": null,
     "children": null,
     "policies": null,

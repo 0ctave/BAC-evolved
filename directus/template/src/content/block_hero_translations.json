@@ -1,0 +1,50 @@
+[
+  {
+    "id": 1,
+    "block_hero_id": "0e09d473-7f86-4e70-a199-e81e6c04c3c6",
+    "langues_code": "fr-FR",
+    "tagline": null,
+    "headline": null,
+    "description": null
+  },
+  {
+    "id": 2,
+    "block_hero_id": "0e09d473-7f86-4e70-a199-e81e6c04c3c6",
+    "langues_code": null,
+    "tagline": "CMS",
+    "headline": "Headless. Not Brainless.",
+    "description": "Directus gives you a backend that is perfect for Headless CMS use cases but also everything beyond. Authentication, user permissions."
+  },
+  {
+    "id": 3,
+    "block_hero_id": "0e09d473-7f86-4e70-a199-e81e6c04c3c6",
+    "langues_code": "de-DE",
+    "tagline": null,
+    "headline": "ZDZDQDQZD",
+    "description": "dzqdqzdqz"
+  },
+  {
+    "id": 4,
+    "block_hero_id": "f2806264-1671-4c28-a538-f893231fbc16",
+    "langues_code": "fr-FR",
+    "tagline": null,
+    "headline": "La Chambre Marceline",
+    "description": "La chambre Marceline, au 1er étage de la maison, dispose d’une fenêtre lumineuse sur la cour intérieure, ce qui vous garantit le calme après une journée de visites ou de travail. En cas de fortes chaleurs, outre un volet roulant électrique, un ventilateur est mis à votre disposition dans la chambre. Vous avez accès, au rez-de-chaussée, à une petite cour verdoyante et fleurie selon la saison, où vous pouvez déguster tranquillement une boisson chaude (bouilloire, dosettes et gâteaux à votre disposition) ou vous détendre. La maison étant entièrement “non fumeur”, un cendrier est à votre disposition dans la cour."
+  },
+  {
+    "id": 5,
+    "block_hero_id": "625259d2-88b0-461a-b5b4-82e6a70e7cad",
+    "langues_code": "fr-FR",
+    "tagline": null,
+    "headline": "La Chambre Louise",
+    "description": "Insonorisée et climatisée, la chambre Louise, de 15 m2, est située au deuxième étage de la maison. La décoration est sobre et moderne et la chambre, éclairée largement par une fenêtre de toit, donne sur une cour intérieure, ce qui vous garantit le calme pour la nuit.\n\nElle peut accueillir jusqu’à 3 adultes et un bébé (1 lit de 140 x 190 cm ; une chauffeuse BZ de 90 x 190 cm ; un lit-parapluie pour enfant < 3 ans sur demande). Vous disposez ainsi d’une literie confortable (sommiers à lattes et matelas Bultex anti-allergiques, lit de relaxation à tête relevable), du wifi illimité, d’une console avec plateau de courtoisie et d’une armoire avec penderie et étagères.\n\nVous trouverez sur le même palier une vaste salle d’eau réservée à votre usage (draps de bain, tapis de bain, savon, shampoing, sèche-cheveux fournis) et des WC séparés."
+  },
+  {
+    "id": 6,
+    "block_hero_id": "ad1c081b-989e-4830-968b-e5101bae5577",
+    "langues_code": "fr-FR",
+    "tagline": null,
+    "headline": "Réservez une chambre ou une visite ! ",
+    "description": null
+  }
+]

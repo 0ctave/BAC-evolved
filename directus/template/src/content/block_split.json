@@ -1,0 +1,26 @@
+[
+  {
+    "id": 1,
+    "user_created": "8464becf-b8ed-404b-94c1-42dbd8d2c9f0",
+    "date_created": "2026-01-20T19:56:12.414Z",
+    "user_updated": "8464becf-b8ed-404b-94c1-42dbd8d2c9f0",
+    "date_updated": "2026-01-21T02:07:02.618Z",
+    "image": "3a9ef1fd-425c-4a33-84ec-95d970c26cc2",
+    "layout": "image_right",
+    "traductions": [
+      1
+    ]
+  },
+  {
+    "id": 2,
+    "user_created": "8464becf-b8ed-404b-94c1-42dbd8d2c9f0",
+    "date_created": "2026-01-20T20:01:30.452Z",
+    "user_updated": null,
+    "date_updated": null,
+    "image": "c9e2abb0-7ae8-475b-96bf-c043802ebb5b",
+    "layout": "image_left",
+    "traductions": [
+      2
+    ]
+  }
+]

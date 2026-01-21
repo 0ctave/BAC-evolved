@@ -1,0 +1,34 @@
+[
+  {
+    "code": "de-DE",
+    "nom": "Deutsch",
+    "direction": "ltr",
+    "flag_code": "de",
+    "slug": "de",
+    "is_default": null
+  },
+  {
+    "code": "en-GB",
+    "nom": "English",
+    "direction": "ltr",
+    "flag_code": "gb",
+    "slug": "en",
+    "is_default": null
+  },
+  {
+    "code": "es-ES",
+    "nom": "Spanish",
+    "direction": "ltr",
+    "flag_code": "es",
+    "slug": "es",
+    "is_default": null
+  },
+  {
+    "code": "fr-FR",
+    "nom": "Français",
+    "direction": "ltr",
+    "flag_code": "fr",
+    "slug": "fr",
+    "is_default": true
+  }
+]

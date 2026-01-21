@@ -1,0 +1,50 @@
+[
+  {
+    "id": 1,
+    "block_richtext_id": "129625db-433f-4104-9922-3b803ba4599d",
+    "langues_code": null,
+    "tagline": "Why Us?",
+    "headline": "Make your entire team happy",
+    "content": "<p>We we<em>re tired of solutions that were super friendly for conten</em>t editors but were challenging for develope<strong>rs to work with. Conversely, what good is DX if the content edi</strong>tors don't enjoy using the CMS?</p>"
+  },
+  {
+    "id": 2,
+    "block_richtext_id": "129625db-433f-4104-9922-3b803ba4599d",
+    "langues_code": "fr-FR",
+    "tagline": "Bienvenue chez Bordeaux à Cœur !",
+    "headline": "Une Chambre d'Hôte en plein cœur de Bordeaux",
+    "content": "<p>J&rsquo;ai ouvert&nbsp;<strong>Bordeaux &agrave; C&oelig;ur</strong> en <strong>janvier 2016</strong>,</p>\n<p>un projet qui me tenait &agrave; c&oelig;ur depuis longtemps&hellip; (sans mauvais jeu de mot)</p>\n<p>La maison, situ&eacute;e au <strong>53 rue Villedieu</strong> &agrave; Bordeaux, est id&eacute;alement plac&eacute;e &agrave; 50 m&egrave;tres de la Place de la Victoire, d&rsquo;o&ugrave; part la fameuse art&egrave;re pi&eacute;tonne et commer&ccedil;ante de Bordeaux : la rue Sainte Catherine</p>\n<p>Lors de votre accueil, je me ferai un plaisir de vous donner quelques indications pratiques, plans et cartes de restaurant, pour rendre votre s&eacute;jour bordelais le plus agr&eacute;able possible</p>\n<p>Je propose &eacute;galement des visites personnalis&eacute;es ou organis&eacute;e de Bordeaux et ses alentours</p>\n<p>Quelle que soit la dur&eacute;e de votre s&eacute;jour, vous aurez le loisir de d&eacute;couvrir &agrave; chaque fois un visage inattendu et passionnant de la ville et de ses alentours</p>"
+  },
+  {
+    "id": 3,
+    "block_richtext_id": "1134799b-3fd1-47ea-963f-13d8ac1b9e3a",
+    "langues_code": null,
+    "tagline": "About Us",
+    "headline": "Our promise to you",
+    "content": "<p>Welcome to our website solution - where simplicity meets power. While we've made content management beautifully simple, there's a lot more under the hood when you need it.</p>\n<p>Built on Directus, our platform starts as an intuitive CMS that anyone can use. Update your website, manage blog posts, handle forms, and organize media files with ease - no coding required. It's perfect for content creators, marketing teams, and business owners who want to focus on their message, not technical details.</p>\n<p>But here's the exciting part: when your needs grow, so can your platform. Directus isn't just a CMS - it's a full-featured backend that can power everything from mobile apps to complex digital experiences. Think of it as future-proofing your digital presence while keeping things simple today.</p>\n<p><strong>What you'll love:</strong></p>\n<ul>\n<li>A friendly interface that just makes sense</li>\n<li>Easy visual page building</li>\n<li>Hassle-free media management</li>\n<li>Smart form handling with email notifications</li>\n<li>Flexible blog management with drafts</li>\n<li>Custom navigation menus</li>\n<li>Team collaboration tools</li>\n<li>Mobile-ready interface for updates anywhere</li>\n</ul>\n<p><strong>And when you're ready for more than just CMS:</strong></p>\n<ul>\n<li>API access for custom applications</li>\n<li>Advanced data relationships</li>\n<li>Custom workflows</li>\n<li>Automated tasks</li>\n<li>Enterprise-grade security</li>\n</ul>\n<p>Start simple, grow seamlessly. That's our promise to you. Ready to make your website work better for you?</p>"
+  },
+  {
+    "id": 4,
+    "block_richtext_id": "1134799b-3fd1-47ea-963f-13d8ac1b9e3a",
+    "langues_code": "fr-FR",
+    "tagline": "A propos",
+    "headline": "OUIODZDHOH",
+    "content": "<p>dDQZFGGSEGGES</p>"
+  },
+  {
+    "id": 5,
+    "block_richtext_id": "a6275645-16b7-4994-8100-8c43ca07ab06",
+    "langues_code": null,
+    "tagline": null,
+    "headline": "We take privacy very seriously",
+    "content": "<p><strong>Last updated: [Date]</strong></p>\n<p>Welcome to [Your Website Name] (\"we\", \"us\", \"our\"). We are committed to protecting your personal information and your right to privacy. If you have any questions or concerns about our policy, or our practices with regards to your personal information, please contact us at [Contact Information].</p>\n<p>By using our website, [Your Website URL], you consent to the collection and use of your personal information as described in this privacy policy.</p>\n<h2>Information We Collect</h2>\n<p>We collect personal information that you voluntarily provide to us when registering at the website, expressing an interest in obtaining information about us or our products and services, when participating in activities on the website, or otherwise contacting us.</p>\n<p>The personal information that we collect depends on the context of your interactions with us and the website, the choices you make, and the products and features you use. The personal information we collect can include the following:</p>\n<ul>\n<li>Name and Contact Data: We collect your first and last name, email address, postal address, phone number, and other similar contact data.</li>\n<li>Credentials: We collect passwords, password hints, and similar security information used for authentication and account access.</li>\n<li>Payment Data: We collect data necessary to process your payment if you make purchases, such as your payment instrument number (such as a credit card number), and the security code associated with your payment instrument.</li>\n</ul>\n<h2>How We Use Your Information</h2>\n<p>We use personal information collected via our website for a variety of business purposes described below:</p>\n<ul>\n<li>To provide and manage our services.</li>\n<li>To process your transactions.</li>\n<li>To send you administrative information.</li>\n<li>To respond to your inquiries and provide customer service.</li>\n<li>To send you marketing and promotional communications.</li>\n<li>To enforce our terms, conditions, and policies.</li>\n</ul>\n<h2>Sharing Your Information</h2>\n<p>We may share or disclose your personal information in the following situations:</p>\n<ul>\n<li>With Service Providers: We may share your personal information with third-party service providers to monitor and analyze the use of our service, to contact you.</li>\n<li>For Business Transfers: We may share or transfer your personal information in connection with, or during negotiations of, any merger, sale of company assets, financing, or acquisition of all or a portion of our business to another company.</li>\n<li>With Affiliates: We may share your information with our affiliates, in which case we will require those affiliates to honor this privacy policy.</li>\n</ul>\n<h2>Retention of Your Information</h2>\n<p>We will retain your personal information only for as long as is necessary for the purposes set out in this privacy policy, and to the extent necessary to comply with our legal obligations, resolve disputes, and enforce our legal agreements and policies.</p>\n<h2>Security of Your Information</h2>\n<p>We use administrative, technical, and physical security measures to help protect your personal information. While we have taken reasonable steps to secure the personal information you provide to us, please be aware that despite our efforts, no security measures are perfect or impenetrable, and no method of data transmission can be guaranteed against any interception or other type of misuse.</p>\n<h2>Your Privacy Rights</h2>\n<p>Depending on your location, you may have certain rights under applicable data protection laws. These may include the right (i) to request access and obtain a copy of your personal information, (ii) to request rectification or erasure; (iii) to restrict the processing of your personal information; and (iv) if applicable, to data portability.</p>\n<h2>Updates to Our Privacy Policy</h2>\n<p>We may update our privacy policy from time to time. The updated version will be indicated by an updated \"Revised\" date and the updated version will be effective as soon as it is accessible. We encourage you to review this privacy policy frequently to be informed of how we are protecting your information.</p>"
+  },
+  {
+    "id": 6,
+    "block_richtext_id": "a6275645-16b7-4994-8100-8c43ca07ab06",
+    "langues_code": "fr-FR",
+    "tagline": null,
+    "headline": "OUI OUI",
+    "content": "<p>La vie priv&eacute;e c'est important</p>"
+  }
+]

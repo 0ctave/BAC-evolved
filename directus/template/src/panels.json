@@ -36,8 +36,8 @@
       "dateField": "timestamp",
       "valueField": "id"
     },
-    "date_created": "2024-09-12T20:57:38.458Z",
-    "user_created": "d56956bf-6ed0-465e-bb4a-ec9bde65c5f0"
+    "date_created": "2026-01-15T19:25:14.400Z",
+    "user_created": "8464becf-b8ed-404b-94c1-42dbd8d2c9f0"
   },
   {
     "id": "19b3d901-aa7c-4a04-bc9a-800e43510e69",
@@ -59,8 +59,8 @@
       "linkToItem": true,
       "displayTemplate": "{{timestamp}} • {{values}} • {{form}}"
     },
-    "date_created": "2024-09-12T21:00:02.732Z",
-    "user_created": "d56956bf-6ed0-465e-bb4a-ec9bde65c5f0"
+    "date_created": "2026-01-15T19:25:14.494Z",
+    "user_created": "8464becf-b8ed-404b-94c1-42dbd8d2c9f0"
   },
   {
     "id": "3861ceb1-11ff-4e9d-a985-60d862d90aa3",
@@ -84,8 +84,31 @@
         "use24": false
       }
     },
-    "date_created": "2024-09-12T20:56:09.536Z",
-    "user_created": "d56956bf-6ed0-465e-bb4a-ec9bde65c5f0"
+    "date_created": "2026-01-15T19:25:14.603Z",
+    "user_created": "8464becf-b8ed-404b-94c1-42dbd8d2c9f0"
+  },
+  {
+    "id": "3e5d4046-0b57-4b5c-b08d-6f452fb98850",
+    "dashboard": "b455643b-e29f-4a06-96a1-62ec1e0c962a",
+    "name": null,
+    "icon": null,
+    "color": null,
+    "show_header": false,
+    "note": null,
+    "type": "booking-timeline",
+    "position_x": 3,
+    "position_y": 3,
+    "width": 70,
+    "height": 17,
+    "options": {
+      "roomsCollection": "chambres",
+      "bookingsCollection": "reservations_chambre",
+      "startDateField": "date_arrivee",
+      "endDateField": "date_depart",
+      "roomRefField": "chambre"
+    },
+    "date_created": "2026-01-16T05:14:14.293Z",
+    "user_created": "8464becf-b8ed-404b-94c1-42dbd8d2c9f0"
   },
   {
     "id": "53575d2f-e3a0-4532-a176-d047cbbc11a7",
@@ -116,8 +139,8 @@
         ]
       }
     },
-    "date_created": "2024-09-12T20:56:09.528Z",
-    "user_created": "d56956bf-6ed0-465e-bb4a-ec9bde65c5f0"
+    "date_created": "2026-01-15T19:25:14.694Z",
+    "user_created": "8464becf-b8ed-404b-94c1-42dbd8d2c9f0"
   },
   {
     "id": "8cb3b63c-d8e3-4078-9160-096e32b9fcb0",
@@ -138,8 +161,8 @@
       "function": "count",
       "sortField": null
     },
-    "date_created": "2024-09-12T21:00:59.426Z",
-    "user_created": "d56956bf-6ed0-465e-bb4a-ec9bde65c5f0"
+    "date_created": "2026-01-15T19:25:14.787Z",
+    "user_created": "8464becf-b8ed-404b-94c1-42dbd8d2c9f0"
   },
   {
     "id": "b770ea7e-1b49-441f-ba6f-2d4b90e08070",
@@ -157,8 +180,8 @@
     "options": {
       "text": "Form Dashboard"
     },
-    "date_created": "2024-09-12T21:00:39.624Z",
-    "user_created": "d56956bf-6ed0-465e-bb4a-ec9bde65c5f0"
+    "date_created": "2026-01-15T19:25:14.894Z",
+    "user_created": "8464becf-b8ed-404b-94c1-42dbd8d2c9f0"
   },
   {
     "id": "dc01026c-1728-4e71-ab45-7cea9fc4751c",
@@ -182,7 +205,7 @@
         "use24": false
       }
     },
-    "date_created": "2024-09-12T20:56:09.540Z",
-    "user_created": "d56956bf-6ed0-465e-bb4a-ec9bde65c5f0"
+    "date_created": "2026-01-15T19:25:14.988Z",
+    "user_created": "8464becf-b8ed-404b-94c1-42dbd8d2c9f0"
   }
 ]
