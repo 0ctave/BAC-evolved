@@ -3,6 +3,7 @@
 	import { cn } from '$lib/utils';
 	import { page as pageStore } from '$app/state';
 	import { getPageLink } from '$lib/directus/directus-utils';
+	import {defaultLocale} from "$lib/i18n";
 
 	export interface ButtonProps {
 		id: string;
@@ -47,19 +48,19 @@
 
 	const Icon = $state(customIcon || (icon ? icons[icon] : null));
 
-	// Get current locale
-	const currentLocale = $derived(pageStore.params.lang || 'fr');
+	const currentDbLocale = $derived(pageStore.data.locale || defaultLocale);
 
 	const href = $derived.by(() => {
 		if (type === 'page' && page) {
-			return getPageLink(page, currentLocale);
+			return getPageLink(page, currentDbLocale);
 		}
 		if (type === 'post' && post?.slug) {
-			const blogPrefix = currentLocale === 'fr' ? '/blog' : `/${currentLocale}/blog`;
+			const blogPrefix = currentDbLocale === 'fr' ? '/blog' : `/${currentDbLocale}/blog`;
 			return `${blogPrefix}/${post.slug}`;
 		}
 		return url || undefined;
 	});
+
 
 	const buttonClasses = $derived(cn(
 			variant === 'default' && 'btn-atelier-primary',

@@ -211,7 +211,6 @@ export const fetchSiteData = (fetch: RequestEvent['fetch']): Promise<SiteConfig>
 			readItem('navigation', 'main', {
 				fields: [
 					'id',
-					{ traductions: ['title', 'langues_code'] },
 					{
 						items: [
 							'*',
@@ -242,14 +241,12 @@ export const fetchSiteData = (fetch: RequestEvent['fetch']): Promise<SiteConfig>
 						]
 					}
 				],
-				deep: { items: { _sort: ['sort'] } }
 			})
 		),
 		directus.request(
 			readItem('navigation', 'footer', {
 				fields: [
 					'id',
-					{ traductions: ['title', 'langues_code'] },
 					{
 						items: [
 							'*',

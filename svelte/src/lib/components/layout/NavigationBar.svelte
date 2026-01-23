@@ -12,6 +12,7 @@
 	import { getPageLink, getNavUrl, flattenTree, flatten } from '$lib/directus/directus-utils';
 	import { defaultLocale } from '$lib/i18n';
 	import Button from "$lib/components/blocks/Button.svelte";
+	import type {NavigationItem} from "$lib/types/directus-schema";
 
 	const globals = $derived(page.data.globals);
 	const rawNavigation = $derived(page.data.headerNavigation);
@@ -27,7 +28,7 @@
 	const currentSlug = $derived(page.data.langSlug || defaultLocale);
 	const currentDbLocale = $derived(page.data.locale || defaultLocale);
 
-	const navItems = $derived(
+	const navItems: NavigationItem[] = $derived(
 			rawNavigation?.items
 					? flattenTree(rawNavigation.items, currentDbLocale)
 					: []

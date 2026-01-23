@@ -40,7 +40,7 @@ export function flatten<T>(item: any, locale: string): T {
 		// A. Try Exact/Fuzzy Match (Requested Locale)
 		t = translations.find((t: any) => {
 			// Handle varied language keys: langues_code, languages_code, language
-			const rawCode = t.langues_code || t.languages_code || t.language;
+			const rawCode = t.langues_code;
 			const code = typeof rawCode === 'string' ? rawCode : rawCode?.code;
 
 			if (!code) return false;
@@ -72,7 +72,7 @@ export function flatten<T>(item: any, locale: string): T {
 
 	// 4. Recursively process children
 	for (const key in flattened) {
-		if (key === 'traductions' || key === 'translations' || key === '_currentLocale') continue;
+		if (key === 'traductions') continue;
 
 		const value = flattened[key];
 		if (typeof value === 'object' && value !== null) {
