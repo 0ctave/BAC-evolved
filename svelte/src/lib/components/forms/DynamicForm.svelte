@@ -1,14 +1,13 @@
 <script lang="ts">
-	import { dev } from '$app/environment';
+	import { untrack } from 'svelte';
 	import setAttr from '$lib/directus/visualEditing';
 	import type { FormField as FormFieldType } from '$lib/types/directus-schema';
 	import { buildZodSchema } from '$lib/zodSchemaBuilder';
 	import Button from '../blocks/Button.svelte';
 	import Field from './FormField.svelte';
-	import { superForm, superValidate } from 'sveltekit-superforms';
-	// import SuperDebug from 'sveltekit-superforms';
+	import { superForm } from 'sveltekit-superforms';	// import SuperDebug from 'sveltekit-superforms';
 
-	import { zodClient, zod } from 'sveltekit-superforms/adapters';
+	import { zodClient } from 'sveltekit-superforms/adapters';
 
 	interface DynamicFormProps {
 		fields: FormFieldType[];
@@ -19,28 +18,30 @@
 
 	const { fields, onSubmit, submitLabel, id }: DynamicFormProps = $props();
 
-	const sortedFields = [...fields].sort((a, b) => (a.sort || 0) - (b.sort || 0));
-	const formSchema = buildZodSchema(fields);
+	const sortedFields = $derived([...fields].sort((a, b) => (a.sort || 0) - (b.sort || 0)));
 
-	const defaultValues = fields.reduce<Record<string, any>>((defaults, field) => {
-		if (!field.name) return defaults;
-		switch (field.type) {
-			case 'checkbox':
-				defaults[field.name] = false;
-				break;
-			case 'checkbox_group':
-				defaults[field.name] = [];
-				break;
-			case 'radio':
-				defaults[field.name] = '';
-				break;
-			default:
-				defaults[field.name] = '';
-				break;
-		}
-
-		return defaults;
-	}, {});
+	const { formSchema, defaultValues } = untrack(() => {
+		const schema = buildZodSchema(fields);
+		const defaults = fields.reduce<Record<string, any>>((defaults, field) => {
+			if (!field.name) return defaults;
+			switch (field.type) {
+				case 'checkbox':
+					defaults[field.name] = false;
+					break;
+				case 'checkbox_group':
+					defaults[field.name] = [];
+					break;
+				case 'radio':
+					defaults[field.name] = '';
+					break;
+				default:
+					defaults[field.name] = '';
+					break;
+			}
+			return defaults;
+		}, {});
+		return { formSchema: schema, defaultValues: defaults };
+	});
 
 	const form = superForm(defaultValues, {
 		validators: zodClient(formSchema),

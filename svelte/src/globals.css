@@ -1,6 +1,39 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+@theme {
+	/* --- FONTS --- */
+	--font-heading: "Playfair Display", serif;
+	--font-sans: "Lato", sans-serif;
+
+	/* --- COLORS --- */
+	/* Limestone */
+	--color-limestone-50: #fcfbf7;
+	--color-limestone-100: #f7f5ef;
+	--color-limestone-200: #efead8;
+	--color-limestone-300: #e4dcb8;
+	--color-limestone-400: #d2c595;
+	--color-limestone-900: #4a4538;
+
+	/* Iron */
+	--color-iron: #2d2a2e;
+	--color-iron-light: #4a474b;
+	--color-iron-muted: #787579;
+
+	/* Primary */
+	--color-primary: #f55677;
+	--color-primary-light: #ff8fa3;
+	--color-primary-dark: #d94462;
+
+	/* --- SHADOWS --- */
+	--shadow-retro: 5px 5px 0px 0px rgba(45, 42, 46, 0.1);
+	--shadow-retro-hover: 8px 8px 0px 0px rgba(45, 42, 46, 0.15);
+	--shadow-retro-primary: 5px 5px 0px 0px #f55677;
+	--shadow-retro-white: 5px 5px 0px 0px #ffffff;
+	--shadow-retro-sm: 3px 3px 0px 0px rgba(45, 42, 46, 0.08);
+
+	/* --- BACKGROUNDS --- */
+	--image-paper-texture: url('https://www.transparenttextures.com/patterns/cream-paper.png');
+}
 
 :root {
 	--background-color: #fcfbf7;
@@ -57,6 +90,28 @@
 	}
 }
 
+@utility btn-base {
+	@apply inline-flex items-center justify-center gap-2 transition-all duration-200
+	outline-none font-heading font-bold tracking-widest uppercase text-sm cursor-pointer
+	rounded-none border-0;
+}
+
+@utility btn-atelier-primary {
+	@apply btn-base px-6 py-3 md:px-10 md:py-4 bg-primary text-white
+	border-2 border-black dark:border-white
+	shadow-[4px_4px_0px_0px_#000] dark:shadow-[4px_4px_0px_0px_#fff]
+	hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_#000] dark:hover:shadow-[6px_6px_0px_0px_#fff] hover:brightness-110
+	active:translate-y-0 active:shadow-none
+	disabled:opacity-70 disabled:cursor-wait disabled:translate-y-0 disabled:shadow-none;
+}
+
+@utility surface-atelier {
+	@apply bg-white dark:bg-[#252426]
+	border-2 border-black dark:border-white
+	shadow-[4px_4px_0px_0px_#000] dark:shadow-[4px_4px_0px_0px_#fff]
+	rounded-lg transition-all duration-300;
+}
+
 @layer components {
 	/* --- GLASS PANEL (Strong Borders) --- */
 	.panel-backdrop {
@@ -79,22 +134,6 @@
 
 	.text-body {
 		@apply text-base md:text-lg text-iron-muted dark:text-limestone-300 leading-relaxed font-sans;
-	}
-
-	/* --- BUTTONS --- */
-	.btn-base {
-		@apply inline-flex items-center justify-center gap-2 transition-all duration-200
-		outline-none font-heading font-bold tracking-widest uppercase text-sm cursor-pointer
-		rounded-none border-0;
-	}
-
-	.btn-atelier-primary {
-		@apply btn-base px-6 py-3 md:px-10 md:py-4 bg-primary text-white
-		border-2 border-black dark:border-white
-		shadow-[4px_4px_0px_0px_#000] dark:shadow-[4px_4px_0px_0px_#fff]
-		hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_#000] dark:hover:shadow-[6px_6px_0px_0px_#fff] hover:brightness-110
-		active:translate-y-0 active:shadow-none
-		disabled:opacity-70 disabled:cursor-wait disabled:translate-y-0 disabled:shadow-none;
 	}
 
 	.btn-atelier-dark {
@@ -123,25 +162,17 @@
 
 	.btn-atelier { @apply btn-atelier-primary; }
 
-	/* --- SURFACES (Strong Borders) --- */
-	.surface-atelier {
-		@apply bg-white dark:bg-[#252426]
-		border-2 border-black dark:border-white
-		shadow-[4px_4px_0px_0px_#000] dark:shadow-[4px_4px_0px_0px_#fff]
-		rounded-lg transition-all duration-300;
-	}
-
-	.surface-interactive {
+	.surface-interactive,
+	.card-interactive {
 		@apply surface-atelier cursor-pointer text-left outline-none relative p-6 md:p-8
-		hover:border-primary hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_#000] dark:hover:shadow-[6px_6px_0px_0px_#fff];
+		hover:border-primary hover:-translate-y-1
+		hover:shadow-[6px_6px_0px_0px_#000] dark:hover:shadow-[6px_6px_0px_0px_#fff];
 	}
 
-	.surface-interactive[data-state='active'] {
+	.surface-interactive[data-state='active'],
+	.card-interactive[data-state='active'] {
 		@apply border-primary shadow-none translate-y-0 bg-primary/5;
 	}
-
-	.card-atelier { @apply surface-atelier; }
-	.card-interactive { @apply surface-interactive; }
 
 	/* --- IMAGES & MEDIA FRAMES --- */
 	.frame-atelier {
@@ -176,5 +207,135 @@
 	}
 	.step-indicator.completed {
 		@apply bg-primary text-white border-primary;
+	}
+
+	/* --- CALENDAR COMPONENTS --- */
+	.calendar-container {
+		@apply select-none relative z-10 w-full;
+	}
+
+	.calendar-header-row {
+		@apply flex items-center justify-between pb-8 pt-2;
+	}
+
+	.calendar-nav-btn {
+		@apply w-9 h-9 rounded-full flex items-center justify-center
+		border border-iron/20 text-iron dark:text-limestone-300 dark:border-limestone-100/20
+		hover:bg-iron hover:text-white hover:scale-110 active:scale-95
+		dark:hover:bg-limestone-100 dark:hover:text-iron
+		transition-all duration-300 cursor-pointer;
+	}
+
+	.calendar-heading {
+		@apply text-xl font-heading font-bold text-iron dark:text-limestone-50 capitalize select-none tabular-nums;
+	}
+
+	.calendar-grid {
+		@apply w-full border-collapse;
+	}
+
+	.calendar-weekday-header {
+		@apply w-10 text-[10px] uppercase tracking-widest font-bold text-center select-none;
+	}
+
+	.calendar-day-wrapper {
+		@apply relative p-0 m-0;
+	}
+
+	/* The animated day cell */
+	.calendar-day {
+		@apply w-10 h-10 flex items-center justify-center relative z-10 font-sans cursor-pointer
+		rounded-lg overflow-hidden;
+
+		/* SEQUENCED ANIMATION */
+		/* We use separate timings for properties to create a sophisticated feel */
+		/* Background & Color: Smooth ease-in-out (0.4s) */
+		/* Transform: Bouncy spring effect (0.3s) */
+		/* Shadow: Slightly delayed fade (0.4s) */
+		transition:
+				background-color 0.4s cubic-bezier(0.2, 0.8, 0.2, 1),
+				color 0.4s cubic-bezier(0.2, 0.8, 0.2, 1),
+				transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
+				box-shadow 0.4s ease-out,
+				opacity 0.4s ease;
+
+		backface-visibility: hidden;
+	}
+
+	/* Default state (available, but not strictly future) */
+	.calendar-day-default {
+		@apply text-sm font-medium;
+	}
+
+	/* Future state (strictly after today, available) */
+	.calendar-day-future {
+		@apply text-[1.05rem] font-bold;
+	}
+
+	/* Booked state (Explicitly unavailable/booked) */
+	.calendar-day-booked {
+		@apply bg-red-100 dark:bg-red-900/20 text-red-900 dark:text-red-200 cursor-not-allowed border border-red-200 dark:border-red-900/30 opacity-80;
+		text-decoration: line-through;
+		/* Diagonal stripes pattern for visibility */
+		background-image: linear-gradient(45deg, rgba(245, 86, 119, 0.15) 25%, transparent 25%, transparent 50%, rgba(245, 86, 119, 0.15) 50%, rgba(245, 86, 119, 0.15) 75%, transparent 75%, transparent);
+		background-size: 8px 8px;
+	}
+
+	/* General Disabled state (Past dates, today) - Faded but not "booked" styled */
+	/* This applies to any date marked disabled that DOESN'T have the booked class */
+	.calendar-day[data-disabled]:not(.calendar-day-booked) {
+		@apply opacity-30 cursor-not-allowed grayscale;
+	}
+
+	.calendar-day:not([data-disabled]):hover {
+		@apply scale-110 z-20 shadow-lg bg-[var(--background-color)];
+	}
+
+	.calendar-day:active {
+		@apply scale-95 duration-100;
+	}
+
+	.calendar-day::before {
+		content: '';
+		@apply absolute inset-0 -z-10 opacity-0 transition-opacity duration-300 rounded-lg pointer-events-none;
+		background: var(--cell-bg, none);
+		opacity: var(--cell-opacity, 0);
+	}
+
+	/* Selection Info Box */
+	.calendar-info-box {
+		@apply flex items-center gap-4 p-4 border-l-4 border-primary bg-primary/5 dark:bg-primary/10 rounded-r-lg;
+	}
+
+	/* --- CALENDAR LEGEND --- */
+	.calendar-legend {
+		@apply flex flex-wrap items-center gap-x-6 gap-y-2 mt-6 pt-4 border-t-2 border-iron/5 dark:border-limestone-100/5 text-sm font-medium text-iron/60 dark:text-limestone-300;
+	}
+
+	.calendar-legend-item {
+		@apply flex items-center gap-2;
+	}
+
+	.legend-indicator {
+		@apply w-4 h-4 rounded-md border;
+	}
+
+	.legend-indicator.available {
+		@apply border-iron/20 bg-transparent dark:border-limestone-100/20;
+	}
+
+	.legend-indicator.booked {
+		@apply bg-red-100 dark:bg-red-900/20 border-red-200 dark:border-red-900/30;
+		background-image: linear-gradient(45deg, rgba(245, 86, 119, 0.15) 25%, transparent 25%, transparent 50%, rgba(245, 86, 119, 0.15) 50%, rgba(245, 86, 119, 0.15) 75%, transparent 75%, transparent);
+		background-size: 6px 6px;
+	}
+
+	.legend-indicator.partial {
+		@apply bg-amber-100 dark:bg-amber-900/20 border-amber-200 dark:border-amber-700/30;
+
+	}
+
+	.legend-indicator.past {
+		@apply bg-iron/5 border-iron/10 opacity-30 dark:bg-limestone-100/5 dark:border-limestone-100/10;
 	}
 }

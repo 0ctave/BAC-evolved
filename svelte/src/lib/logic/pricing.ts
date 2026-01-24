@@ -1,5 +1,5 @@
 import { CalendarDate, getLocalTimeZone } from '@internationalized/date';
-import type { TarifsSpeciaux } from '../types/directus-schema';
+import type { TarifsSpeciaux, TarifsSpeciauxChambre } from '../types/directus-schema';
 
 export interface NightDetail {
 	date: string; // ISO
@@ -26,9 +26,10 @@ function resolveOverrides(candidates: TarifsSpeciaux[]): TarifsSpeciaux[] {
 			if (!childRule.parent) return false;
 
 			// Handle Directus relation (could be ID or Object)
-			const parentId = (typeof childRule.parent === 'object' && childRule.parent !== null)
-				? (childRule.parent as any).id
-				: childRule.parent;
+			const parentId =
+				typeof childRule.parent === 'object' && childRule.parent !== null
+					? (childRule.parent as any).id
+					: childRule.parent;
 
 			// Loose equality to handle number vs string IDs
 			return parentId == parentRule.id;
@@ -64,6 +65,8 @@ export function calculateStayPrice(
 
 	const startDateJS = start.toDate(getLocalTimeZone());
 	const endDateJS = end.toDate(getLocalTimeZone());
+
+	// Calculate duration in nights (safe calculation)
 	const durationInNights = Math.round(
 		(endDateJS.getTime() - startDateJS.getTime()) / (1000 * 60 * 60 * 24)
 	);
@@ -72,8 +75,13 @@ export function calculateStayPrice(
 
 	// Fonction utilitaire pour vérifier si une règle s'applique globalement (hors date)
 	const checkGlobalConditions = (rule: TarifsSpeciaux) => {
-		// 1. Filtre Parking
-		if (rule.parking && !context.parking) return false;
+		// Ensure types is an array (defensive programming, though interface says it is)
+		const ruleTypes = Array.isArray(rule.type) ? rule.type : [rule.type];
+
+		// 1. Filtre Parking:
+		// Check if 'parking' is in the type array.
+		// If it IS a parking rule, but user didn't select parking -> Exclude it.
+		if (ruleTypes.includes('parking') && !context.parking) return false;
 
 		// 2. Filtre Durée
 		if (rule.duree_min && durationInNights < rule.duree_min) return false;
@@ -86,12 +94,30 @@ export function calculateStayPrice(
 		// 4. Filtre Chambres Concernées
 		if (rule.chambres_concernees && rule.chambres_concernees.length > 0 && context.roomId) {
 			const targetId = String(context.roomId);
-			const isIncluded = rule.chambres_concernees.some((item: any) => {
-				if (typeof item === 'object' && item !== null && 'chambres_id' in item) {
-					return String(item.chambres_id) === targetId;
+
+			// We need to check if the current room ID exists in the intermediate table
+			const isIncluded = (rule.chambres_concernees as any[]).some(
+				(item: TarifsSpeciauxChambre | string) => {
+					// Handle if it's just an ID string (unlikely in M2M but possible in specific setups)
+					if (typeof item === 'string' || typeof item === 'number') {
+						return String(item) === targetId;
+					}
+
+					// Handle object: check intermediate table 'chambres_id'
+					if (typeof item === 'object' && item !== null && 'chambres_id' in item) {
+						// Handle if 'chambres_id' is expanded object or just ID
+						const cId =
+							typeof item.chambres_id === 'object' &&
+							item.chambres_id !== null &&
+							'id' in item.chambres_id
+								? (item.chambres_id as any).id
+								: item.chambres_id;
+
+						return String(cId) === targetId;
+					}
+					return false;
 				}
-				return String(item) === targetId;
-			});
+			);
 
 			if (!isIncluded) return false;
 		}
@@ -100,7 +126,6 @@ export function calculateStayPrice(
 	};
 
 	// Optimization: Pre-filter rules that match global context (Duration, Room, etc.)
-	// This avoids checking non-applicable rules inside the loop
 	const contextValidRules = rules.filter(checkGlobalConditions);
 
 	// --- 1. Calcul jour par jour ---
@@ -108,16 +133,22 @@ export function calculateStayPrice(
 		const isoDate = current.toString();
 		const jsDate = current.toDate(getLocalTimeZone());
 		let dayOfWeekIndex = jsDate.getDay();
-		if (dayOfWeekIndex === 0) dayOfWeekIndex = 7;
+		if (dayOfWeekIndex === 0) dayOfWeekIndex = 7; // 1=Mon, 7=Sun
 		const dayOfWeekStr = String(dayOfWeekIndex);
 
 		let nightlyPrice = basePricePerNight;
 		const adjustments: { name: string; amount: number }[] = [];
 
 		// Step A: Find all POTENTIAL rules for this specific night
-		const nightlyCandidates = contextValidRules.filter(rule => {
+		const nightlyCandidates = contextValidRules.filter((rule) => {
 			const ruleTypes = Array.isArray(rule.type) ? rule.type : [rule.type];
-			const appliesNightly = ruleTypes.includes('pourcentage') || ruleTypes.includes('fix_nuit');
+
+			// Include standard modifiers AND specific nightly charges like tax/parking
+			const appliesNightly =
+				ruleTypes.includes('pourcentage') ||
+				ruleTypes.includes('fix_nuit') ||
+				// ruleTypes.includes('taxe_sejour') || // Removed: Tax is included in base price
+				ruleTypes.includes('parking');
 
 			if (!appliesNightly) return false;
 
@@ -127,9 +158,12 @@ export function calculateStayPrice(
 			}
 
 			// Day of Week Check
-			if (rule.jours_application && rule.jours_application.length > 0) {
-				// @ts-ignore
-				if (!rule.jours_application.includes(dayOfWeekStr)) return false;
+			if (rule.jours_application) {
+				if (Array.isArray(rule.jours_application)) {
+					if (!rule.jours_application.includes(dayOfWeekStr as any)) return false;
+				} else {
+					if (rule.jours_application !== dayOfWeekStr) return false;
+				}
 			}
 
 			return true;
@@ -143,13 +177,33 @@ export function calculateStayPrice(
 			const ruleTypes = Array.isArray(rule.type) ? rule.type : [rule.type];
 			let amount = 0;
 
+			// --- Logic for different rule types ---
+
+			// 1. Percentage (e.g. -10% promo)
 			if (ruleTypes.includes('pourcentage')) {
 				amount += (basePricePerNight * rule.valeur) / 100;
 			}
+
+			// 2. Fixed Nightly Amount (e.g. +20€ High Season)
 			if (ruleTypes.includes('fix_nuit')) {
 				amount += rule.valeur;
 			}
 
+			// 3. Tourist Tax (Per Adult / Per Night)
+			// REMOVED: Taxe de séjour is included in the base price as per user request.
+			/*
+			if (ruleTypes.includes('taxe_sejour')) {
+				amount += rule.valeur * context.adults;
+			}
+			*/
+
+			// 4. Parking (Per Night)
+			if (ruleTypes.includes('parking')) {
+				// Global filter already checked context.parking, so we just add the val
+				amount += rule.valeur;
+			}
+
+			// Round to 2 decimals to prevent floating point drift
 			amount = Math.round(amount * 100) / 100;
 
 			if (amount !== 0) {
@@ -177,11 +231,11 @@ export function calculateStayPrice(
 	// --- 2. Application des règles "Une fois par séjour" ---
 
 	// Step A: Find potential Stay rules
-	const stayCandidates = contextValidRules.filter(rule => {
+	const stayCandidates = contextValidRules.filter((rule) => {
 		const ruleTypes = Array.isArray(rule.type) ? rule.type : [rule.type];
 		if (!ruleTypes.includes('fixe_sejour')) return false;
 
-		// For fixed stay fees with dates, we usually check if the START of the stay is within range
+		// For fixed stay fees with dates, check if START of stay is within range
 		if (rule.date_debut && rule.date_fin) {
 			const startISO = start.toString();
 			if (startISO < rule.date_debut || startISO > rule.date_fin) return false;

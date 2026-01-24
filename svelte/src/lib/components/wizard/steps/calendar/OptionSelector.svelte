@@ -1,7 +1,11 @@
 <script lang="ts">
     import { Switch } from "bits-ui";
+    import { slide } from 'svelte/transition';
 
-    let { parking = $bindable() } = $props<{ parking: boolean }>();
+    let { parking = $bindable(), parkingDetails } = $props<{
+        parking: boolean,
+        parkingDetails: { dailyRate: number, total: number, nights: number }
+    }>();
 </script>
 
 <div class="space-y-4">
@@ -21,7 +25,15 @@
                 </svg>
             </div>
             <div>
-                <p class="font-bold text-iron dark:text-limestone-50">Place de Parking</p>
+                <div class="flex items-baseline gap-2">
+                    <p class="font-bold text-iron dark:text-limestone-50">Place de Parking</p>
+                    {#if parkingDetails}
+                        <!-- Display effective daily rate -->
+                        <span class="text-sm font-bold text-primary" in:slide={{ axis: 'x', duration: 300 }}>
+                            {parkingDetails.dailyRate}€ <span class="text-[10px] font-normal text-iron-muted opacity-80">/ nuit</span>
+                        </span>
+                    {/if}
+                </div>
                 <p class="text-xs text-iron-muted dark:text-limestone-400">Sécurisé et couvert.</p>
             </div>
         </div>

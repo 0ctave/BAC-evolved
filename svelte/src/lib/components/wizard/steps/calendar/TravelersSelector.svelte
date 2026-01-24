@@ -1,12 +1,23 @@
 <script lang="ts">
     import { fly } from 'svelte/transition';
 
-    let { adults = $bindable(), children = $bindable(), maxAdults, maxChildren } = $props<{
+    let {
+        adults = $bindable(),
+        children = $bindable(),
+        maxAdults,
+        maxChildren,
+        totalCapacity // NEW: Passed from parent to enforce room limits
+    } = $props<{
         adults: number,
         children: number,
         maxAdults: number,
-        maxChildren: number
+        maxChildren: number,
+        totalCapacity: number
     }>();
+
+    // Derived to check current total against limit
+    let currentTotal = $derived(adults + children);
+    let isTotalMaxReached = $derived(currentTotal >= totalCapacity);
 </script>
 
 <div class="space-y-4">
@@ -23,7 +34,6 @@
                 </button>
 
                 <span class="font-bold text-iron dark:text-limestone-50 w-6 h-8 flex items-center justify-center text-lg tabular-nums select-none overflow-hidden relative">
-                    <!-- Key block triggers the animation whenever 'adults' changes -->
                     {#key adults}
                         <span in:fly={{ y: 15, duration: 250 }} class="absolute">
                             {adults}
@@ -32,7 +42,7 @@
                 </span>
 
                 <button class="w-8 h-8 flex items-center justify-center rounded-xl bg-white dark:bg-iron-light shadow-sm text-iron-muted dark:text-limestone-300 hover:text-primary dark:hover:text-primary hover:border-primary/30 disabled:opacity-30 disabled:cursor-not-allowed border border-limestone-100 dark:border-iron transition-all active:scale-90"
-                        onclick={() => adults++} disabled={adults >= maxAdults}>
+                        onclick={() => adults++} disabled={adults >= maxAdults || isTotalMaxReached}>
                     <span class="text-lg leading-none mb-0.5">+</span>
                 </button>
             </div>
@@ -57,7 +67,7 @@
                     </span>
 
                     <button class="w-8 h-8 flex items-center justify-center rounded-xl bg-white dark:bg-iron-light shadow-sm text-iron-muted dark:text-limestone-300 hover:text-primary dark:hover:text-primary hover:border-primary/30 disabled:opacity-30 disabled:cursor-not-allowed border border-limestone-100 dark:border-iron transition-all active:scale-90"
-                            onclick={() => children++} disabled={children >= maxChildren}>
+                            onclick={() => children++} disabled={children >= maxChildren || isTotalMaxReached}>
                         <span class="text-lg leading-none mb-0.5">+</span>
                     </button>
                 </div>

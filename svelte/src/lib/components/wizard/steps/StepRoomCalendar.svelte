@@ -37,6 +37,9 @@
 
     let totalRooms = $derived(rooms.length);
 
+    // Global Minimum Date: Today + 3 days buffer
+    const minDate = today(getLocalTimeZone()).add({ days: 3 });
+
     const toDateValue = (d: any): DateValue | undefined => d ? (d as DateValue) : undefined;
 
     let value = $state<DateRange>({
@@ -44,8 +47,20 @@
         end: toDateValue(booking.roomSelection.date_depart)
     });
 
+    // --- INITIALIZATION LOGIC FOR PLACEHOLDER ---
     let placeholder = $state<DateValue>(
-        value.start ?? today(getLocalTimeZone())
+        untrack(() => {
+            if (value.start) return value.start;
+            const now = today(getLocalTimeZone());
+            const startOfNextMonth = now.set({ day: 1 }).add({ months: 1 });
+            const endOfMonth = startOfNextMonth.subtract({ days: 1 });
+            const daysRemaining = endOfMonth.day - now.day;
+
+            if (daysRemaining < 14) {
+                return startOfNextMonth;
+            }
+            return now;
+        })
     );
 
     // --- CAPACITÉ & CONTRAINTES ---
@@ -53,22 +68,120 @@
         selectedRoomId !== 'any' ? rooms.find(r => r.id === selectedRoomId) : null
     );
 
+    // Maximum adults allowed individually
     let maxAdults = $derived.by(() => {
         if (activeRoom) return activeRoom.capacite_adultes ?? 2;
         return rooms.length > 0 ? Math.max(...rooms.map(r => r.capacite_adultes ?? 2)) : 2;
     });
 
+    // Maximum children allowed individually
     let maxChildren = $derived.by(() => {
         if (activeRoom) return activeRoom.capacite_enfants ?? 0;
         return rooms.length > 0 ? Math.max(...rooms.map(r => r.capacite_enfants ?? 0)) : 0;
     });
 
-    $effect(() => {
-        if (adults > maxAdults) adults = maxAdults;
-        if (children > maxChildren) children = maxChildren;
+    // Maximum TOTAL capacity (Adults + Children)
+    let totalCapacity = $derived.by(() => {
+        if (activeRoom) {
+            return (activeRoom.capacite_adultes ?? 2) + (activeRoom.capacite_enfants ?? 0);
+        }
+        // If "any" room is selected, find the room with the largest combined capacity
+        if (rooms.length > 0) {
+            return Math.max(...rooms.map(r => (r.capacite_adultes ?? 2) + (r.capacite_enfants ?? 0)));
+        }
+        return 2;
     });
 
-    // --- ESTIMATION DE PRIX ---
+    $effect(() => {
+        // Enforce individual limits
+        if (adults > maxAdults) adults = maxAdults;
+        if (children > maxChildren) children = maxChildren;
+
+        // Enforce total capacity limit
+        if (adults + children > totalCapacity) {
+            // Prioritize adults, reduce children if needed, then reduce adults
+            if (adults > totalCapacity) {
+                adults = totalCapacity;
+                children = 0;
+            } else {
+                children = totalCapacity - adults;
+            }
+        }
+    });
+
+    // --- PRICING CALCULATIONS ---
+
+    // 1. Calculate TRUE room prices per night (Average)
+    const roomPrices = $derived.by(() => {
+        const prices: Record<string | number, number> = {};
+
+        const simStart = value.start ? (value.start as CalendarDate) : today(getLocalTimeZone()).add({days: 3});
+        const simEnd = (value.start && value.end) ? (value.end as CalendarDate) : simStart.add({days: 1});
+
+        rooms.forEach(room => {
+            const result = calculateStayPrice(
+                Number(room.prix_nuit),
+                simStart,
+                simEnd,
+                pricingRules,
+                {
+                    adults: adults,
+                    children: children,
+                    parking: false,
+                    roomId: room.id
+                }
+            );
+
+            const nights = Math.max(1, result.details.length);
+            prices[room.id] = Math.round(result.total / nights);
+        });
+        return prices;
+    });
+
+    // 2. Calculate Parking Price
+    const parkingDetails = $derived.by(() => {
+        let days = 0;
+        if (value.start && value.end) {
+            const d1 = value.start.toDate(getLocalTimeZone());
+            const d2 = value.end.toDate(getLocalTimeZone());
+            const diffTime = Math.abs(d2.getTime() - d1.getTime());
+            days = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        }
+        // For rate calculation, assume at least 1 day if selection is incomplete
+        const durationForCalc = Math.max(1, days);
+
+        // Find all rules that apply to parking for this duration
+        let activeRules = pricingRules.filter(r => {
+            const types = Array.isArray(r.type) ? r.type : [r.type];
+            if (!types.includes('parking')) return false;
+
+            // Check duration constraints
+            if (r.duree_min && durationForCalc < r.duree_min) return false;
+            if (r.duree_max && durationForCalc > r.duree_max) return false;
+
+            return true;
+        });
+
+        // Handle overrides (If a rule is a parent of another selected rule, remove the parent)
+        activeRules = activeRules.filter(parent => {
+            const isOverridden = activeRules.some(child => {
+                const pId = (typeof child.parent === 'object' && child.parent) ? (child.parent as any).id : child.parent;
+                return pId == parent.id;
+            });
+            return !isOverridden;
+        });
+
+        // Sum up the values (e.g. Base 15 + Discount -5 = 10)
+        const dailyRate = activeRules.reduce((sum, r) => sum + Number(r.valeur), 0);
+
+        return {
+            dailyRate,
+            total: days > 0 ? dailyRate * days : dailyRate,
+            nights: days
+        };
+    });
+
+    // 3. Total Estimate
     let priceEstimate = $derived.by<PricingResult | null>(() => {
         if (!value.start || !value.end || selectedRoomId === 'any' || !booking.roomSelection.chambre) {
             return null;
@@ -188,8 +301,7 @@
 
     // --- LOGIQUE DE VALIDATION ---
     function isDateUnavailable(date: DateValue) {
-        const now = today(getLocalTimeZone());
-        if (date.compare(now) < 0) return true;
+        if (date.compare(minDate) < 0) return true;
 
         if (!value.start) {
             return isFull(date);
@@ -197,16 +309,13 @@
 
         const barriers = validationBarriers;
 
-        // Selection End Date (Forward)
         if (date.compare(value.start) > 0) {
             if (barriers.max && date.compare(barriers.max) > 0) return true;
             return false;
         }
 
-        // Selection Start Date (Backward - Reverse)
         if (date.compare(value.start) < 0) {
             if (barriers.min && date.compare(barriers.min) < 0) return true;
-            if (isFull(date)) return true;
             return false;
         }
 
@@ -222,10 +331,7 @@
         return null;
     }
 
-    // --- INTERACTION ---
     function handleDateClick(date: DateValue, currentMonth: DateValue) {
-        // La gestion des clics (Désélection, Inversion) est déléguée à CalendarView
-        // Ici on gère juste le changement de mois visuel si nécessaire
         if (date.month !== currentMonth.month) {
             placeholder = date;
         }
@@ -275,7 +381,6 @@
 
         results.forEach((res, index) => {
             const currentId = roomIds[index];
-            const nightsSet = new SvelteSet<string>();
             const checkInSet = new SvelteSet<string>();
 
             res.forEach((r: any) => {
@@ -286,12 +391,12 @@
 
                 while (curr.compare(end) < 0) {
                     const k = curr.toString();
-                    nightsSet.add(k);
+                    if (!newNights[currentId]) newNights[currentId] = new SvelteSet();
+                    newNights[currentId].add(k);
                     newOccupancy[k] = (newOccupancy[k] || 0) + 1;
                     curr = curr.add({days: 1});
                 }
             });
-            newNights[currentId] = nightsSet;
             newCheckIns[currentId] = checkInSet;
         });
 
@@ -343,7 +448,7 @@
         }
     }
 
-    // --- STYLING LOGIC (OPTIMISÉ) ---
+    // --- STYLING LOGIC ---
     let hoveredDate = $state<DateValue | null>(null);
 
     const cellStyles = $derived.by(() => {
@@ -354,25 +459,6 @@
         const maxBarrier = barriers.max;
         const minBarrier = barriers.min;
 
-        // Préparation des barrières (hors boucle principale)
-        const selectionLimits: Record<string|number, DateValue | null> = {};
-        if (start && !end && selectedRoomId === 'any') {
-            for (const room of rooms) {
-                const cache = bookedDatesCache[room.id];
-                if (!cache) { selectionLimits[room.id] = null; continue; }
-                let rMax: DateValue | null = null;
-                let curr = start.add({days: 0});
-                for(let i=0; i<90; i++) {
-                    if (cache.has(curr.toString())) {
-                        rMax = curr;
-                        break;
-                    }
-                    curr = curr.add({days: 1});
-                }
-                selectionLimits[room.id] = rMax;
-            }
-        }
-
         if (!placeholder) return {};
 
         let firstDayOfMonth = new CalendarDate(placeholder.year, placeholder.month, 1);
@@ -382,8 +468,7 @@
 
         for (let i = 0; i < 42; i++) {
             const dateStr = currentDate.toString();
-            const isPast = currentDate.compare(now) < 0;
-
+            const isRestricted = currentDate.compare(minDate) < 0;
             const full = isFull(currentDate);
             const isStart = start && isSameDay(currentDate, start);
             const isEnd = end && isSameDay(currentDate, end);
@@ -412,99 +497,77 @@
             let decorColor = 'transparent';
             let bg = 'none';
 
-            if (selectedRoomId === 'any' && rooms.length >= 2) {
-                const r1Id = rooms[0].id;
-                const r2Id = rooms[1].id;
-                const r3Id = rooms[2]?.id;
-
-                let r1Limit = start && !end ? selectionLimits[r1Id] : null;
-                let r2Limit = start && !end ? selectionLimits[r2Id] : null;
-                let r3Limit = start && !end && r3Id ? selectionLimits[r3Id] : null;
-
-                const r1Masked = r1Limit && isSameDay(currentDate, r1Limit);
-                const r2Masked = r2Limit && isSameDay(currentDate, r2Limit);
-                const r3Masked = r3Limit && r3Id && isSameDay(currentDate, r3Limit);
-
-                const r1Real = bookedDatesCache[r1Id]?.has(dateStr);
-                const r2Real = bookedDatesCache[r2Id]?.has(dateStr);
-                const r3Real = r3Id && bookedDatesCache[r3Id]?.has(dateStr);
-
-                const r1Booked = r1Real && !r1Masked;
-                const r2Booked = r2Real && !r2Masked;
-                const r3Booked = r3Real && !r3Masked;
-
-                if (rooms.length >= 3) {
-                    if (r1Booked || r2Booked || r3Booked) {
-                        const c1 = r1Booked ? 'rgba(245, 86, 119, 0.1)' : 'transparent';
-                        const c2 = r2Booked ? 'rgba(245, 86, 119, 0.1)' : 'transparent';
-                        const c3 = r3Booked ? 'rgba(245, 86, 119, 0.1)' : 'transparent';
-                        bg = `conic-gradient(from 330deg, ${c1} 0deg 120deg, ${c2} 120deg 240deg, ${c3} 240deg 360deg)`;
-                        textureOpacity = '1';
-                    }
-                } else {
-                    if (r1Booked && r2Booked) {
-                        bg = 'repeating-linear-gradient(45deg, transparent, transparent 5px, rgba(245, 86, 119, 0.1) 5px, rgba(245, 86, 119, 0.1) 10px)';
-                        textureOpacity = '1';
-                    } else if (r1Booked) {
-                        bg = "linear-gradient(135deg, rgba(245, 86, 119, 0.1) 50%, transparent 50%)";
-                        textureOpacity = '1';
-                    } else if (r2Booked) {
-                        bg = "linear-gradient(135deg, transparent 50%, rgba(245, 86, 119, 0.1) 50%)";
-                        textureOpacity = '1';
-                    }
-                }
-            } else if (full) {
-                let isBarrier = false;
-                if (start && !end) {
-                    if (maxBarrier && isSameDay(currentDate, maxBarrier)) isBarrier = true;
-                    if (minBarrier && isSameDay(currentDate, minBarrier)) isBarrier = true;
-                }
-
-                if (!isBarrier) {
-                    bg = currentDate.month !== placeholder.month
-                        ? 'repeating-linear-gradient(45deg, transparent, transparent 5px, rgba(245, 86, 119, 0.05) 5px, rgba(245, 86, 119, 0.05) 10px)'
-                        : 'repeating-linear-gradient(45deg, transparent, transparent 5px, rgba(245, 86, 119, 0.1) 5px, rgba(245, 86, 119, 0.1) 10px)';
-                    textureOpacity = '1';
-                }
-            }
-
             const isBarrierDate = start && !end && (
                 (maxBarrier && isSameDay(currentDate, maxBarrier)) ||
                 (minBarrier && isSameDay(currentDate, minBarrier))
             );
 
-            if (isPast) {
+            if (isRestricted) {
                 textColor = '#787579';
                 textDecor = 'line-through';
                 decorColor = '#787579';
                 cursor = 'not-allowed';
                 bg = 'none';
-            } else if (isStart || isEnd) {
+            }
+            else if (isStart || isEnd) {
                 bg = 'none';
                 baseBg = '#f55677';
                 textColor = 'white';
                 textureOpacity = '0';
                 if (isStart && !end) {
-                    cursor = 'pointer'; // Ensure it's clickable for deselection
+                    cursor = 'pointer';
                 }
-            } else {
-                if ((isSelected || isHoverRange) && !isBlockedByBarrier) {
-                    baseBg = 'rgba(245, 86, 119, 0.15)';
-                    textColor = '#f55677';
+            }
+            else if (isBlockedByBarrier) {
+                textColor = '#d1d5db';
+                bg = 'transparent';
+                textureOpacity = '0';
+                cursor = 'not-allowed';
+                baseBg = 'rgba(0,0,0,0.03)';
+            }
+            else if ((isSelected || isHoverRange)) {
+                baseBg = 'rgba(245, 86, 119, 0.15)';
+                textColor = '#f55677';
+            }
+            else if (isBarrierDate) {
+                cursor = 'pointer';
+            }
+            else {
+                if (selectedRoomId === 'any' && rooms.length >= 2) {
+                    const bookedCount = rooms.reduce((acc, room) => {
+                        const isBooked = bookedDatesCache[room.id]?.has(dateStr);
+                        const isCheckIn = checkInDates[room.id]?.has(dateStr);
+
+                        if (start && !end && currentDate.compare(start) > 0) {
+                            if (isBooked && isCheckIn) return acc;
+                        }
+                        return acc + (isBooked ? 1 : 0);
+                    }, 0);
+
+                    if (bookedCount > 0 && bookedCount < rooms.length) {
+                        bg = "rgba(254, 243, 199, 1)";
+                        textureOpacity = '1';
+                    }
                 }
 
-                if (isBarrierDate) {
-                    cursor = 'pointer';
-                } else if (full) {
-                    if (bg !== 'none') {
+                if (full) {
+                    if (selectedRoomId === 'any') {
+                        textColor = '#b91c1c';
+                        textDecor = 'line-through';
+                        decorColor = '#fca5a5';
+                        cursor = 'not-allowed';
+                        bg = 'repeating-linear-gradient(45deg, transparent, transparent 5px, rgba(245, 86, 119, 0.1) 5px, rgba(245, 86, 119, 0.1) 10px)';
+                        textureOpacity = '1';
+                    } else {
+                        bg = currentDate.month !== placeholder.month
+                            ? 'repeating-linear-gradient(45deg, transparent, transparent 5px, rgba(245, 86, 119, 0.05) 5px, rgba(245, 86, 119, 0.05) 10px)'
+                            : 'repeating-linear-gradient(45deg, transparent, transparent 5px, rgba(245, 86, 119, 0.1) 5px, rgba(245, 86, 119, 0.1) 10px)';
+                        textureOpacity = '1';
                         textColor = '#b91c1c';
                         textDecor = 'line-through';
                         decorColor = '#fca5a5';
                         cursor = 'not-allowed';
                     }
-                } else if (isBlockedByBarrier) {
-                    textColor = '#94a3b8';
-                    cursor = 'not-allowed';
                 }
             }
 
@@ -540,7 +603,7 @@
                 bind:value={value}
                 bind:placeholder={placeholder}
                 bind:hoveredDate={hoveredDate}
-                minValue={value.start}
+                minValue={minDate}
                 isDateUnavailable={isDateUnavailable}
                 cellStyles={cellStyles}
                 onReset={resetDates}
@@ -553,10 +616,12 @@
                 bind:children={children}
                 maxAdults={maxAdults}
                 maxChildren={maxChildren}
+                totalCapacity={totalCapacity}
         />
 
         <OptionSelector
                 bind:parking={booking.roomSelection.parking}
+                parkingDetails={parkingDetails}
         />
     </div>
 
@@ -572,9 +637,11 @@
                 loading={loading}
                 selectedRoomId={selectedRoomId}
                 value={value}
+                hoveredDate={hoveredDate}
                 onSelect={handleRoomSelect}
                 isRoomAvailableRange={isRoomAvailableRange}
                 getRoomImage={resolveRoomImage}
+                roomPrices={roomPrices}
         />
 
         <PriceEstimator

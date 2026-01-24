@@ -11,7 +11,6 @@
         isRoomSelected: boolean
     }>();
 
-    // The Tweened Store: Controls the rolling number animation
     const displayedPrice = tweened(0, {
         duration: 800,
         easing: cubicOut
@@ -28,23 +27,25 @@
 
 <div class="mt-auto border-t border-limestone-100 dark:border-iron-light p-6">
     {#if priceEstimate}
-        <!-- Key block forces re-render of fade if logic requires it, but here we keep container stable -->
         <div class="bg-primary/5 dark:bg-primary/10 border border-primary/20 rounded-2xl p-6 flex flex-col items-center justify-center text-center space-y-2 relative overflow-hidden"
              in:fade={{ duration: 300 }}>
 
-            <!-- Decorative sheen effect -->
             <div class="absolute inset-0 bg-gradient-to-tr from-white/10 to-transparent pointer-events-none mix-blend-overlay"></div>
 
             <p class="text-sm text-iron-muted dark:text-limestone-400 font-medium uppercase tracking-wider relative z-10">Total estimé</p>
 
-            <div class="flex items-baseline gap-1 relative z-10 h-16 overflow-hidden">
-                <!-- Using fixed width/tabular nums prevents jitter as numbers change width -->
-                <span class="text-6xl font-black text-primary tabular-nums tracking-tighter leading-none">
-                    {$displayedPrice.toFixed(0)}€
+            <div class="flex flex-col items-center relative z-10">
+                <div class="h-16 flex items-baseline overflow-hidden">
+                    <span class="text-6xl font-black text-primary tabular-nums tracking-tighter leading-none">
+                        {$displayedPrice.toFixed(0)}€
+                    </span>
+                </div>
+                <!-- Added "Tax included" label -->
+                <span class="text-[10px] text-iron-muted/60 dark:text-limestone-400/60 font-medium uppercase tracking-tight -mt-1">
+                    Taxe de séjour incluse
                 </span>
             </div>
 
-            <!-- Details slide in gently -->
             <div class="flex items-center gap-3 text-sm text-iron-muted dark:text-limestone-400 relative z-10"
                  transition:slide={{ axis: 'y', duration: 400 }}>
                 <span>{priceEstimate.details.length}

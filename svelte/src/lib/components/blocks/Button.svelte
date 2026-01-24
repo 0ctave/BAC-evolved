@@ -46,7 +46,7 @@
 		plus: Plus
 	};
 
-	const Icon = $state(customIcon || (icon ? icons[icon] : null));
+	const Icon = $derived(customIcon || (icon ? icons[icon] : null));
 
 	const currentDbLocale = $derived(pageStore.data.locale || defaultLocale);
 

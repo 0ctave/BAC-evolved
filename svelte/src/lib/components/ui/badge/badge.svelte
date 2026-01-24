@@ -1,5 +1,5 @@
 <script lang="ts" module>
-	import { type VariantProps, tv } from 'tailwind-variants';
+	import { type VariantProps } from 'tailwind-variants';
 	import { cva } from 'class-variance-authority';
 
 	const badgeVariants = cva(

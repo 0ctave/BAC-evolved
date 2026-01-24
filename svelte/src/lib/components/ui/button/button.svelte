@@ -1,7 +1,7 @@
 <script lang="ts" module>
 	import type { WithElementRef } from 'bits-ui';
 	import type { HTMLAnchorAttributes, HTMLButtonAttributes } from 'svelte/elements';
-	import { type VariantProps, tv } from 'tailwind-variants';
+	import { type VariantProps } from 'tailwind-variants';
 	import { cva } from 'class-variance-authority';
 
 	export const buttonVariants = cva(

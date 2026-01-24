@@ -144,8 +144,8 @@
             Applied 'surface-atelier' to match your design system.
             The height transition here ensures the 'card' resizes smoothly around the content.
         -->
-        <div class="w-full surface-atelier overflow-hidden relative flex flex-col transition-[height] duration-500 ease-[cubic-bezier(0.25,1,0.5,1)] will-change-[height]"
-             style="height: {totalHeight}px"
+        <div class="w-full surface-atelier overflow-hidden relative flex flex-col transition-[height] duration-500 will-change-[height]"
+             style="height: {totalHeight}px; transition-timing-function: cubic-bezier(0.25, 1, 0.5, 1);"
              in:fly|global={{ y: 30, duration: 600, delay: 100, easing: cubicOut }}>
 
             <!-- Accent Line -->

@@ -9,6 +9,7 @@
 	import Headline from '../ui/Headline.svelte';
 	import Tagline from '../ui/Tagline.svelte';
 	import { scale } from 'svelte/transition';
+	import {untrack} from "svelte";
 
 	interface PostsProps {
 		data: {
@@ -26,7 +27,7 @@
 
 	let currentPage = $state(initialPage);
 	let perPage = $derived(limit || 6);
-	let paginatedPosts = $state<Post[]>(currentPage === 1 ? posts || [] : []);
+	let paginatedPosts = $state<Post[]>(untrack(() => currentPage === 1 ? posts || [] : []));
 	let totalPages = $state(0);
 	let totalCount = $state(0);
 

@@ -20,17 +20,17 @@
 
 	const { field, form }: FieldProps = $props();
 	const { errors } = $derived(form);
-	const fieldName = field.name as string;
-	const { form: formData } = form;
+	const fieldName = $derived(field.name as string);
+	const formData = $derived(form.form);
 
-	const widthClass = field.width
+	const widthClass = $derived(field.width
 			? {
 		100: 'flex-[100%]',
-		50: 'flex-[calc(50%-1.5rem)]', // Adjusted for gap
+		50: 'flex-[calc(50%-1.5rem)]',
 		67: 'flex-[calc(67%-1.5rem)]',
 		33: 'flex-[calc(33%-1.5rem)]'
 	}[field.width] || 'flex-[100%]'
-			: 'flex-[100%]';
+			: 'flex-[100%]');
 
 	// ATELIER INPUT STYLE
 	const inputClass = "w-full bg-transparent border-b-2 border-iron/20 dark:border-limestone-100/20 px-0 py-3 text-lg font-medium text-iron dark:text-limestone-50 outline-none transition-all duration-300 placeholder:text-iron-muted/40 dark:placeholder:text-limestone-400/40 focus:border-primary focus:bg-limestone-50/30 dark:focus:bg-iron-light/10";

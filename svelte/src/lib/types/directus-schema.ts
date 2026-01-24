@@ -12,6 +12,26 @@ export interface ExtensionSeoMetadata {
     no_follow?: boolean;
 }
 
+export interface AiPrompt {
+	/** @primaryKey */
+	id: string;
+	sort?: number | null;
+	/** @description Unique name for the prompt. Use names like "create-article" or "generate-product-description". @required */
+	name: string;
+	/** @description Is this prompt published and available to use? */
+	status?: 'draft' | 'in_review' | 'published';
+	/** @description Briefly explain what this prompt does in 1-2 sentences. */
+	description?: string | null;
+	/** @description Optional: Define the conversation structure between users and AI. Used to add context and improve outputs. */
+	messages?: Array<{ role: 'user' | 'assistant'; text: string }> | null;
+	/** @description Instructions that shape how the AI responds. */
+	system_prompt?: string | null;
+	date_created?: string | null;
+	user_created?: DirectusUser | string | null;
+	date_updated?: string | null;
+	user_updated?: DirectusUser | string | null;
+}
+
 export interface BlockBooking {
 	/** @primaryKey */
 	id: number;
@@ -283,7 +303,14 @@ export interface Chambre {
 	/** @required */
 	statut: 'disponible' | 'indisponible';
 	image?: DirectusFile | string | null;
-	images?: string;
+	images?: ChambresFile[] | string[];
+}
+
+export interface ChambresFile {
+	/** @primaryKey */
+	id: number;
+	chambres_id?: Chambre | string | null;
+	directus_files_id?: DirectusFile | string | null;
 }
 
 export interface Client {
@@ -311,12 +338,18 @@ export interface CreneauxVisite {
 }
 
 export interface FormFieldChoice {
+	/** @primaryKey */
+	id: number;
+	form_field?: FormField | string | null;
+	value?: string | null;
+	sort?: number | null;
+	traductions?: FormFieldChoicesTranslation[] | null;
 }
 
 export interface FormFieldChoicesTranslation {
 	/** @primaryKey */
 	id: number;
-	form_field_choices_id?: number | null;
+	form_field_choices_id?: FormFieldChoice | string | null;
 	langues_code?: Langue | string | null;
 	text?: string | null;
 }
@@ -342,7 +375,7 @@ export interface FormField {
 	date_updated?: string | null;
 	user_updated?: DirectusUser | string | null;
 	traductions?: FormFieldsTranslation[] | null;
-	choices?: string;
+	choices?: FormFieldChoice[] | string[];
 }
 
 export interface FormFieldsTranslation {
@@ -365,9 +398,17 @@ export interface Form {
 	success_redirect_url?: string | null;
 	/** @description Show or hide this form from the site. */
 	is_active?: boolean | null;
+	/** @description Setup email notifications when forms are submitted. */
+	emails?: Array<{ to: string[]; subject: string; message: string }> | null;
+	date_created?: string | null;
+	user_created?: DirectusUser | string | null;
+	date_updated?: string | null;
+	user_updated?: DirectusUser | string | null;
+	traductions?: FormsTranslation[] | null;
 	/** @description Form structure and input fields */
 	fields?: FormField[] | string[];
-	traductions?: FormsTranslation[] | null;
+	/** @description Received form responses. */
+	submissions?: FormSubmission[] | string[];
 }
 
 export interface FormsTranslation {
@@ -378,6 +419,31 @@ export interface FormsTranslation {
 	title?: string | null;
 	submit_label?: string | null;
 	success_message?: string | null;
+}
+
+export interface FormSubmission {
+	/** @description Unique ID for this specific form submission @primaryKey */
+	id: string;
+	/** @description Form submission date and time. */
+	timestamp?: string | null;
+	/** @description Associated form for this submission. */
+	form?: Form | string | null;
+	/** @description Submitted field responses */
+	values?: FormSubmissionValue[] | string[];
+}
+
+export interface FormSubmissionValue {
+	/** @primaryKey */
+	id: string;
+	/** @description Parent form submission for this value. */
+	form_submission?: FormSubmission | string | null;
+	field?: FormField | string | null;
+	/** @description The data entered by the user for this specific field in the form submission. */
+	value?: string | null;
+	sort?: number | null;
+	file?: DirectusFile | string | null;
+	/** @description Form submission date and time. */
+	timestamp?: string | null;
 }
 
 export interface Globals {
@@ -397,10 +463,25 @@ export interface Globals {
 	favicon?: DirectusFile | string | null;
 	/** @description Main logo shown on the site (for light mode). */
 	logo?: DirectusFile | string | null;
+	/** @description Secret OpenAI API key. Don't share with anyone outside your team. */
+	openai_api_key?: string | null;
+	/** @description The public URL for this Directus instance. Used in Flows. */
+	directus_url?: string | null;
 	/** @description Main logo shown on the site (for dark mode). */
 	logo_dark_mode?: DirectusFile | string | null;
 	/** @description Accent color for the website (used on buttons, links, etc). */
 	accent_color?: string | null;
+	date_created?: string | null;
+	user_created?: DirectusUser | string | null;
+	date_updated?: string | null;
+	user_updated?: DirectusUser | string | null;
+}
+
+export interface Language {
+	/** @primaryKey */
+	code: string;
+	name?: string | null;
+	direction?: 'ltr' | 'rtl' | null;
 }
 
 export interface Langue {
@@ -530,7 +611,7 @@ export interface Post {
 	/** @description Short summary of the blog post to entice readers. */
 	description?: string | null;
 	/** @description Select the team member who wrote this post */
-	author?: string | null;
+	author?: DirectusUser | string | null;
 	/** @description Publish now or schedule for later. */
 	published_at?: string | null;
 	seo?: ExtensionSeoMetadata | null;
@@ -592,7 +673,7 @@ export interface TarifsSpeciaux {
 	/** @required */
 	nom: string;
 	/** @required */
-	type: Array<'pourcentage' | 'fix_nuit' | 'fixe_sejour'>;
+	type: Array<'pourcentage' | 'fix_nuit' | 'fixe_sejour' | 'parking' | 'taxe_sejour'>;
 	date_debut?: string | null;
 	date_fin?: string | null;
 	/** @required */
@@ -605,8 +686,6 @@ export interface TarifsSpeciaux {
 	duree_max?: number | null;
 	personnes_min?: number | null;
 	personnes_max?: number | null;
-	/** @required */
-	parking: boolean;
 	parent?: TarifsSpeciaux | string | null;
 	chambres_concernees?: TarifsSpeciauxChambre[] | string[];
 }
@@ -629,6 +708,15 @@ export interface Visite {
 	prix_unitaire?: number | null;
 }
 
+export interface DirectusAccess {
+	/** @primaryKey */
+	id: string;
+	role?: DirectusRole | string | null;
+	user?: DirectusUser | string | null;
+	policy?: DirectusPolicy | string;
+	sort?: number | null;
+}
+
 export interface DirectusActivity {
 	/** @primaryKey */
 	id: number;
@@ -640,7 +728,7 @@ export interface DirectusActivity {
 	collection?: string;
 	item?: string;
 	origin?: string | null;
-	revisions?: string;
+	revisions?: DirectusRevision[] | string[];
 }
 
 export interface DirectusCollection {
@@ -711,7 +799,7 @@ export interface DirectusFile {
 	filename_download?: string;
 	title?: string | null;
 	type?: string | null;
-	folder?: string | null;
+	folder?: DirectusFolder | string | null;
 	uploaded_by?: DirectusUser | string | null;
 	created_on?: string;
 	modified_by?: DirectusUser | string | null;
@@ -731,6 +819,48 @@ export interface DirectusFile {
 	tus_id?: string | null;
 	tus_data?: 'json' | null;
 	uploaded_on?: string | null;
+}
+
+export interface DirectusFolder {
+	/** @primaryKey */
+	id: string;
+	name?: string;
+	parent?: DirectusFolder | string | null;
+}
+
+export interface DirectusMigration {
+	/** @primaryKey */
+	version: string;
+	name?: string;
+	timestamp?: string | null;
+}
+
+export interface DirectusPermission {
+	/** @primaryKey */
+	id: number;
+	collection?: string;
+	action?: string;
+	permissions?: 'json' | null;
+	validation?: 'json' | null;
+	presets?: 'json' | null;
+	fields?: string[] | null;
+	policy?: DirectusPolicy | string;
+}
+
+export interface DirectusPolicy {
+	/** @primaryKey */
+	id: string;
+	/** @required */
+	name: string;
+	icon?: string;
+	description?: string | null;
+	ip_access?: string[] | null;
+	enforce_tfa?: boolean;
+	admin_access?: boolean;
+	app_access?: boolean;
+	permissions?: DirectusPermission[] | string[];
+	users?: DirectusAccess[] | string[];
+	roles?: DirectusAccess[] | string[];
 }
 
 export interface DirectusPreset {
@@ -764,6 +894,18 @@ export interface DirectusRelation {
 	one_deselect_action?: string;
 }
 
+export interface DirectusRevision {
+	/** @primaryKey */
+	id: number;
+	activity?: DirectusActivity | string;
+	collection?: string;
+	item?: string;
+	data?: 'json' | null;
+	delta?: 'json' | null;
+	parent?: DirectusRevision | string | null;
+	version?: DirectusVersion | string | null;
+}
+
 export interface DirectusRole {
 	/** @primaryKey */
 	id: string;
@@ -773,8 +915,20 @@ export interface DirectusRole {
 	description?: string | null;
 	parent?: DirectusRole | string | null;
 	children?: DirectusRole[] | string[];
-	policies?: string;
+	policies?: DirectusAccess[] | string[];
 	users?: DirectusUser[] | string[];
+}
+
+export interface DirectusSession {
+	/** @primaryKey */
+	token: string;
+	user?: DirectusUser | string | null;
+	expires?: string;
+	ip?: string | null;
+	user_agent?: string | null;
+	share?: DirectusShare | string | null;
+	origin?: string | null;
+	next_token?: string | null;
 }
 
 export interface DirectusSettings {
@@ -792,7 +946,7 @@ export interface DirectusSettings {
 	storage_asset_transform?: 'all' | 'none' | 'presets' | null;
 	storage_asset_presets?: Array<{ key: string; fit: 'contain' | 'cover' | 'inside' | 'outside'; width: number; height: number; quality: number; withoutEnlargement: boolean; format: 'auto' | 'jpeg' | 'png' | 'webp' | 'tiff' | 'avif'; transforms: 'json' }> | null;
 	custom_css?: string | null;
-	storage_default_folder?: string | null;
+	storage_default_folder?: DirectusFolder | string | null;
 	basemaps?: Array<{ name: string; type: 'raster' | 'tile' | 'style'; url: string; tileSize: number; attribution: string }> | null;
 	mapbox_key?: string | null;
 	module_bar?: 'json' | null;
@@ -847,11 +1001,68 @@ export interface DirectusUser {
 	tfa_secret?: string | null;
 	status?: 'draft' | 'invited' | 'unverified' | 'active' | 'suspended' | 'archived';
 	role?: DirectusRole | string | null;
+	token?: string | null;
+	last_access?: string | null;
 	last_page?: string | null;
-	provider?: string;
+	provider?: 'keycloak';
+	external_identifier?: string | null;
+	auth_data?: 'json' | null;
+	email_notifications?: boolean | null;
 	appearance?: null | 'auto' | 'light' | 'dark' | null;
 	theme_dark?: string | null;
 	theme_light?: string | null;
+	theme_light_overrides?: 'json' | null;
+	theme_dark_overrides?: 'json' | null;
+	text_direction?: 'auto' | 'ltr' | 'rtl';
+	/** @description Blog posts this user has authored. */
+	posts?: Post[] | string[];
+	policies?: DirectusAccess[] | string[];
+}
+
+export interface DirectusWebhook {
+	/** @primaryKey */
+	id: number;
+	name?: string;
+	method?: null;
+	url?: string;
+	status?: 'active' | 'inactive';
+	data?: boolean;
+	actions?: 'create' | 'update' | 'delete';
+	collections?: string[];
+	headers?: Array<{ header: string; value: string }> | null;
+	was_active_before_deprecation?: boolean;
+	migrated_flow?: DirectusFlow | string | null;
+}
+
+export interface DirectusDashboard {
+	/** @primaryKey */
+	id: string;
+	name?: string;
+	icon?: string;
+	note?: string | null;
+	date_created?: string | null;
+	user_created?: DirectusUser | string | null;
+	color?: string | null;
+	panels?: DirectusPanel[] | string[];
+}
+
+export interface DirectusPanel {
+	/** @primaryKey */
+	id: string;
+	dashboard?: DirectusDashboard | string;
+	name?: string | null;
+	icon?: string | null;
+	color?: string | null;
+	show_header?: boolean;
+	note?: string | null;
+	type?: string;
+	position_x?: number;
+	position_y?: number;
+	width?: number;
+	height?: number;
+	options?: 'json' | null;
+	date_created?: string | null;
+	user_created?: DirectusUser | string | null;
 }
 
 export interface DirectusNotification {
@@ -883,6 +1094,39 @@ export interface DirectusShare {
 	max_uses?: number | null;
 }
 
+export interface DirectusFlow {
+	/** @primaryKey */
+	id: string;
+	name?: string;
+	icon?: string | null;
+	color?: string | null;
+	description?: string | null;
+	status?: string;
+	trigger?: string | null;
+	accountability?: string | null;
+	options?: 'json' | null;
+	operation?: DirectusOperation | string | null;
+	date_created?: string | null;
+	user_created?: DirectusUser | string | null;
+	operations?: DirectusOperation[] | string[];
+}
+
+export interface DirectusOperation {
+	/** @primaryKey */
+	id: string;
+	name?: string | null;
+	key?: string;
+	type?: string;
+	position_x?: number;
+	position_y?: number;
+	options?: 'json' | null;
+	resolve?: DirectusOperation | string | null;
+	reject?: DirectusOperation | string | null;
+	flow?: DirectusFlow | string;
+	date_created?: string | null;
+	user_created?: DirectusUser | string | null;
+}
+
 export interface DirectusTranslation {
 	/** @primaryKey */
 	id: string;
@@ -894,7 +1138,32 @@ export interface DirectusTranslation {
 	value: string;
 }
 
+export interface DirectusVersion {
+	/** @primaryKey */
+	id: string;
+	key?: string;
+	name?: string | null;
+	collection?: DirectusCollection | string;
+	item?: string;
+	hash?: string | null;
+	date_created?: string | null;
+	date_updated?: string | null;
+	user_created?: DirectusUser | string | null;
+	user_updated?: DirectusUser | string | null;
+	delta?: 'json' | null;
+}
+
+export interface DirectusExtension {
+	enabled?: boolean;
+	/** @primaryKey */
+	id: string;
+	folder?: string;
+	source?: string;
+	bundle?: string | null;
+}
+
 export interface Schema {
+	ai_prompts: AiPrompt[];
 	block_booking: BlockBooking[];
 	block_booking_translations: BlockBookingTranslation[];
 	block_button: BlockButton[];
@@ -918,6 +1187,7 @@ export interface Schema {
 	block_split: BlockSplit[];
 	block_split_translations: BlockSplitTranslation[];
 	chambres: Chambre[];
+	chambres_files: ChambresFile[];
 	clients: Client[];
 	creneaux_visites: CreneauxVisite[];
 	form_field_choices: FormFieldChoice[];
@@ -926,7 +1196,10 @@ export interface Schema {
 	form_fields_translations: FormFieldsTranslation[];
 	forms: Form[];
 	forms_translations: FormsTranslation[];
+	form_submissions: FormSubmission[];
+	form_submission_values: FormSubmissionValue[];
 	globals: Globals;
+	languages: Language[];
 	langues: Langue[];
 	navigation: Navigation[];
 	navigation_items: NavigationItem[];
@@ -941,22 +1214,37 @@ export interface Schema {
 	tarifs_speciaux: TarifsSpeciaux[];
 	tarifs_speciaux_chambres: TarifsSpeciauxChambre[];
 	visites: Visite[];
+	directus_access: DirectusAccess[];
 	directus_activity: DirectusActivity[];
 	directus_collections: DirectusCollection[];
 	directus_comments: DirectusComment[];
 	directus_fields: DirectusField[];
 	directus_files: DirectusFile[];
+	directus_folders: DirectusFolder[];
+	directus_migrations: DirectusMigration[];
+	directus_permissions: DirectusPermission[];
+	directus_policies: DirectusPolicy[];
 	directus_presets: DirectusPreset[];
 	directus_relations: DirectusRelation[];
+	directus_revisions: DirectusRevision[];
 	directus_roles: DirectusRole[];
+	directus_sessions: DirectusSession[];
 	directus_settings: DirectusSettings;
 	directus_users: DirectusUser[];
+	directus_webhooks: DirectusWebhook[];
+	directus_dashboards: DirectusDashboard[];
+	directus_panels: DirectusPanel[];
 	directus_notifications: DirectusNotification[];
 	directus_shares: DirectusShare[];
+	directus_flows: DirectusFlow[];
+	directus_operations: DirectusOperation[];
 	directus_translations: DirectusTranslation[];
+	directus_versions: DirectusVersion[];
+	directus_extensions: DirectusExtension[];
 }
 
 export enum CollectionNames {
+	ai_prompts = 'ai_prompts',
 	block_booking = 'block_booking',
 	block_booking_translations = 'block_booking_translations',
 	block_button = 'block_button',
@@ -980,6 +1268,7 @@ export enum CollectionNames {
 	block_split = 'block_split',
 	block_split_translations = 'block_split_translations',
 	chambres = 'chambres',
+	chambres_files = 'chambres_files',
 	clients = 'clients',
 	creneaux_visites = 'creneaux_visites',
 	form_field_choices = 'form_field_choices',
@@ -988,7 +1277,10 @@ export enum CollectionNames {
 	form_fields_translations = 'form_fields_translations',
 	forms = 'forms',
 	forms_translations = 'forms_translations',
+	form_submissions = 'form_submissions',
+	form_submission_values = 'form_submission_values',
 	globals = 'globals',
+	languages = 'languages',
 	langues = 'langues',
 	navigation = 'navigation',
 	navigation_items = 'navigation_items',
@@ -1003,17 +1295,31 @@ export enum CollectionNames {
 	tarifs_speciaux = 'tarifs_speciaux',
 	tarifs_speciaux_chambres = 'tarifs_speciaux_chambres',
 	visites = 'visites',
+	directus_access = 'directus_access',
 	directus_activity = 'directus_activity',
 	directus_collections = 'directus_collections',
 	directus_comments = 'directus_comments',
 	directus_fields = 'directus_fields',
 	directus_files = 'directus_files',
+	directus_folders = 'directus_folders',
+	directus_migrations = 'directus_migrations',
+	directus_permissions = 'directus_permissions',
+	directus_policies = 'directus_policies',
 	directus_presets = 'directus_presets',
 	directus_relations = 'directus_relations',
+	directus_revisions = 'directus_revisions',
 	directus_roles = 'directus_roles',
+	directus_sessions = 'directus_sessions',
 	directus_settings = 'directus_settings',
 	directus_users = 'directus_users',
+	directus_webhooks = 'directus_webhooks',
+	directus_dashboards = 'directus_dashboards',
+	directus_panels = 'directus_panels',
 	directus_notifications = 'directus_notifications',
 	directus_shares = 'directus_shares',
-	directus_translations = 'directus_translations'
+	directus_flows = 'directus_flows',
+	directus_operations = 'directus_operations',
+	directus_translations = 'directus_translations',
+	directus_versions = 'directus_versions',
+	directus_extensions = 'directus_extensions'
 }
