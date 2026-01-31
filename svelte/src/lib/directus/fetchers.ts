@@ -48,13 +48,7 @@ const pageFields = [
 					block_booking: [
 						'id',
 						{
-							traductions: [
-								'langues_code',
-								'step_1_label',
-								'step_2_label',
-								'step_3_label',
-								'step_4_label'
-							]
+							traductions: ['*']
 						}
 					],
 					block_richtext: [

@@ -1,15 +1,19 @@
 <script lang="ts">
     import { Switch } from "bits-ui";
     import { slide } from 'svelte/transition';
+    import { booking } from '$lib/logic/booking.svelte';
 
     let { parking = $bindable(), parkingDetails } = $props<{
         parking: boolean,
         parkingDetails: { dailyRate: number, total: number, nights: number }
     }>();
+
+    // Translations
+    const l = $derived(booking.labels);
 </script>
 
 <div class="space-y-4">
-    <h4 class="text-sm font-bold text-iron dark:text-limestone-50 uppercase tracking-wide">Options</h4>
+    <h4 class="text-sm font-bold text-iron dark:text-limestone-50 uppercase tracking-wide">{l.options_title}</h4>
 
     <div class="p-4 bg-white dark:bg-[#252426] rounded-2xl border border-limestone-200 dark:border-iron-light flex items-center justify-between shadow-sm hover:shadow-md transition-all duration-300">
         <div class="flex items-center gap-3">
@@ -26,15 +30,15 @@
             </div>
             <div>
                 <div class="flex items-baseline gap-2">
-                    <p class="font-bold text-iron dark:text-limestone-50">Place de Parking</p>
+                    <p class="font-bold text-iron dark:text-limestone-50">{l.options_parking_title}</p>
                     {#if parkingDetails}
                         <!-- Display effective daily rate -->
                         <span class="text-sm font-bold text-primary" in:slide={{ axis: 'x', duration: 300 }}>
-                            {parkingDetails.dailyRate}€ <span class="text-[10px] font-normal text-iron-muted opacity-80">/ nuit</span>
+                            {parkingDetails.dailyRate}€ <span class="text-[10px] font-normal text-iron-muted opacity-80">{l.options_parking_unit}</span>
                         </span>
                     {/if}
                 </div>
-                <p class="text-xs text-iron-muted dark:text-limestone-400">Sécurisé et couvert.</p>
+                <p class="text-xs text-iron-muted dark:text-limestone-400">{l.options_parking_desc}</p>
             </div>
         </div>
 

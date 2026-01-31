@@ -1,5 +1,6 @@
 <script lang="ts">
-    import { fly } from 'svelte/transition';
+    import { fly, fade } from 'svelte/transition';
+    import { booking } from '$lib/logic/booking.svelte';
 
     let {
         adults = $bindable(),
@@ -18,15 +19,26 @@
     // Derived to check current total against limit
     let currentTotal = $derived(adults + children);
     let isTotalMaxReached = $derived(currentTotal >= totalCapacity);
+
+    // Translations
+    const l = $derived(booking.labels);
 </script>
 
 <div class="space-y-4">
-    <h4 class="text-sm font-bold text-iron dark:text-limestone-50 uppercase tracking-wide">Voyageurs</h4>
+    <div class="flex justify-between items-baseline">
+        <h4 class="text-sm font-bold text-iron dark:text-limestone-50 uppercase tracking-wide">{l.travelers_title}</h4>
+        {#if isTotalMaxReached}
+            <span in:fade class="text-xs font-medium text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 px-2 py-0.5 rounded">
+                {l.travelers_max_reached}
+            </span>
+        {/if}
+    </div>
+
     <div class="grid {maxChildren > 0 ? 'grid-cols-2' : 'grid-cols-1'} gap-4">
 
         <!-- Adultes -->
         <div class="p-3 bg-white dark:bg-[#252426] rounded-2xl border border-limestone-200 dark:border-iron-light flex flex-col items-center justify-center gap-2 shadow-sm hover:shadow-md transition-shadow duration-300">
-            <span class="text-xs font-bold text-iron-muted dark:text-limestone-400">Adultes</span>
+            <span class="text-xs font-bold text-iron-muted dark:text-limestone-400">{l.travelers_adults}</span>
             <div class="flex items-center gap-3">
                 <button class="w-8 h-8 flex items-center justify-center rounded-xl bg-white dark:bg-iron-light shadow-sm text-iron-muted dark:text-limestone-300 hover:text-primary dark:hover:text-primary hover:border-primary/30 disabled:opacity-30 disabled:cursor-not-allowed border border-limestone-100 dark:border-iron transition-all active:scale-90"
                         onclick={() => adults = Math.max(1, adults - 1)} disabled={adults <= 1}>
@@ -51,7 +63,7 @@
         <!-- Enfants -->
         {#if maxChildren > 0}
             <div class="p-3 bg-white dark:bg-[#252426] rounded-2xl border border-limestone-200 dark:border-iron-light flex flex-col items-center justify-center gap-2 shadow-sm hover:shadow-md transition-shadow duration-300">
-                <span class="text-xs font-bold text-iron-muted dark:text-limestone-400">Enfants</span>
+                <span class="text-xs font-bold text-iron-muted dark:text-limestone-400">{l.travelers_children}</span>
                 <div class="flex items-center gap-3">
                     <button class="w-8 h-8 flex items-center justify-center rounded-xl bg-white dark:bg-iron-light shadow-sm text-iron-muted dark:text-limestone-300 hover:text-primary dark:hover:text-primary hover:border-primary/30 disabled:opacity-30 disabled:cursor-not-allowed border border-limestone-100 dark:border-iron transition-all active:scale-90"
                             onclick={() => children = Math.max(0, children - 1)} disabled={children <= 0}>

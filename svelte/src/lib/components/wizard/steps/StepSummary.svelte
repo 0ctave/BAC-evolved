@@ -4,148 +4,182 @@
     import { calculateStayPrice, type PricingResult } from '$lib/logic/pricing';
     import { onMount } from 'svelte';
     import { CalendarDate } from '@internationalized/date';
-    import { fly, fade, slide } from 'svelte/transition';
+    import { fly, slide } from 'svelte/transition';
     import { tweened } from 'svelte/motion';
     import { cubicOut } from 'svelte/easing';
+    import { page } from "$app/state";
 
     let details = $state<any>(null);
     let pricing = $state<PricingResult | null>(null);
     let loading = $state(true);
 
-    // Animated total
     const displayedTotal = tweened(0, { duration: 1000, easing: cubicOut });
-
     const dateFormatter = new Intl.DateTimeFormat('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+
+    // Translations
+    const l = $derived(booking.labels);
 
     onMount(async () => {
         try {
             if (booking.type === 'CHAMBRE' && booking.roomSelection.chambre) {
-                const [roomData, pricingRules] = await Promise.all([
+                const [roomData, rules] = await Promise.all([
                     fetchRoomDetails(Number(booking.roomSelection.chambre), fetch),
                     fetchPricingRules(fetch)
                 ]);
 
-                if (roomData) {
-                    const pricePerNight = roomData.prix_nuit;
-                    const start = booking.roomSelection.date_arrivee as CalendarDate;
-                    const end = booking.roomSelection.date_depart as CalendarDate;
-
-                    const startDateObj = new Date(start.year, start.month - 1, start.day);
-                    const endDateObj = new Date(end.year, end.month - 1, end.day);
-
-                    pricing = calculateStayPrice(pricePerNight, start, end, pricingRules, {
-                        adults: booking.roomSelection.adults,
-                        children: booking.roomSelection.children,
-                        parking: booking.roomSelection.parking,
-                        roomId: booking.roomSelection.chambre
-                    });
+                if (roomData && booking.roomSelection.date_arrivee && booking.roomSelection.date_depart) {
+                    pricing = calculateStayPrice(
+                        roomData.prix_nuit,
+                        booking.roomSelection.date_arrivee as CalendarDate,
+                        booking.roomSelection.date_depart as CalendarDate,
+                        rules,
+                        {
+                            adults: booking.roomSelection.adults,
+                            children: booking.roomSelection.children,
+                            parking: booking.roomSelection.parking,
+                            roomId: booking.roomSelection.chambre
+                        }
+                    );
 
                     details = {
                         title: roomData.nom,
-                        subtitle: 'Hébergement',
-                        basePrice: pricePerNight,
-                        quantityLabel: `${pricing.details.length} nuit(s)`,
-                        dateRange: `Du ${dateFormatter.format(startDateObj)} au ${dateFormatter.format(endDateObj)}`
+                        subtitle: l.summary_subtitle_room,
+                        dateRange: `Du ${dateFormatter.format(booking.roomSelection.date_arrivee.toDate('UTC'))} au ${dateFormatter.format(booking.roomSelection.date_depart.toDate('UTC'))}`,
+                        quantityLabel: `${pricing.details.length} ${l.summary_unit_night}`
                     };
                 }
             } else if (booking.type === 'VISITE' && booking.tourSelection.creneau_visite) {
-                const slotData = await fetchSlotDetails(booking.tourSelection.creneau_visite, fetch);
-                if (slotData) {
-                    const unitPrice = slotData.visite_id.prix_unitaire ?? 0;
+                const slot = await fetchSlotDetails(booking.tourSelection.creneau_visite, fetch);
+                if (slot) {
+                    const unitPrice = slot.visite_id.prix_unitaire ?? 0;
                     const total = booking.tourSelection.quantite_billets * unitPrice;
-                    const dateObj = new Date(slotData.date_heure_debut);
-
-                    details = {
-                        title: slotData.visite_id.nom,
-                        subtitle: 'Activité',
-                        dateRange: dateObj.toLocaleString('fr-FR', { dateStyle: 'long', timeStyle: 'short' }),
-                        basePrice: unitPrice,
-                        quantityLabel: `${booking.tourSelection.quantite_billets} billet(s)`
-                    };
-
                     pricing = { total, baseTotal: total, details: [], appliedRules: [] };
+                    details = {
+                        title: slot.visite_id.nom,
+                        subtitle: l.summary_subtitle_visit,
+                        dateRange: new Date(slot.date_heure_debut).toLocaleString('fr-FR', { dateStyle: 'long', timeStyle: 'short' }),
+                        quantityLabel: `${booking.tourSelection.quantite_billets} ${l.summary_unit_ticket}`
+                    };
                 }
             }
-
-            if (pricing) {
-                displayedTotal.set(pricing.total);
-            }
+            if (pricing) displayedTotal.set(pricing.total);
         } catch (e) {
-            console.error(e);
+            console.error("Summary error:", e);
         } finally {
             loading = false;
         }
     });
 </script>
 
-<div class="max-w-xl mx-auto">
-    <div class="text-center mb-10" in:fly={{ y: -20, duration: 600 }}>
-        <h2 class="text-3xl font-heading italic text-iron dark:text-limestone-50">Récapitulatif</h2>
-        <div class="w-12 h-1 bg-primary mx-auto mt-4 rounded-full"></div>
+<div class="max-w-xl mx-auto space-y-8">
+    <!-- Header -->
+    <div class="text-center" in:fly={{ y: -20, duration: 600 }}>
+        <h2 class="heading-page">{l.summary_title}</h2>
+        <div class="w-16 h-1 bg-primary mx-auto rounded-full"></div>
     </div>
 
     {#if loading}
-        <div class="h-64 bg-limestone-100 dark:bg-iron-light rounded-sm animate-pulse"></div>
+        <!-- Loading Skeleton -->
+        <div class="surface-atelier h-96 w-full animate-pulse bg-limestone-50/50 dark:bg-iron-light/10"></div>
     {:else if details && pricing}
-        <!-- Manifest Style Card -->
-        <div in:fly={{ y: 50, duration: 800, easing: cubicOut }}
-             class="bg-white dark:bg-[#252426] border-2 border-iron/10 dark:border-limestone-100/10 shadow-retro dark:shadow-none p-8 relative transform hover:-translate-y-1 transition-transform duration-500">
+        <!-- Main Summary Card -->
+        <div class="surface-atelier p-8 md:p-10 relative" in:fly={{ y: 30, duration: 600, delay: 100 }}>
 
-            <!-- Holes decoration (Punch card effect) -->
-            <div class="absolute -left-3 top-1/2 -translate-y-1/2 w-6 h-6 bg-[var(--background-color)] rounded-full border-r-2 border-iron/10 dark:border-limestone-100/10"></div>
-            <div class="absolute -right-3 top-1/2 -translate-y-1/2 w-6 h-6 bg-[var(--background-color)] rounded-full border-l-2 border-iron/10 dark:border-limestone-100/10"></div>
+            <!-- Top Section: Title & Dates -->
+            <div class="border-b-2 border-black/10 dark:border-white/10 pb-6 mb-6">
+                <div class="flex justify-between items-start gap-4">
+                    <div>
+                        <span class="text-xs font-bold uppercase tracking-widest text-primary mb-2 block">{details.subtitle}</span>
+                        <h3 class="text-3xl md:text-4xl font-heading font-bold text-iron dark:text-limestone-50 leading-tight">
+                            {details.title}
+                        </h3>
+                    </div>
+                </div>
 
-            <div class="border-b-2 border-dashed border-iron/10 dark:border-limestone-100/10 pb-6 mb-6">
-                <span class="text-xs font-bold uppercase tracking-[0.2em] text-primary block mb-2">{details.subtitle}</span>
-                <h3 class="text-3xl font-heading font-bold text-iron dark:text-limestone-50 leading-tight">{details.title}</h3>
-                {#if details.dateRange}
-                    <p class="text-iron-muted dark:text-limestone-300 font-serif italic mt-3 text-lg border-l-2 border-primary/30 pl-3">{details.dateRange}</p>
+                <div class="mt-6 flex items-start gap-3 text-iron/80 dark:text-limestone-200">
+                    <div class="mt-1 p-1.5 rounded bg-limestone-100 dark:bg-iron-light border border-black/5 dark:border-white/10">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 00-2 2z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="font-heading font-medium text-xl">{details.dateRange}</p>
+                        {#if booking.type === 'CHAMBRE'}
+                            <p class="text-sm text-iron-muted dark:text-limestone-400 mt-0.5">
+                                {booking.roomSelection.adults} {booking.roomSelection.adults > 1 ? l.price_est_unit_adults : l.price_est_unit_adult}
+                                {#if booking.roomSelection.children > 0}
+                                    , {booking.roomSelection.children} {booking.roomSelection.children > 1 ? l.price_est_unit_children : l.price_est_unit_child}
+                                {/if}
+                            </p>
+                        {/if}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pricing Breakdown -->
+            <div class="space-y-4">
+                <div class="flex justify-between items-center text-lg font-medium text-iron dark:text-limestone-100">
+                    <span>{l.summary_base_price} <span class="text-sm text-iron-muted dark:text-limestone-400 font-normal">({details.quantityLabel})</span></span>
+                    <span class="tabular-nums">{pricing.baseTotal}€</span>
+                </div>
+
+                {#if pricing.appliedRules.length > 0}
+                    <div class="space-y-2 py-2">
+                        {#each pricing.appliedRules as rule}
+                            <div class="flex justify-between items-center text-sm" transition:slide>
+                                <span class="text-iron-muted dark:text-limestone-400 italic flex items-center gap-2">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-primary/40"></span>
+                                    {rule.name}
+                                </span>
+                                <span class="font-medium tabular-nums {rule.amount < 0 ? 'text-primary' : 'text-iron dark:text-limestone-200'}">
+                                    {rule.amount > 0 ? '+' : ''}{rule.amount}€
+                                </span>
+                            </div>
+                        {/each}
+                    </div>
                 {/if}
             </div>
 
-            <!-- Itemized List -->
-            <div class="space-y-3 font-sans text-sm">
-                <div class="flex justify-between items-center text-iron dark:text-limestone-100">
-                    <span>Prix de base ({details.quantityLabel})</span>
-                    <span class="font-bold">{pricing.baseTotal}€</span>
+            <!-- Total Section -->
+            <div class="mt-8 pt-6 border-t-2 border-black dark:border-white flex flex-col sm:flex-row justify-between items-end sm:items-center gap-4">
+                <span class="font-heading font-bold text-2xl text-iron dark:text-limestone-50">{l.summary_total}</span>
+                <div class="text-right">
+                    <span class="block text-5xl font-heading font-bold text-primary tabular-nums tracking-tighter leading-none">
+                        {$displayedTotal.toFixed(2)}€
+                    </span>
+                    <span class="text-[10px] font-bold uppercase tracking-widest text-iron-muted/60 dark:text-limestone-400/60 mt-1 block">
+                        {l.price_est_tax_included}
+                    </span>
                 </div>
-
-                {#if pricing.appliedRules && pricing.appliedRules.length > 0}
-                    {#each pricing.appliedRules as rule, i}
-                        <div class="flex justify-between items-center" in:slide={{ axis: 'y', duration: 300, delay: i * 100 }}>
-                            <span class="text-iron-muted dark:text-limestone-400 italic">{rule.name}</span>
-                            <span class="{rule.amount < 0 ? 'text-green-600 dark:text-green-400' : 'text-iron dark:text-limestone-200'} font-medium">
-                                {rule.amount > 0 ? '+' : ''}{rule.amount}€
-                            </span>
-                        </div>
-                    {/each}
-                {/if}
-            </div>
-
-            <!-- Total -->
-            <div class="mt-8 pt-6 border-t-2 border-iron dark:border-limestone-100 flex justify-between items-end">
-                <span class="font-heading font-bold text-xl text-iron dark:text-limestone-50">Total</span>
-                <span class="font-bold text-4xl text-primary tabular-nums tracking-tighter">
-                    {$displayedTotal.toFixed(2)}€
-                </span>
             </div>
         </div>
 
-        <!-- Guest Info Mini-Card -->
-        <div in:fly={{ y: 20, duration: 600, delay: 200 }}>
-            <button
-                    onclick={() => booking.step = 2}
-                    class="w-full mt-8 p-4 border-2 border-iron/10 dark:border-limestone-100/10 bg-white dark:bg-[#252426] flex items-center gap-4 hover:border-primary transition-colors group shadow-retro-sm hover:shadow-retro active:translate-y-1 active:shadow-none duration-200"
-            >
-                <div class="w-10 h-10 border border-iron/20 flex items-center justify-center text-iron-muted dark:text-limestone-300 font-heading font-bold rounded-full group-hover:bg-primary group-hover:text-white group-hover:border-primary transition-colors">
-                    {booking.customer.prenom.charAt(0)}
+        <!-- Customer Edit Card -->
+        <button
+                onclick={() => booking.step = 2}
+                class="surface-interactive w-full flex items-center gap-5 !p-5 group"
+                in:fly={{ y: 30, duration: 600, delay: 200 }}
+        >
+            <div class="w-14 h-14 rounded-full border-2 border-black dark:border-white bg-limestone-100 dark:bg-iron-light flex items-center justify-center font-heading font-bold text-2xl text-iron dark:text-limestone-50 group-hover:bg-primary group-hover:text-white transition-colors duration-300 shadow-sm">
+                {booking.customer.prenom.charAt(0).toUpperCase()}
+            </div>
+
+            <div class="flex-1 text-left min-w-0">
+                <div class="flex items-center gap-2">
+                    <p class="font-bold text-lg text-iron dark:text-limestone-50 group-hover:text-primary transition-colors truncate">
+                        {booking.customer.prenom} {booking.customer.nom}
+                    </p>
                 </div>
-                <div class="flex-1 text-left">
-                    <p class="font-bold text-iron dark:text-limestone-50 group-hover:text-primary transition-colors">{booking.customer.prenom} {booking.customer.nom}</p>
-                    <p class="text-xs text-iron-muted dark:text-limestone-400">{booking.customer.email}</p>
-                </div>
-                <span class="text-xs font-bold uppercase text-primary opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all">Modifier</span>
-            </button>
-        </div>
+                <p class="text-sm text-iron-muted dark:text-limestone-400 truncate">{booking.customer.email}</p>
+                <p class="text-sm text-iron-muted dark:text-limestone-400 truncate">{booking.customer.telephone}</p>
+            </div>
+
+            <div class="flex items-center gap-2 px-4 py-2 rounded-full border border-black/10 dark:border-white/10 group-hover:border-primary/30 group-hover:bg-primary/5 transition-all">
+                <span class="text-xs font-bold uppercase tracking-widest text-iron-muted dark:text-limestone-400 group-hover:text-primary transition-colors">{l.summary_edit_button}</span>
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 text-iron-muted dark:text-limestone-400 group-hover:text-primary transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                </svg>
+            </div>
+        </button>
     {/if}
 </div>

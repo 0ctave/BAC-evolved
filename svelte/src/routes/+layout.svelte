@@ -24,15 +24,23 @@
 	// Default to your Pink if CMS data is missing
 	const accentColor = $derived(data.globals?.accent_color || '#f55677');
 
-	enableVisualEditing();
+	// FIX: Only enable visual editing if the server flag allows it (prevents postMessage errors on localhost)
+	$effect(() => {
+		if (data.visualEditingEnabled) {
+			enableVisualEditing();
+		}
+	});
 
 	afterNavigate(async (_navigation) => {
-		apply({
-			directusUrl: PUBLIC_DIRECTUS_URL,
-			onSaved: async () => {
-				await invalidateAll();
-			}
-		});
+		// FIX: Guard the apply function
+		if (data.visualEditingEnabled) {
+			apply({
+				directusUrl: PUBLIC_DIRECTUS_URL,
+				onSaved: async () => {
+					await invalidateAll();
+				}
+			});
+		}
 	});
 </script>
 
@@ -53,10 +61,6 @@
 <ModeWatcher />
 <NavigationBar />
 
-<!--
-    Apply the subtle limestone texture/color to the main background
-    bg-background is now #fdfbf7 (Warm Limestone)
--->
 <main class="flex-grow bg-background transition-colors duration-500">
 	{@render children()}
 </main>
