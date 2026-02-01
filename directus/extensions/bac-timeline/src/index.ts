@@ -5,18 +5,17 @@ export default definePanel({
 	id: 'bac-timeline',
 	name: 'Bordeaux à Coeur Timeline',
 	icon: 'calendar_view_day',
-	description: 'A Gantt-style timeline for hotel bookings.',
+	description: 'Professional hotel calendar with side-panel details.',
 	component: PanelComponent,
 	options: [
 		{
-			field: 'collection',
-			name: 'Collection',
+			field: 'roomFilter',
+			name: 'Filter by Room Name',
 			type: 'string',
 			meta: {
-				interface: 'system-collection',
-				options: {
-					includeSystem: false,
-				},
+				interface: 'input',
+				note: 'Leave empty for Combined View. Enter exact Room Name to filter.',
+				//placeholder: 'e.g. La Chambre Louise'
 			},
 		},
 		{
@@ -27,10 +26,10 @@ export default definePanel({
 				interface: 'input',
 			},
 			schema: {
-				default_value: 14,
+				default_value: 21,
 			},
 		},
 	],
-	minWidth: 12,
-	minHeight: 10,
+	minWidth: 24, // Wider by default for calendar view
+	minHeight: 12,
 });
