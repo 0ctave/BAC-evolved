@@ -15,7 +15,6 @@
 			description: string;
 			layout: 'image_center' | 'image_left' | 'image_right';
 			image: string;
-			// Restored alignment prop as requested, made optional
 			alignment?: 'left' | 'center' | 'right';
 			button_group?: {
 				id: string;
@@ -25,64 +24,26 @@
 	}
 
 	let { data }: Props = $props();
-	// Restored alignment in destructuring
 	const { headline, description, image, button_group, tagline, layout, id, alignment } = $derived(data);
 
-	// Derived value to check if there is any content to display
 	const hasContent = $derived(headline || tagline || description || (button_group && button_group.buttons && button_group.buttons.length > 0));
 </script>
 
 <section
 		class={cn(
-		'relative mx-auto flex w-full flex-col gap-6 md:gap-10',
-		// Removed md:p-12 to allow the image to take full width like RichText block
-		// Layout is strictly stacked (Image Top, Content Bottom) as per previous request.
+		'relative mx-auto flex w-full flex-col md:gap-10', // Section scales naturally
 		layout === 'image_center'
 			? 'items-center text-center'
 			: 'items-start text-left'
 	)}
 >
-	<!--
-        BLOCK 1: Image Content (Top)
-        Full width container.
-    -->
-	{#if image}
-		<div
-				class="relative w-full flex justify-center items-center py-16 md:py-0"
-				data-directus={setAttr({ collection: 'block_hero', item: id, fields: ['image', 'layout'], mode: 'modal' })}
-		>
-			<div class="w-full relative group flex justify-center">
-				<DirectusImage
-						uuid={image}
-						alt={tagline || headline || 'Hero Image'}
-						sizes="100vw"
-						class="
-							/* Mobile / Vertical Mode */
-							rotate-90 origin-center
-							h-[100vw] w-auto max-w-none shrink-0
 
-							/* Desktop / Horizontal Mode */
-							md:rotate-0 md:h-auto md:w-full md:max-w-full
 
-							/* Shared Styles */
-							object-contain bg-transparent mx-auto dark:invert transition-transform duration-500
-						"
-				/>
-			</div>
-		</div>
-	{/if}
-
-	<!--
-        BLOCK 2: Text Content (Bottom)
-        Width constrained for readability.
-        Only rendered if there is actual content.
-    -->
 	{#if hasContent}
 		<div
 				class={cn(
-				'flex w-full flex-col gap-6 relative z-10',
+				'flex w-full flex-col gap-6 relative z-10 mt-6 md:mt-0',
 				'panel-backdrop p-8 md:p-12',
-				// Added md:ml-12 to compensate for removed section padding when left-aligned
 				layout === 'image_center' ? 'items-center md:w-3/4' : 'items-start md:w-2/3 md:ml-12'
 			)}
 		>
@@ -116,9 +77,6 @@
 			{/if}
 
 			{#if button_group && button_group.buttons.length > 0}
-				<!--
-					 Using the restored 'alignment' prop if available, otherwise defaulting to layout-based center check.
-				-->
 				<div
 						class={cn(
 							(alignment === 'center' || (!alignment && layout === 'image_center')) && 'flex justify-center',
@@ -131,4 +89,43 @@
 			{/if}
 		</div>
 	{/if}
+	<!--
+        BLOCK 1: Image Content (Top)
+        Fix:
+        1. Removed 'aspect-[9/16]' and 'absolute' positioning which were causing fixed gaps.
+        2. Set the image to 'w-full h-auto' on mobile. This ensures the container
+           hugs the image exactly, removing all top/bottom padding.
+        3. Removed 'rotate-90' on mobile. CSS rotation does not update the parent's height
+           in the layout flow, so rotating a landscape image into a portrait space
+           always forces either a fixed height (with gaps) or overlap.
+    -->
+	{#if image}
+		<div
+				class="relative w-full flex justify-center items-center"
+				data-directus={setAttr({ collection: 'block_hero', item: id, fields: ['image', 'layout'], mode: 'modal' })}
+		>
+			<div class="w-full relative group flex justify-center items-center md:h-full">
+				<DirectusImage
+						uuid={image}
+						alt={tagline || headline || 'Hero Image'}
+						sizes="100vw"
+						class="
+							/* Mobile / Vertical Mode */
+							w-full h-auto object-contain
+
+							/* Desktop / Horizontal Mode */
+							md:relative md:rotate-0 md:h-auto md:w-full md:max-w-full md:inset-auto
+
+							/* Shared Styles */
+							bg-transparent mx-auto dark:invert transition-transform duration-500
+						"
+				/>
+			</div>
+		</div>
+	{/if}
+
+	<!--
+        BLOCK 2: Text Content (Bottom)
+    -->
+
 </section>
