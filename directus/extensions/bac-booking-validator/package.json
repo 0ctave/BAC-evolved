@@ -1,19 +1,19 @@
 {
-	"name": "booking-timeline",
+	"name": "bac-booking-validator",
 	"description": "Please enter a description for your extension",
 	"icon": "extension",
-	"version": "1.0.8",
+	"version": "1.0.1",
 	"keywords": [
 		"directus",
 		"directus-extension",
-		"directus-extension-panel"
+		"directus-extension-hook"
 	],
 	"type": "module",
 	"files": [
 		"dist"
 	],
 	"directus:extension": {
-		"type": "panel",
+		"type": "hook",
 		"path": "dist/index.js",
 		"source": "src/index.ts",
 		"host": "^10.10.0"
@@ -26,7 +26,7 @@
 	},
 	"devDependencies": {
 		"@directus/extensions-sdk": "17.0.5",
-		"typescript": "^5.9.3",
-		"vue": "^3.5.26"
+		"@types/node": "^25.0.9",
+		"typescript": "^5.9.3"
 	}
 }
