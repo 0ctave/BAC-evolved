@@ -196,8 +196,9 @@
             </div>
           </div>
           <div class="form-group">
-            <label>Chambre concernée</label>
+            <label>Chambre(s) concernée(s)</label>
             <select v-model="blockRoomId" class="modal-select">
+              <option value="all">Toutes les chambres</option>
               <option v-for="r in visibleRooms" :key="r.id" :value="r.id">{{ r.name }}</option>
             </select>
           </div>
@@ -205,7 +206,7 @@
         <div class="modal-actions">
           <button class="btn-cancel" @click="cancelSelection">Annuler</button>
           <button class="btn-confirm" @click="confirmBlockDates" :disabled="!blockRoomId || submitting">
-            {{ submitting ? '...' : 'Confirmer' }}
+            {{ submitting ? '...' : 'Confirmer le blocage' }}
           </button>
         </div>
       </div>
@@ -318,7 +319,7 @@ const isSelectionMode = ref(false);
 const selectionStart = ref<Date | null>(null);
 const selectionEnd = ref<Date | null>(null);
 const showBlockModal = ref(false);
-const blockRoomId = ref<any>(null);
+const blockRoomId = ref<any>('all');
 
 const containerRef = ref<HTMLElement | null>(null);
 const containerWidth = ref(0);
@@ -415,9 +416,17 @@ function isInSelectionRange(date: Date) {
 }
 
 function openBlockModal() {
+  // If we have a room filter, default the modal to that room
   if (props.roomFilter) {
     const r = visibleRooms.value.find(r => r.name.toLowerCase().includes(props.roomFilter.toLowerCase()));
-    if (r) blockRoomId.value = r.id;
+    if (r) {
+      blockRoomId.value = r.id;
+    } else {
+      blockRoomId.value = 'all';
+    }
+  } else {
+    // Default to 'all' for combined view
+    blockRoomId.value = 'all';
   }
   showBlockModal.value = true;
 }
@@ -426,7 +435,7 @@ function cancelSelection() {
   selectionStart.value = null;
   selectionEnd.value = null;
   showBlockModal.value = false;
-  blockRoomId.value = null;
+  blockRoomId.value = 'all';
 }
 
 function openInDirectus(id: any) {
@@ -478,7 +487,6 @@ function getCalendarDays(baseDate: Date) {
             connectRight: true
           });
         } else if (isArrival) {
-          // Check-in happens on the RIGHT half
           segments.push({
             id: booking.id,
             type: 'check-in',
@@ -490,7 +498,6 @@ function getCalendarDays(baseDate: Date) {
             connectRight: !isDeparture
           });
         } else if (isDeparture) {
-          // Check-out happens on the LEFT half
           segments.push({
             id: booking.id,
             type: 'check-out',
@@ -504,7 +511,6 @@ function getCalendarDays(baseDate: Date) {
         }
       });
 
-      // Crucial: check-out must render first in the array to be on the left
       segments.sort((a, b) => (a.type === 'check-out' ? -1 : 1));
 
       return { roomId: room.id, segments };
@@ -560,12 +566,24 @@ async function confirmBlockDates() {
   try {
     const startDateStr = format(selectionStart.value, 'yyyy-MM-dd');
     const endDateStr = format(selectionEnd.value, 'yyyy-MM-dd');
-    await api.post(`/items/${collectionName.value}`, {
+
+    // Determine which rooms to block
+    const roomIdsToBlock = blockRoomId.value === 'all'
+        ? visibleRooms.value.map(r => r.id)
+        : [blockRoomId.value];
+
+    // Create the payload for bulk insertion
+    const payloads = roomIdsToBlock.map(id => ({
       [props.startDateField]: startDateStr,
       [props.endDateField]: endDateStr,
-      [actualRoomField.value]: blockRoomId.value,
+      [actualRoomField.value]: id,
       [props.statusField]: 'indisponible',
-    });
+    }));
+
+    // Perform the bulk creation
+    // Directus supports passing an array to the create items endpoint
+    await api.post(`/items/${collectionName.value}`, payloads.length === 1 ? payloads[0] : payloads);
+
     await fetchData();
     cancelSelection();
     isSelectionMode.value = false;
@@ -584,7 +602,7 @@ async function updateBookingStatus(booking: any, newStatus: string) {
 }
 
 async function deleteBooking(booking: any) {
-  if (!confirm("Supprimer ?")) return;
+  if (!confirm("Voulez-vous vraiment supprimer cette réservation ?")) return;
   try {
     await api.delete(`/items/${collectionName.value}/${booking.id}`);
     selectedDay.value = null;
@@ -627,44 +645,44 @@ onUnmounted(() => { if (resizeObserver) resizeObserver.disconnect(); });
   overflow: hidden;
 }
 
-.view-title h1 { margin: 0; font-size: 1.4rem; font-weight: 800; text-align: center; margin-bottom: 20px;}
+.view-title h1 { margin: 0; font-size: 1.6rem; font-weight: 900; text-align: center; margin-bottom: 24px; color: var(--theme--primary); }
 
 .calendar-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 24px;
+  margin-bottom: 32px;
 }
 
-.nav-controls { display: flex; align-items: center; gap: 8px; }
+.nav-controls { display: flex; align-items: center; gap: 10px; }
 
 .nav-btn {
   background: var(--theme--background-accent);
   border: 1px solid var(--theme--border-color-subdued);
-  height: 36px;
+  height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  border-radius: 8px;
+  border-radius: 10px;
   color: var(--theme--foreground);
-  transition: all 0.2s;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
-.nav-btn:hover { background: var(--theme--background-subdued); }
-.text-btn { padding: 0 14px; font-weight: 600; font-size: 0.85rem; }
+.nav-btn:hover { background: var(--theme--background-subdued); transform: scale(1.02); }
+.text-btn { padding: 0 16px; font-weight: 700; font-size: 0.9rem; }
 .mode-btn.active { background: var(--theme--primary); color: white; border-color: var(--theme--primary); }
 
-.month-label { font-size: 1rem; font-weight: 700; margin: 0; text-transform: capitalize; }
+.month-label { font-size: 1.1rem; font-weight: 800; margin: 0; text-transform: capitalize; }
 
-.legend { display: flex; gap: 12px; }
-.legend-item { display: flex; align-items: center; gap: 6px; font-size: 0.75rem; font-weight: 600; }
-.dot { width: 8px; height: 8px; border-radius: 50%; }
+.legend { display: flex; gap: 16px; }
+.legend-item { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; font-weight: 700; }
+.dot { width: 10px; height: 10px; border-radius: 50%; }
 
 .calendars-row { display: flex; flex: 1; gap: 32px; min-height: 0; }
 .single-calendar { flex: 1; display: flex; flex-direction: column; min-height: 0; }
 
-.weekdays-row { display: grid; grid-template-columns: repeat(7, 1fr); margin-bottom: 8px; }
-.weekday-header { text-align: center; font-weight: 700; color: var(--theme--foreground-subdued); font-size: 0.7rem; text-transform: uppercase; }
+.weekdays-row { display: grid; grid-template-columns: repeat(7, 1fr); margin-bottom: 12px; }
+.weekday-header { text-align: center; font-weight: 800; color: var(--theme--foreground-subdued); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; }
 
 .calendar-grid {
   display: grid;
@@ -678,31 +696,32 @@ onUnmounted(() => { if (resizeObserver) resizeObserver.disconnect(); });
 .day-cell {
   border-right: 1px solid var(--theme--border-color-subdued);
   border-bottom: 1px solid var(--theme--border-color-subdued);
-  padding: 4px 0;
+  padding: 6px 0;
   display: flex;
   flex-direction: column;
   position: relative;
   cursor: pointer;
   background: var(--theme--background);
+  transition: background 0.15s;
 }
 .day-cell:hover { background: var(--theme--background-subdued); }
-.day-cell.is-padding { opacity: 0.4; background: var(--theme--background-accent); }
+.day-cell.is-padding { opacity: 0.35; background: var(--theme--background-accent); }
 
-.day-header { padding: 0 8px; display: flex; justify-content: flex-end; margin-bottom: 2px; }
-.day-number { font-size: 0.75rem; font-weight: 600; opacity: 0.6; }
-.is-today .day-number { color: var(--theme--primary); opacity: 1; font-weight: 800; }
+.day-header { padding: 0 10px; display: flex; justify-content: flex-end; margin-bottom: 4px; z-index: 10; }
+.day-number { font-size: 0.8rem; font-weight: 700; opacity: 0.5; }
+.is-today .day-number { color: var(--theme--primary); opacity: 1; font-weight: 900; transform: scale(1.1); }
 
 .day-content {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 8px; /* Vertical spacing between rooms */
   justify-content: center;
 }
 
 /* Lane Management */
 .room-lane {
-  height: 24px; /* Default thick bar */
+  height: 34px; /* Significantly thicker bars for combined view */
   display: flex;
   position: relative;
   gap: 0;
@@ -712,7 +731,7 @@ onUnmounted(() => { if (resizeObserver) resizeObserver.disconnect(); });
 
 /* Expand lane when filtered (Single Room View) */
 .day-cell.has-filter .room-lane {
-  height: 48px;
+  height: 64px;
 }
 
 /* Segment Logic */
@@ -720,107 +739,122 @@ onUnmounted(() => { if (resizeObserver) resizeObserver.disconnect(); });
   height: 100%;
   display: flex;
   align-items: center;
-  padding: 0 6px;
+  padding: 0 10px;
   position: relative;
-  z-index: 2;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+  z-index: 5;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.2);
   overflow: hidden;
-  transition: transform 0.1s;
-  background-image: linear-gradient(rgba(255,255,255,0.1) 0%, rgba(0,0,0,0.05) 100%);
+  transition: all 0.2s ease;
+  background-image: linear-gradient(to bottom, rgba(255,255,255,0.1) 0%, rgba(0,0,0,0.08) 100%);
 }
 
-/* Widths & Connectivity */
-/* Full Stay */
-.booking-segment.full { width: 100%; margin: 0 2px; border-radius: 4px; }
-.booking-segment.full.connect-left { margin-left: 0; border-top-left-radius: 0; border-bottom-left-radius: 0; box-shadow: none; }
-.booking-segment.full.connect-right { margin-right: 0; border-top-right-radius: 0; border-bottom-right-radius: 0; box-shadow: none; }
+/* Correcting connection and border hiding */
+.booking-segment.connect-left {
+  margin-left: -1px; /* Overlap the cell border on the left */
+  border-top-left-radius: 0 !important;
+  border-bottom-left-radius: 0 !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.1);
+}
+.booking-segment.connect-right {
+  margin-right: -1px; /* Overlap the cell border on the right */
+  border-top-right-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.1);
+  z-index: 6; /* Slightly higher to hide overlap line */
+}
 
-/* Transitions */
+/* Segment widths and transition gaps */
+.booking-segment.full {
+  width: calc(100% - 6px);
+  margin: 0 3px;
+  border-radius: 6px;
+}
+.booking-segment.full.connect-left { margin-left: -1px; width: calc(100% - 3px + 1px); }
+.booking-segment.full.connect-right { margin-right: -1px; width: calc(100% - 3px + 1px); }
+.booking-segment.full.connect-left.connect-right { margin-left: -1px; margin-right: -1px; width: calc(100% + 2px); }
+
+/* Transition positions with larger 12px gap in the middle */
 .booking-segment.check-out {
-  width: 50%;
-  margin-left: 2px;
-  border-radius: 4px 0 0 4px;
-  border-right: 1px solid rgba(0,0,0,0.1);
+  width: calc(50% - 6px); /* Half cell minus half of the gap */
+  margin-left: 3px;
+  border-radius: 6px 0 0 6px;
 }
 .booking-segment.check-out.connect-left {
-  margin-left: 0;
-  border-top-left-radius: 0;
-  border-bottom-left-radius: 0;
-  box-shadow: none;
+  margin-left: -1px;
+  width: calc(50% - 6px + 1px);
 }
 
 .booking-segment.check-in {
-  width: 50%;
-  margin-right: 2px;
-  border-radius: 0 4px 4px 0;
-  margin-left: auto; /* Push to right */
+  width: calc(50% - 6px);
+  margin-right: 3px;
+  border-radius: 0 6px 6px 0;
+  margin-left: auto; /* Push to the right side of the lane */
 }
 .booking-segment.check-in.connect-right {
-  margin-right: 0;
-  border-top-right-radius: 0;
-  border-bottom-right-radius: 0;
-  box-shadow: none;
+  margin-right: -1px;
+  width: calc(50% - 6px + 1px);
 }
 
-.booking-segment.is-blocked { background: #333 !important; }
+.booking-segment.is-blocked { background: #1a1a1a !important; }
 
 .segment-label {
-  font-size: 0.65rem;
+  font-size: 0.7rem;
   font-weight: 800;
   color: white;
   white-space: nowrap;
-  text-shadow: 0 1px 1px rgba(0,0,0,0.3);
+  text-shadow: 0 1px 2px rgba(0,0,0,0.5);
   pointer-events: none;
+  letter-spacing: 0.02em;
 }
 
 .day-cell.has-filter .segment-label {
-  font-size: 0.75rem;
+  font-size: 0.85rem;
 }
 
 /* Selection Mode */
-.day-cell.is-selected { background: var(--theme--primary-subdued); }
+.day-cell.is-selected { background: var(--theme--primary-subdued); box-shadow: inset 0 0 0 2px var(--theme--primary); }
 .day-cell.in-selection-range { background: rgba(var(--primary-rgb), 0.1); }
 
 /* Side Drawer & UI Components */
-.side-drawer { position: absolute; top: 0; right: 0; bottom: 0; width: 400px; background: var(--theme--background); z-index: 100; border-left: 1px solid var(--theme--border-color); display: flex; flex-direction: column; box-shadow: -10px 0 30px rgba(0,0,0,0.1); }
-.drawer-header { padding: 20px; border-bottom: 1px solid var(--theme--border-color-subdued); display: flex; justify-content: space-between; align-items: center; }
-.close-btn { background: none; border: none; font-size: 1.5rem; cursor: pointer; }
-.drawer-content { flex: 1; overflow-y: auto; padding: 20px; background: var(--theme--background-subdued); }
+.side-drawer { position: absolute; top: 0; right: 0; bottom: 0; width: 440px; background: var(--theme--background); z-index: 100; border-left: 1px solid var(--theme--border-color); display: flex; flex-direction: column; box-shadow: -15px 0 45px rgba(0,0,0,0.15); }
+.drawer-header { padding: 24px; border-bottom: 1px solid var(--theme--border-color-subdued); display: flex; justify-content: space-between; align-items: center; }
+.close-btn { background: none; border: none; font-size: 2rem; cursor: pointer; color: var(--theme--foreground-subdued); line-height: 1; }
+.drawer-content { flex: 1; overflow-y: auto; padding: 24px; background: var(--theme--background-subdued); }
 
-.booking-card { background: var(--theme--background); border-radius: 12px; border: 1px solid var(--theme--border-color-subdued); margin-bottom: 16px; overflow: hidden; }
-.card-header { padding: 12px 16px; border-left: 4px solid #ccc; display: flex; justify-content: space-between; align-items: center; background: var(--theme--background); }
-.room-name { font-weight: 700; font-size: 0.9rem; }
-.status-badge { font-size: 0.65rem; padding: 2px 8px; border-radius: 10px; font-weight: 700; text-transform: uppercase; }
+.booking-card { background: var(--theme--background); border-radius: 14px; border: 1px solid var(--theme--border-color-subdued); margin-bottom: 20px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+.card-header { padding: 16px 20px; border-left: 6px solid #ccc; display: flex; justify-content: space-between; align-items: center; background: var(--theme--background); }
+.room-name { font-weight: 800; font-size: 1rem; }
+.status-badge { font-size: 0.7rem; padding: 4px 12px; border-radius: 20px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.03em; }
 .status-badge.confirmee { background: #e6f4ea; color: #1e8e3e; }
-.status-badge.indisponible { background: #333; color: white; }
+.status-badge.indisponible { background: #1a1a1a; color: white; }
 
-.card-body { padding: 16px; }
-.client-info { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
-.client-icon { width: 32px; height: 32px; background: var(--theme--background-accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; }
-.client-text .name { font-weight: 700; font-size: 0.95rem; }
-.client-text .email { font-size: 0.8rem; color: var(--theme--foreground-subdued); }
+.card-body { padding: 20px; }
+.client-info { display: flex; align-items: center; gap: 16px; margin-bottom: 20px; }
+.client-icon { width: 40px; height: 40px; background: var(--theme--background-accent); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: var(--theme--primary); }
+.client-text .name { font-weight: 800; font-size: 1.1rem; }
+.client-text .email { font-size: 0.85rem; color: var(--theme--foreground-subdued); }
 
-.dates-info { background: var(--theme--background-subdued); padding: 12px; border-radius: 8px; font-size: 0.85rem; }
-.date-row { display: flex; justify-content: space-between; margin-bottom: 4px; }
+.dates-info { background: var(--theme--background-subdued); padding: 16px; border-radius: 12px; font-size: 0.9rem; border: 1px solid var(--theme--border-color-subdued); }
+.date-row { display: flex; justify-content: space-between; margin-bottom: 6px; }
 
-.status-pills { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
-.status-pill-btn { border: 1px solid var(--theme--border-color); background: none; font-size: 0.75rem; padding: 4px 10px; border-radius: 12px; cursor: pointer; }
-.status-pill-btn.active { background: var(--theme--primary); color: white; border-color: var(--theme--primary); }
+.status-pills { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+.status-pill-btn { border: 1px solid var(--theme--border-color); background: none; font-size: 0.8rem; padding: 6px 14px; border-radius: 20px; cursor: pointer; font-weight: 700; transition: all 0.2s; }
+.status-pill-btn.active { background: var(--theme--primary); color: white; border-color: var(--theme--primary); box-shadow: 0 4px 8px var(--theme--primary-subdued); }
 
-.card-footer { padding: 12px 16px; border-top: 1px solid var(--theme--border-color-subdued); display: flex; justify-content: space-between; }
-.btn-link { background: none; border: none; color: var(--theme--primary); font-size: 0.8rem; font-weight: 700; cursor: pointer; }
+.card-footer { padding: 16px 20px; border-top: 1px solid var(--theme--border-color-subdued); display: flex; justify-content: space-between; background: var(--theme--background-subdued); }
+.btn-link { background: none; border: none; color: var(--theme--primary); font-size: 0.85rem; font-weight: 800; cursor: pointer; text-decoration: none; }
 .btn-link.delete { color: var(--theme--danger); }
 
-.modal-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; z-index: 200; }
-.modal-card { background: var(--theme--background); padding: 24px; border-radius: 16px; width: 340px; }
-.modal-select { width: 100%; padding: 8px; border-radius: 8px; margin-top: 8px; border: 1px solid var(--theme--border-color); }
-.modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
-.btn-confirm { background: var(--theme--primary); color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-weight: 700; }
+.modal-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 200; }
+.modal-card { background: var(--theme--background); padding: 32px; border-radius: 20px; width: 400px; box-shadow: 0 20px 60px rgba(0,0,0,0.2); }
+.modal-select { width: 100%; padding: 12px; border-radius: 10px; margin-top: 12px; border: 1px solid var(--theme--border-color); font-weight: 600; background: var(--theme--background); color: var(--theme--foreground); }
+.modal-actions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px; }
+.btn-confirm { background: var(--theme--primary); color: white; border: none; padding: 10px 24px; border-radius: 10px; cursor: pointer; font-weight: 800; }
 
-.loading-overlay { position: absolute; inset: 0; background: rgba(255,255,255,0.7); z-index: 300; display: flex; align-items: center; justify-content: center; }
-.spinner { width: 30px; height: 30px; border: 3px solid #eee; border-top-color: var(--theme--primary); border-radius: 50%; animation: spin 0.8s linear infinite; }
+.loading-overlay { position: absolute; inset: 0; background: rgba(255,255,255,0.8); z-index: 300; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(2px); }
+.spinner { width: 40px; height: 40px; border: 4px solid #eee; border-top-color: var(--theme--primary); border-radius: 50%; animation: spin 0.8s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
 
-.slide-enter-active, .slide-leave-active { transition: transform 0.3s ease; }
+.slide-enter-active, .slide-leave-active { transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
 .slide-enter-from, .slide-leave-to { transform: translateX(100%); }
 </style>
