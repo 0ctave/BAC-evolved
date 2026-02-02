@@ -57,14 +57,14 @@ export async function submitBooking() {
 					client: clientId,
 					date_arrivee: formatDate(booking.roomSelection.date_arrivee),
 					date_depart: formatDate(booking.roomSelection.date_depart),
-					statut: 'confirmee',
+					statut: 'en_attente',
 					parking: booking.roomSelection.parking // <-- Ajout ici
 				}
 			: {
 					creneau_visite: booking.tourSelection.creneau_visite,
 					client: clientId,
 					quantite_billets: booking.tourSelection.quantite_billets,
-					statut: 'confirmee'
+					statut: 'en_attente'
 				};
 
 		const res = await fetchWithAuth(`/items/${collection}`, {
