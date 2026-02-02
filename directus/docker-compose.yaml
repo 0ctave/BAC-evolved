@@ -9,6 +9,8 @@ services:
       retries: 5
       start_interval: 5s
       start_period: 30s
+    networks:
+      - bac-beta_default
 
   directus:
     image: directus/directus:11.14.1
@@ -26,7 +28,7 @@ services:
       SECRET: ${DIRECTUS_SECRET}
 
       DB_CLIENT: 'pg'
-      DB_HOST: 'database'
+      DB_HOST: 'postgres'
       DB_PORT: '5432'
       DB_DATABASE: ${DB_DATABASE}
       DB_USER: ${DB_USER}
@@ -78,3 +80,10 @@ services:
       AUTH_KEYCLOAK_CLIENT_SECRET: ${AUTH_KEYCLOAK_CLIENT_SECRET}
       AUTH_KEYCLOAK_ISSUER_URL: ${AUTH_KEYCLOAK_ISSUER_URL}
       AUTH_KEYCLOAK_IDENTIFIER_KEY: ${AUTH_KEYCLOAK_IDENTIFIER_KEY}
+    networks:
+      - db-net
+      - bac-beta_default
+
+networks:
+  db-net:
+    external: true
