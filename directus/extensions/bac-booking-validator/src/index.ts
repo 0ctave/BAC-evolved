@@ -1,7 +1,6 @@
 import { defineHook } from '@directus/extensions-sdk';
 
 export default defineHook(({ filter }, { services }) => {
-	const { ItemsService } = services;
 
 	const throwError = (message: string, code: string = 'INVALID_PAYLOAD') => {
 		const error: any = new Error(message);
