@@ -1,5 +1,24 @@
-name: bac-beta
+name: directus-cms-template
 services:
+  database:
+    image: postgis/postgis:16-master
+    platform: linux/amd64
+    ports:
+      - 5433:5432  
+    volumes:
+      - ./data/database:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_DATABASE}
+    healthcheck:
+      test: ['CMD', 'pg_isready', '-U', '${DB_USER}', '-d', '${DB_DATABASE}', '-h', 'localhost']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_interval: 5s
+      start_period: 30s
+
   cache:
     image: redis:6
     healthcheck:
@@ -11,7 +30,7 @@ services:
       start_period: 30s
 
   directus:
-    image: directus/directus:11.14.1
+    image: directus/directus:11.14.0
     ports:
       - ${DIRECTUS_PORT}:8055
     volumes:
@@ -67,14 +86,3 @@ services:
       EMAIL_SMTP_PORT: ${EMAIL_SMTP_PORT}
       EMAIL_SMTP_USER: ${EMAIL_SMTP_USER}
       EMAIL_SMTP_PASSWORD: ${EMAIL_SMTP_PASSWORD}
-
-      AUTH_PROVIDERS: ${AUTH_PROVIDERS}
-
-      AUTH_KEYCLOAK_ALLOW_PUBLIC_REGISTRATION: ${AUTH_KEYCLOAK_ALLOW_PUBLIC_REGISTRATION}
-      AUTH_KEYCLOAK_DEFAULT_ROLE_ID: ${AUTH_KEYCLOAK_DEFAULT_ROLE_ID}
-      AUTH_KEYCLOAK_MODE: ${AUTH_KEYCLOAK_MODE}
-      AUTH_KEYCLOAK_DRIVER: ${AUTH_KEYCLOAK_DRIVER}
-      AUTH_KEYCLOAK_CLIENT_ID: ${AUTH_KEYCLOAK_CLIENT_ID}
-      AUTH_KEYCLOAK_CLIENT_SECRET: ${AUTH_KEYCLOAK_CLIENT_SECRET}
-      AUTH_KEYCLOAK_ISSUER_URL: ${AUTH_KEYCLOAK_ISSUER_URL}
-      AUTH_KEYCLOAK_IDENTIFIER_KEY: ${AUTH_KEYCLOAK_IDENTIFIER_KEY}
