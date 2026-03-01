@@ -65,19 +65,19 @@
 	)}
 >
     <Container class="relative">
-        <nav class="flex h-20 items-center justify-between">
+        <nav class="flex h-30 items-center justify-between">
             <!-- Logo -->
             <a href="/" class="relative z-10 flex shrink-0 items-center gap-2" onclick={closeMenu}>
                 <img
                         src={lightLogoUrl}
                         alt="Logo"
-                        class="h-10 w-auto transition-all duration-300 dark:hidden"
+                        class="h-20 w-auto transition-all duration-300 dark:hidden"
                 />
                 {#if darkLogoUrl}
                     <img
                             src={darkLogoUrl}
                             alt="Logo Dark"
-                            class="hidden h-10 w-auto transition-all duration-300 dark:block"
+                            class="hidden h-20 w-auto transition-all duration-300 dark:block"
                     />
                 {/if}
             </a>
@@ -116,8 +116,8 @@
                     {/if}
                 {/each}
 
-                <div class="flex items-center gap-4 border-l-2 border-iron/10 pl-8 dark:border-limestone-100/10">
-                    <LightSwitch/>
+                <div class="flex items-center gap-6 border-l-2 border-iron/10 pl-8 dark:border-limestone-100/10">
+
                     <LanguageSwitch/>
 
                     <!-- Dynamic CTA Button (Desktop) -->
@@ -128,21 +128,15 @@
                             <Button {...buttonData}/>
                         {/if}
                     {/if}
+
+                    <LightSwitch/>
                 </div>
             </div>
 
             <!-- Mobile Hamburger Toggle -->
             <div class="flex items-center gap-2 lg:hidden">
                 <!-- Dynamic CTA Button (Mobile Header) - Hides completely when menu opens -->
-                {#if ctaItem && !isOpen}
-                    {@const
-                        buttonData = typeof ctaItem.button === 'object' ? flatten(ctaItem.button, currentDbLocale) : null}
-                    <div transition:slide={{ axis: 'x', duration: 300 }}>
-                        {#if buttonData}
-                            <Button {...buttonData}/>
-                        {/if}
-                    </div>
-                {/if}
+
 
                 <button
                         onclick={toggleMenu}

@@ -24,7 +24,7 @@ function resolveOverrides(candidates: TarifsSpeciaux[]): TarifsSpeciaux[] {
 			if (!childRule.parent) return false;
 
 			const parentId =
-				typeof childRule.parent === 'object' && childRule.parent !== null
+				typeof childRule.parent === 'object' && true
 					? (childRule.parent as any).id
 					: childRule.parent;
 
@@ -59,14 +59,15 @@ export function calculateStayPrice(
 	const startDateJS = start.toDate(getLocalTimeZone());
 	const endDateJS = end.toDate(getLocalTimeZone());
 
-	const durationInNights = Math.max(1, Math.round(
-		(endDateJS.getTime() - startDateJS.getTime()) / (1000 * 60 * 60 * 24)
-	));
+	const durationInNights = Math.max(
+		1,
+		Math.round((endDateJS.getTime() - startDateJS.getTime()) / (1000 * 60 * 60 * 24))
+	);
 
 	const totalPeople = context.adults + context.children;
 
 	const checkGlobalConditions = (rule: TarifsSpeciaux) => {
-		const ruleTypes = Array.isArray(rule.type) ? rule.type : [rule.type];
+		const ruleTypes = rule.type_reduction;
 
 		if (ruleTypes.includes('parking') && !context.parking) return false;
 		if (rule.duree_min && durationInNights < rule.duree_min) return false;
@@ -82,9 +83,12 @@ export function calculateStayPrice(
 						return String(item) === targetId;
 					}
 					if (item && typeof item === 'object' && 'chambres_id' in item) {
-						const cId = typeof item.chambres_id === 'object' && item.chambres_id !== null && 'id' in item.chambres_id
-							? (item.chambres_id as any).id
-							: item.chambres_id;
+						const cId =
+							typeof item.chambres_id === 'object' &&
+							item.chambres_id !== null &&
+							'id' in item.chambres_id
+								? (item.chambres_id as any).id
+								: item.chambres_id;
 						return String(cId) === targetId;
 					}
 					return false;
@@ -109,14 +113,21 @@ export function calculateStayPrice(
 		const adjustments: { name: string; amount: number }[] = [];
 
 		const nightlyCandidates = contextValidRules.filter((rule) => {
-			const ruleTypes = Array.isArray(rule.type) ? rule.type : [rule.type];
-			const appliesNightly = ruleTypes.some(t => ['pourcentage', 'fix_nuit', 'parking'].includes(t));
+			const ruleTypes = rule.type_reduction;
+			const appliesNightly = ['prix_unitaire', 'parking'].includes(ruleTypes);
 
 			if (!appliesNightly) return false;
-			if (rule.date_debut && rule.date_fin && (isoDate < rule.date_debut || isoDate > rule.date_fin)) return false;
+			if (
+				rule.date_debut &&
+				rule.date_fin &&
+				(isoDate < rule.date_debut || isoDate > rule.date_fin)
+			)
+				return false;
 
 			if (rule.jours_application) {
-				const days = Array.isArray(rule.jours_application) ? rule.jours_application : [rule.jours_application];
+				const days = Array.isArray(rule.jours_application)
+					? rule.jours_application
+					: [rule.jours_application];
 				if (!days.map(String).includes(dayOfWeekStr)) return false;
 			}
 
@@ -126,17 +137,14 @@ export function calculateStayPrice(
 		const activeNightlyRules = resolveOverrides(nightlyCandidates);
 
 		for (const rule of activeNightlyRules) {
-			const ruleTypes = Array.isArray(rule.type) ? rule.type : [rule.type];
+			const ruleTypes = rule.type_reduction;
 			let amount = 0;
 
-			if (ruleTypes.includes('pourcentage')) {
-				amount += (basePricePerNight * (rule.valeur || 0)) / 100;
-			}
-			if (ruleTypes.includes('fix_nuit')) {
-				amount += (rule.valeur || 0);
+			if (ruleTypes.includes('prix_unitaire')) {
+				amount += rule.valeur || 0;
 			}
 			if (ruleTypes.includes('parking')) {
-				amount += (rule.valeur || 0);
+				amount += rule.valeur || 0;
 			}
 
 			amount = Math.round(amount * 100) / 100;
@@ -161,8 +169,8 @@ export function calculateStayPrice(
 	}
 
 	const stayCandidates = contextValidRules.filter((rule) => {
-		const ruleTypes = Array.isArray(rule.type) ? rule.type : [rule.type];
-		if (!ruleTypes.includes('fixe_sejour')) return false;
+		const ruleTypes = rule.type_reduction;
+		if (!ruleTypes.includes('prix_total')) return false;
 
 		if (rule.date_debut && rule.date_fin) {
 			const startISO = start.toString();

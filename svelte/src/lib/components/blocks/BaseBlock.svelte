@@ -6,12 +6,13 @@
 	import Posts from '$lib/components/blocks/Posts.svelte';
 	import Form from '$lib/components/blocks/Form.svelte';
 	import Split from '$lib/components/blocks/Split.svelte';
+	import Carte from '$lib/components/blocks/Carte.svelte';
 	import WizardContainer from '$lib/components/wizard/WizardContainer.svelte';
 
 	// CHANGED: Use the standard store for maximum compatibility
-	import { page } from '$app/stores';
 	import { flatten } from '$lib/directus/directus-utils';
 	import { defaultLocale } from '$lib/i18n';
+	import {page} from "$app/state";
 
 	interface BaseBlockProps {
 		block: {
@@ -31,6 +32,7 @@
 		block_posts: Posts,
 		block_form: Form,
 		block_split: Split,
+		block_map: Carte,
 		block_booking: WizardContainer
 	} as const;
 
@@ -39,7 +41,7 @@
 
 	// Resolve Locale from Store
 	// We use $page.data because 'page' is a store
-	const locale = $derived($page.data.locale || defaultLocale);
+	const locale = $derived(page.data.locale || defaultLocale);
 
 	// Flatten Data
 	const localizedItem = $derived(block.item ? flatten(block.item, locale) : null);

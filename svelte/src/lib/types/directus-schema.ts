@@ -248,6 +248,31 @@ export interface BlockHeroTranslation {
 	description?: string | null;
 }
 
+export interface BlockMap {
+	/** @primaryKey */
+	id: number;
+	user_created?: DirectusUser | string | null;
+	date_created?: string | null;
+	user_updated?: DirectusUser | string | null;
+	date_updated?: string | null;
+	/** @required */
+	carte: string;
+	/** @required */
+	layout: 'map_left' | 'map_right';
+	traductions?: BlockMapTranslation[] | null;
+}
+
+export interface BlockMapTranslation {
+	/** @primaryKey */
+	id: number;
+	block_map_id?: BlockMap | string | null;
+	langues_code?: Langue | string | null;
+	headline?: string | null;
+	tagline?: string | null;
+	description?: string | null;
+	address?: string | null;
+}
+
 export interface BlockPost {
 	/** @primaryKey */
 	id: string;
@@ -351,7 +376,15 @@ export interface BlockSplit {
 	date_updated?: string | null;
 	image?: DirectusFile | string | null;
 	layout?: 'image_left' | 'image_right' | null;
+	bouton_groupe?: BlockButtonGroup | string | null;
 	traductions?: BlockSplitTranslation[] | null;
+}
+
+export interface BlockSplitBlockButtonGroup {
+	/** @primaryKey */
+	id: number;
+	block_split_id?: BlockSplit | string | null;
+	block_button_group_id?: BlockButtonGroup | string | null;
 }
 
 export interface BlockSplitTranslation {
@@ -381,6 +414,7 @@ export interface Chambre {
 	/** @required */
 	statut: 'disponible' | 'indisponible';
 	image?: DirectusFile | string | null;
+	couleur?: 'bleu' | 'orange' | null;
 	images?: ChambresFile[] | string[];
 }
 
@@ -412,7 +446,6 @@ export interface CreneauxVisite {
 	/** @required */
 	date_heure_debut: string;
 	capacite_max?: number | null;
-	place_reservee?: number | null;
 }
 
 export interface FormFieldChoice {
@@ -630,7 +663,7 @@ export interface PageBlock {
 	/** @description The id of the page that this block belongs to. */
 	page?: Page | string | null;
 	/** @description The data for the block. */
-	item?: BlockHero | BlockRichtext | BlockForm | BlockPost | BlockGallery | BlockPricing | BlockBooking | BlockSplit | string | null;
+	item?: BlockHero | BlockRichtext | BlockForm | BlockPost | BlockGallery | BlockPricing | BlockBooking | BlockSplit | BlockMap | string | null;
 	/** @description The collection (type of block). */
 	collection?: string | null;
 	/** @description Temporarily hide this block on the website without having to remove it from your page. */
@@ -727,7 +760,7 @@ export interface ReservationsChambre {
 	/** @required */
 	date_depart: string;
 	/** @required */
-	statut: 'en_attente' | 'confirmee' | 'annulee';
+	statut: 'en_attente' | 'confirmee' | 'annulee' | 'indisponible';
 	/** @required */
 	parking: 'no_parking' | 'parking';
 }
@@ -750,8 +783,6 @@ export interface TarifsSpeciaux {
 	id: number;
 	/** @required */
 	nom: string;
-	/** @required */
-	type: Array<'pourcentage' | 'fix_nuit' | 'fixe_sejour' | 'parking' | 'taxe_sejour'>;
 	date_debut?: string | null;
 	date_fin?: string | null;
 	/** @required */
@@ -765,7 +796,12 @@ export interface TarifsSpeciaux {
 	personnes_min?: number | null;
 	personnes_max?: number | null;
 	parent?: TarifsSpeciaux | string | null;
+	/** @required */
+	type_reduction: 'prix_unitaire' | 'prix_total' | 'parking';
+	/** @required */
+	type: 'chambre' | 'visite';
 	chambres_concernees?: TarifsSpeciauxChambre[] | string[];
+	visites_concernees?: TarifsSpeciauxVisite[] | string[];
 }
 
 export interface TarifsSpeciauxChambre {
@@ -773,6 +809,13 @@ export interface TarifsSpeciauxChambre {
 	id: number;
 	tarifs_speciaux_id?: TarifsSpeciaux | string | null;
 	chambres_id?: Chambre | string | null;
+}
+
+export interface TarifsSpeciauxVisite {
+	/** @primaryKey */
+	id: number;
+	tarifs_speciaux_id?: TarifsSpeciaux | string | null;
+	visites_id?: Visite | string | null;
 }
 
 export interface Visite {
@@ -1097,21 +1140,6 @@ export interface DirectusUser {
 	policies?: DirectusAccess[] | string[];
 }
 
-export interface DirectusWebhook {
-	/** @primaryKey */
-	id: number;
-	name?: string;
-	method?: null;
-	url?: string;
-	status?: 'active' | 'inactive';
-	data?: boolean;
-	actions?: 'create' | 'update' | 'delete';
-	collections?: string[];
-	headers?: Array<{ header: string; value: string }> | null;
-	was_active_before_deprecation?: boolean;
-	migrated_flow?: DirectusFlow | string | null;
-}
-
 export interface DirectusDashboard {
 	/** @primaryKey */
 	id: string;
@@ -1254,6 +1282,8 @@ export interface Schema {
 	block_gallery_translations: BlockGalleryTranslation[];
 	block_hero: BlockHero[];
 	block_hero_translations: BlockHeroTranslation[];
+	block_map: BlockMap[];
+	block_map_translations: BlockMapTranslation[];
 	block_posts: BlockPost[];
 	block_posts_translations: BlockPostsTranslation[];
 	block_pricing: BlockPricing[];
@@ -1263,6 +1293,7 @@ export interface Schema {
 	block_richtext: BlockRichtext[];
 	block_richtext_translations: BlockRichtextTranslation[];
 	block_split: BlockSplit[];
+	block_split_block_button_group: BlockSplitBlockButtonGroup[];
 	block_split_translations: BlockSplitTranslation[];
 	chambres: Chambre[];
 	chambres_files: ChambresFile[];
@@ -1291,6 +1322,7 @@ export interface Schema {
 	reservations_visite: ReservationsVisite[];
 	tarifs_speciaux: TarifsSpeciaux[];
 	tarifs_speciaux_chambres: TarifsSpeciauxChambre[];
+	tarifs_speciaux_visites: TarifsSpeciauxVisite[];
 	visites: Visite[];
 	directus_access: DirectusAccess[];
 	directus_activity: DirectusActivity[];
@@ -1309,7 +1341,6 @@ export interface Schema {
 	directus_sessions: DirectusSession[];
 	directus_settings: DirectusSettings;
 	directus_users: DirectusUser[];
-	directus_webhooks: DirectusWebhook[];
 	directus_dashboards: DirectusDashboard[];
 	directus_panels: DirectusPanel[];
 	directus_notifications: DirectusNotification[];
@@ -1335,6 +1366,8 @@ export enum CollectionNames {
 	block_gallery_translations = 'block_gallery_translations',
 	block_hero = 'block_hero',
 	block_hero_translations = 'block_hero_translations',
+	block_map = 'block_map',
+	block_map_translations = 'block_map_translations',
 	block_posts = 'block_posts',
 	block_posts_translations = 'block_posts_translations',
 	block_pricing = 'block_pricing',
@@ -1344,6 +1377,7 @@ export enum CollectionNames {
 	block_richtext = 'block_richtext',
 	block_richtext_translations = 'block_richtext_translations',
 	block_split = 'block_split',
+	block_split_block_button_group = 'block_split_block_button_group',
 	block_split_translations = 'block_split_translations',
 	chambres = 'chambres',
 	chambres_files = 'chambres_files',
@@ -1372,6 +1406,7 @@ export enum CollectionNames {
 	reservations_visite = 'reservations_visite',
 	tarifs_speciaux = 'tarifs_speciaux',
 	tarifs_speciaux_chambres = 'tarifs_speciaux_chambres',
+	tarifs_speciaux_visites = 'tarifs_speciaux_visites',
 	visites = 'visites',
 	directus_access = 'directus_access',
 	directus_activity = 'directus_activity',
@@ -1390,7 +1425,6 @@ export enum CollectionNames {
 	directus_sessions = 'directus_sessions',
 	directus_settings = 'directus_settings',
 	directus_users = 'directus_users',
-	directus_webhooks = 'directus_webhooks',
 	directus_dashboards = 'directus_dashboards',
 	directus_panels = 'directus_panels',
 	directus_notifications = 'directus_notifications',

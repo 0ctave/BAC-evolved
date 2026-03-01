@@ -97,7 +97,7 @@
 		</div>
 
 		<div class="mt-12 pt-8 border-t border-iron/10 dark:border-limestone-100/10 flex justify-center md:justify-between items-center text-xs font-bold uppercase tracking-widest text-iron-muted/60 dark:text-limestone-400/50">
-			<span>© {new Date().getFullYear()} Modern Atelier.</span>
+			<span>© {new Date().getFullYear()} Octets Computing.</span>
 			<span class="hidden md:block">Fait avec passion.</span>
 		</div>
 	</Container>

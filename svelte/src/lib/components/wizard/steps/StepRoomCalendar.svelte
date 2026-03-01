@@ -257,8 +257,8 @@
             rooms = roomsData;
             pricingRules = rulesData.map((rule: any) => {
                 let val = Number(rule.valeur);
-                const types = Array.isArray(rule.type) ? rule.type : [rule.type];
-                const isFixed = types.includes('fix_nuit') || types.includes('fixe_sejour');
+                const types = rule.type_reduction;
+                const isFixed = types.includes('prix_unitaire') || types.includes('prix_total');
                 if (isFixed && val > 500) { val = val / 100; }
                 return {...rule, valeur: val};
             });
@@ -286,7 +286,6 @@
         let dayOfWeek = getDayOfWeek(firstDayOfMonth, 'fr-FR');
         let offset = (dayOfWeek) % 7;
         let currentDate = firstDayOfMonth.subtract({days: offset});
-        const bookedStripes = 'linear-gradient(45deg, rgba(220, 38, 38, 0.15) 25%, transparent 25%, transparent 50%, rgba(220, 38, 38, 0.15) 50%, rgba(245, 86, 119, 0.15) 75%, transparent 75%, transparent)';
         for (let i = 0; i < 42; i++) {
             const dateStr = currentDate.toString();
             const isRestricted = currentDate.compare(minDate) < 0;

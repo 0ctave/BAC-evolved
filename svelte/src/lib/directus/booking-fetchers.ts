@@ -54,7 +54,7 @@ export const fetchRoomReservations = async (roomId: number | string, fetch: any)
 					filter: {
 						_and: [
 							{ chambre: { _eq: roomId } },
-							{ statut: { _in: ['confirmee', 'en_attente'] } }, // On bloque aussi les "en attente" par sécurité
+							{ statut: { _in: ['confirmee', 'en_attente', 'indisponible'] } }, // On bloque aussi les "en attente" par sécurité
 							{ date_depart: { _gte: todayStr } } // Inutile de charger les vieilles réservations
 						]
 					},
@@ -65,6 +65,52 @@ export const fetchRoomReservations = async (roomId: number | string, fetch: any)
 		return reservations as { date_arrivee: string; date_depart: string }[];
 	} catch (error) {
 		console.error('Error fetching room reservations:', error);
+		return [];
+	}
+};
+
+
+/**
+ * Récupère tous les créneaux de visite à venir pour le calendrier global
+ */
+export const fetchAllUpcomingSlots = async (fetch: any) => {
+	const { getDirectus, readItems, withToken } = useDirectus();
+	const directus = getDirectus(fetch);
+	const todayStr = new Date().toISOString().split('T')[0];
+
+	try {
+		const slots = await directus.request(
+			withToken(
+				PUBLIC_DIRECTUS_TOKEN,
+				readItems('creneaux_visites', {
+					filter: {
+						date_heure_debut: { _gte: `${todayStr}T00:00:00` }
+					},
+					fields: [
+						'id',
+						'date_heure_debut',
+						'capacite_max',
+						// We fetch reservations to aggregate booked tickets manually
+						// @ts-ignore
+						'reservations.quantite_billets',
+						// @ts-ignore
+						'reservations.statut',
+						// @ts-ignore
+						'visite_id.id',
+						// @ts-ignore
+						'visite_id.nom',
+						// @ts-ignore
+						'visite_id.prix_unitaire',
+						// @ts-ignore
+						'visite_id.duree_minutes'
+					],
+					limit: -1
+				})
+			)
+		);
+		return slots as any[];
+	} catch (error) {
+		console.error('Error fetching all slots:', error);
 		return [];
 	}
 };
@@ -93,32 +139,35 @@ export const fetchVisites = async (fetch: any) => {
 };
 
 /**
- * Récupère les créneaux disponibles pour une visite et une date données
+ * Récupère les détails d'un créneau pour le récapitulatif
  */
-export const fetchSlots = async (visiteId: number | string, dateStr: string, fetch: any) => {
-	const { getDirectus, readItems, withToken } = useDirectus();
+export const fetchSlotDetails = async (slotId: number | string, fetch: any) => {
+	const { getDirectus, readItem, withToken } = useDirectus();
 	const directus = getDirectus(fetch);
 
-	try {
-		const slots = await directus.request(
-			withToken(
-				PUBLIC_DIRECTUS_TOKEN,
-				readItems('creneaux_visites', {
-					filter: {
-						_and: [
-							{ visite_id: { _eq: visiteId } },
-							{ date_heure_debut: { _between: [`${dateStr}T00:00:00`, `${dateStr}T23:59:59`] } }
-						]
-					},
-					fields: ['id', 'date_heure_debut', 'capacite_max', 'place_reservee']
-				})
-			)
-		);
-		return slots as CreneauxVisite[];
-	} catch (error) {
-		console.error('Error fetching slots:', error);
-		return [];
-	}
+	const slot = await directus.request(
+		withToken(
+			PUBLIC_DIRECTUS_TOKEN,
+			readItem('creneaux_visites', String(slotId), {
+				fields: [
+					'date_heure_debut',
+					'capacite_max',
+					// @ts-ignore
+					'reservations.quantite_billets',
+					// @ts-ignore
+					'reservations.statut',
+					// @ts-ignore
+					'visite_id.nom',
+					// @ts-ignore
+					'visite_id.prix_unitaire',
+					// @ts-ignore
+					'visite_id.duree_minutes'
+				]
+			})
+		)
+	);
+
+	return slot as any;
 };
 
 /**
@@ -142,32 +191,6 @@ export const fetchRoomDetails = async (roomId: number | string, fetch: any) => {
 };
 
 /**
- * Récupère les détails d'un créneau pour le récapitulatif
- */
-export const fetchSlotDetails = async (slotId: number | string, fetch: any) => {
-	const { getDirectus, readItem, withToken } = useDirectus();
-	const directus = getDirectus(fetch);
-
-	const safeId = String(slotId);
-
-	const slot = await directus.request(
-		withToken(
-			PUBLIC_DIRECTUS_TOKEN,
-			readItem('creneaux_visites', safeId, {
-				fields: [
-					'date_heure_debut',
-					// @ts-ignore
-					'visite_id.nom',
-					'visite_id.prix_unitaire'
-				]
-			})
-		)
-	);
-
-	return slot as unknown as CreneauxVisite & { visite_id: Visite };
-};
-
-/**
  * Récupère les règles de tarification actives
  */
 export const fetchPricingRules = async (fetch: any) => {
@@ -183,7 +206,9 @@ export const fetchPricingRules = async (fetch: any) => {
 					fields: [
 						'*',
 						// @ts-ignore - Fetching the junction table data for related rooms
-						'chambres_concernees.*'
+						'chambres_concernees.*',
+						// @ts-ignore
+						'visites_concernees.*'
 					]
 				})
 			)

@@ -1,22 +1,23 @@
 <script lang="ts">
-    import { booking } from '$lib/logic/booking.svelte';
-    import { submitBooking } from '$lib/logic/submit';
+    import {booking} from '$lib/logic/booking.svelte';
+    import {submitBooking} from '$lib/logic/submit';
     import StepSelector from './steps/StepSelector.svelte';
     import StepRoomCalendar from './steps/StepRoomCalendar.svelte';
     import StepCustomerDetails from './steps/StepCustomerDetails.svelte';
     import StepSummary from './steps/StepSummary.svelte';
-    import { fade, fly, scale, slide } from 'svelte/transition';
-    import { backOut, cubicOut, cubicIn } from 'svelte/easing';
+    import {fade, fly, scale, slide} from 'svelte/transition';
+    import {backOut, cubicIn, cubicOut} from 'svelte/easing';
     import Button from "$lib/components/blocks/Button.svelte";
-    import { onMount } from 'svelte';
-    import { defaultLocale } from "$lib/i18n";
-    import { page } from "$app/state";
+    import {onMount} from 'svelte';
+    import {defaultLocale} from "$lib/i18n";
+    import {page} from "$app/state";
+    import StepTourSession from "$lib/components/wizard/steps/StepTourSession.svelte";
 
     interface Props {
         data: any; // We accept any structure since it contains dynamic labels
     }
 
-    let { data }: Props = $props();
+    let {data}: Props = $props();
 
     let loading = $state(false);
     let error = $state("");
@@ -99,7 +100,7 @@
         return h > 0 ? h : 400;
     });
 
-    function slideFade(node: Element, { duration = 500, delay = 0, xDir = 1, easing = cubicOut }) {
+    function slideFade(node: Element, {duration = 500, delay = 0, xDir = 1, easing = cubicOut}) {
         return {
             duration,
             delay,
@@ -114,7 +115,7 @@
 
 </script>
 
-<svelte:window onclick={handleGlobalClick} />
+<svelte:window onclick={handleGlobalClick}/>
 
 <div class="w-full relative flex flex-col transition-all duration-500">
     {#if !isLoaded}
@@ -134,18 +135,22 @@
                      bind:clientHeight={successHeight}>
                     <div class="w-24 h-24 bg-primary text-white rounded-full flex items-center justify-center mb-8 shadow-retro-primary border-2 border-iron"
                          in:scale={{ duration: 400, delay: 0, easing: backOut, start: 0.5 }}>
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10" fill="none" viewBox="0 0 24 24"
+                             stroke="currentColor" stroke-width="3">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
                         </svg>
                     </div>
-                    <h2 class="text-5xl font-heading text-iron dark:text-limestone-50 mb-6 italic" in:fly={{ y: 20, duration: 400, delay: 100 }}>
+                    <h2 class="text-5xl font-heading text-iron dark:text-limestone-50 mb-6 italic"
+                        in:fly={{ y: 20, duration: 400, delay: 100 }}>
                         {l.wizard_success_title}
                     </h2>
-                    <p class="text-body text-xl mb-12 font-light max-w-md mx-auto" in:fly={{ y: 20, duration: 400, delay: 200 }}>
+                    <p class="text-body text-xl mb-12 font-light max-w-md mx-auto"
+                       in:fly={{ y: 20, duration: 400, delay: 200 }}>
                         {(l.wizard_success_desc || '').replace('{name}', booking.customer.prenom)}
                     </p>
                     <div in:fly={{ y: 20, duration: 400, delay: 300 }}>
-                        <Button url={currentSlug === defaultLocale ? '/' : `/${currentSlug}`} variant="outline" label={l.wizard_btn_home} id="home" />
+                        <Button url={currentSlug === defaultLocale ? '/' : `/${currentSlug}`} variant="outline"
+                                label={l.wizard_btn_home} id="home"/>
                     </div>
                 </div>
             {:else}
@@ -175,24 +180,35 @@
                     </div>
 
                     {#if error}
-                        <div in:slide={{ axis: 'y' }} class="m-6 p-4 bg-red-50 dark:bg-red-900/10 border-l-4 border-red-500 text-red-800 dark:text-red-300 text-sm font-medium flex items-center gap-3">
+                        <div in:slide={{ axis: 'y' }}
+                             class="m-6 p-4 bg-red-50 dark:bg-red-900/10 border-l-4 border-red-500 text-red-800 dark:text-red-300 text-sm font-medium flex items-center gap-3">
                             <svg class="w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                      d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
                             </svg>
                             {error}
                         </div>
                     {/if}
 
-                    <div class="relative w-full overflow-hidden flex-1" style="height: {contentHeight}px; transition: height 500ms cubic-bezier(0.25, 1, 0.5, 1);">
+                    <div class="relative w-full overflow-hidden flex-1"
+                         style="height: {contentHeight}px; transition: height 500ms cubic-bezier(0.25, 1, 0.5, 1);">
                         {#key booking.step}
                             <div class="absolute top-0 left-0 w-full"
                                  in:slideFade={{ duration: 500, xDir: direction, easing: cubicOut }}
                                  out:slideFade={{ duration: 500, xDir: -direction, easing: cubicIn }}>
                                 <div class="p-6 sm:p-12" bind:clientHeight={contentHeight}>
-                                    {#if booking.step === 0} <StepSelector />
-                                    {:else if booking.step === 1} <StepRoomCalendar/>
-                                    {:else if booking.step === 2} <StepCustomerDetails/>
-                                    {:else if booking.step === 3} <StepSummary/>
+                                    {#if booking.step === 0}
+                                        <StepSelector/>
+                                    {:else if booking.step === 1}
+                                        {#if booking.type === "CHAMBRE"}
+                                            <StepRoomCalendar/>
+                                        {:else}
+                                            <StepTourSession/>
+                                        {/if}
+                                    {:else if booking.step === 2}
+                                        <StepCustomerDetails/>
+                                    {:else if booking.step === 3}
+                                        <StepSummary/>
                                     {/if}
                                 </div>
                             </div>
@@ -201,7 +217,8 @@
 
                     <div class="mt-auto p-8 bg-limestone-50/50 dark:bg-[#2a292b] border-t-2 border-iron/5 dark:border-iron-light/30 flex justify-between items-center gap-4 z-20"
                          bind:clientHeight={footerHeight}>
-                        <Button onClick={goPrev} disabled={booking.step === 0 || loading} variant="ghost" label={l.wizard_btn_back} icon="arrow_left" id="back" />
+                        <Button onClick={goPrev} disabled={booking.step === 0 || loading} variant="ghost"
+                                label={l.wizard_btn_back} icon="arrow_left" id="back"/>
 
                         {#if booking.step > 0 && booking.step < 3}
                             <div in:fly={{ x: 10, duration: 300 }}>
@@ -215,7 +232,8 @@
                                 />
                             </div>
                         {:else if booking.step === 3}
-                            <button onclick={onFinalize} disabled={loading} class="btn-atelier-primary group relative overflow-hidden disabled:opacity-50">
+                            <button onclick={onFinalize} disabled={loading}
+                                    class="btn-atelier-primary group relative overflow-hidden disabled:opacity-50">
                                 {#if loading}
                                  <span class="flex items-center gap-2 relative z-10">
                                      <div class="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full"></div>

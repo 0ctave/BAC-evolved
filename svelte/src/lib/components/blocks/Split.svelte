@@ -1,10 +1,11 @@
 <script lang="ts">
-    import { cn } from '$lib/utils';
+    import {cn} from '$lib/utils';
     import DirectusImage from '../shared/DirectusImage.svelte';
     import BaseText from '$lib/components/ui/Text.svelte';
     import Headline from '../ui/Headline.svelte';
     import Tagline from '../ui/Tagline.svelte';
     import setAttr from '$lib/directus/visualEditing';
+    import ButtonGroup from "./ButtonGroup.svelte";
 
     interface Props {
         data: {
@@ -14,14 +15,20 @@
             content: string;
             layout: 'image_left' | 'image_right';
             image: string;
+            bouton_groupe?: {
+                id: string;
+                buttons: Array<any>;
+            };
         };
     }
 
-    let { data }: Props = $props();
-    const { headline, content, image, tagline, layout, id } = $derived(data);
+    let {data}: Props = $props();
+    const {headline, content, image, tagline, layout, bouton_groupe, id} = $derived(data);
+    //console.log(bouton_groupe.id)
 </script>
 
-<section class="mx-auto w-full p-0 panel-backdrop rounded-none overflow-hidden overflow-hidden"> <!-- Padding removed, handled by container -->
+<section class="mx-auto w-full p-0 panel-backdrop rounded-none overflow-hidden overflow-hidden">
+    <!-- Padding removed, handled by container -->
     <div
             class={cn(
 			'relative flex flex-col md:flex-row h-full',
@@ -48,8 +55,22 @@
                 {/if}
 
                 {#if content}
-                    <div class="prose prose-lg text-iron-muted dark:text-limestone-300 font-sans leading-relaxed">
-                        <BaseText content={content} />
+                    <div class="prose prose-lg text-iron-muted dark:text-limestone-300 font-sans text-xl leading-relaxed">
+                        <BaseText content={content}/>
+                    </div>
+                {/if}
+
+
+                {#if bouton_groupe && bouton_groupe.buttons.length > 0}
+                    <div
+                            class={cn(
+							'mt-10 md:mt-12',
+							'w-full flex',
+							layout === 'image_right' ? 'justify-start' : 'justify-end'
+						)}
+                            data-directus={setAttr({ collection: 'block_button_group', item: bouton_groupe.id, fields: 'buttons', mode: 'modal' })}
+                    >
+                        <ButtonGroup buttons={bouton_groupe.buttons} />
                     </div>
                 {/if}
             </div>

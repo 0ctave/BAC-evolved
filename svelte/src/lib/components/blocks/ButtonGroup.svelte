@@ -12,7 +12,7 @@
 
 {#if buttons && buttons.length > 0}
 	<div class={cn('flex gap-4 flex-wrap items-center', props.class)}>
-		{#each buttons as button, index}
+		{#each buttons as button (button)}
 			<Button {...button} />
 		{/each}
 	</div>

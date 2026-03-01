@@ -13,7 +13,7 @@
 	<svelte:element
 			this={as}
 			class="font-heading font-bold text-iron dark:text-limestone-50 {props.class}
-         text-4xl md:text-5xl lg:text-6xl leading-tight"
+         text-3xl md:text-4xl lg:text-5xl leading-tight"
 			data-directus={dataDirectus}
 	>
 		{headline}

@@ -116,6 +116,22 @@ const pageFields = [
 						'image',
 						{
 							traductions: ['langues_code', 'tagline', 'headline', 'content']
+						},
+						{
+							bouton_groupe: [
+								'id',
+								{
+									buttons: [
+										'id',
+										'variant',
+										'url',
+										'type',
+										{ traductions: ['langues_code', 'label'] },
+										{ page: ['id', { traductions: ['permalink', 'langues_code'] }] },
+										{ post: ['slug'] }
+									]
+								}
+							]
 						}
 					],
 					block_posts: [
@@ -149,6 +165,14 @@ const pageFields = [
 								}
 							]
 						}
+					],
+					block_map: [
+						'id',
+						'carte',
+						'layout',
+						{
+							traductions: ['langues_code', 'tagline', 'headline', 'description', 'address']
+						},
 					]
 				}
 			}
