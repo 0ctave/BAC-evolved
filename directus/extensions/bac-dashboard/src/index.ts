@@ -7,14 +7,8 @@ export default defineModule({
 	icon: 'other_houses',
 	routes: [
 		{
+			name: 'bac-dashboard',
 			path: '',
-			props: true,
-			component: ModuleComponent,
-		},
-		{
-			name: 'page',
-			path: ':page',
-			props: true,
 			component: ModuleComponent,
 		},
 	],
