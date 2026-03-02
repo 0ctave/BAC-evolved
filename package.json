@@ -22,7 +22,7 @@
             "name": "Astro",
             "path": "./astro"
         },
-        "svelte": {
+        "svelte": { 
             "name": "Svelte",
             "path": "./sveltekit"
         }
