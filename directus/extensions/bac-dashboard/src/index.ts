@@ -7,7 +7,7 @@ export default defineModule({
 	icon: 'other_houses',
 	routes: [
 		{
-			path: '',
+			path: 'bac-dashboard',
 			component: ModuleComponent,
 		},
 	],
