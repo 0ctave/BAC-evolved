@@ -8,6 +8,13 @@ export default defineModule({
 	routes: [
 		{
 			path: '',
+			props: true,
+			component: ModuleComponent,
+		},
+		{
+			name: 'page',
+			path: ':page',
+			props: true,
 			component: ModuleComponent,
 		},
 	],
