@@ -51,7 +51,8 @@
 
             <div class="weekdays-row">
               <div v-for="dayName in weekDays" :key="dayName" class="weekday-header">
-                {{ dayName.substring(0, 3) }}
+                <span class="desktop-day">{{ dayName.substring(0, 3) }}</span>
+                <span class="mobile-day">{{ dayName.substring(0, 1) }}</span>
               </div>
             </div>
 
@@ -511,29 +512,37 @@ onUnmounted(() => {
 .calendar-scroll-area {
   flex: 1;
   width: 100%;
+  max-width: 100%;
   border-radius: 8px;
   border: 1px solid var(--theme--border-color-subdued);
   background: var(--theme--background);
-  overflow: hidden; /* Empêche tout débordement */
+  overflow: hidden; /* Strictement aucun débordement */
+  box-sizing: border-box;
 }
 
 .calendars-row {
   display: flex;
-  gap: 32px;
+  gap: 16px;
   height: 100%;
   flex-direction: column;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 @media (min-width: 900px) {
-  .calendars-row { flex-direction: row; }
+  .calendars-row { flex-direction: row; gap: 32px; }
 }
 
 .single-calendar {
   flex: 1;
   display: flex;
   flex-direction: column;
-  min-width: 0; /* Permet au calendrier de rétrécir sous la taille de son contenu si nécessaire */
+  min-width: 0;
+  width: 100%;
 }
+
+.desktop-day { display: inline; }
+.mobile-day { display: none; }
 
 .calendar-month-title { padding: 12px; margin: 0; text-transform: capitalize; font-weight: 800; text-align: center; border-bottom: 1px solid var(--theme--border-color-subdued); }
 
@@ -621,23 +630,42 @@ onUnmounted(() => {
 @media (max-width: 768px) {
   .side-drawer { width: 100%; border-left: none; }
   .mobile-hide { display: none !important; }
-  .calendar-wrapper { padding: 12px 8px; }
-  .nav-btn { padding: 0 10px; }
+  .calendar-wrapper { padding: 12px 0px; } /* 0px padding latéral pour maximiser la largeur sur mobile */
 
-  /* Ajustements pour tout faire rentrer sans scroll horizontal */
-  .calendar-grid { grid-auto-rows: minmax(55px, 1fr); } /* Cases moins hautes */
-  .day-cell { padding: 4px 0; }
-  .day-header { justify-content: center; padding: 0; margin-bottom: 2px; } /* Numéros centrés */
-  .room-lane { height: 14px; } /* Barres de réservation plus fines comme des indicateurs */
-  .day-cell.has-filter .room-lane { height: 24px; }
-  .segment-label { display: none; } /* Cache les noms sur mobile pour aérer */
-  .weekday-header { font-size: 0.6rem; padding: 6px 0; letter-spacing: -0.5px; } /* Raccourcit LUN, MAR... */
-  .calendar-header { margin-bottom: 16px; }
+  .desktop-day { display: none; }
+  .mobile-day { display: inline; font-size: 0.75rem; font-weight: 900; }
 
-  /* Affiner les contrôles pour gagner de la place en hauteur */
+  /* Ajustements pour tout faire rentrer SANS scroll horizontal ni vertical énorme */
+  .calendar-grid {
+    grid-auto-rows: minmax(45px, 1fr); /* Cases parfaitement adaptées à l'écran du tel */
+  }
+
+  .day-cell { padding: 2px 0; }
+  .day-cell:nth-child(7n) { border-right: none; } /* Enlever la bordure droite du dernier jour pour gagner 1px de la grille */
+
+  .day-header { justify-content: center; padding: 0; margin-bottom: 2px; }
+  .day-number { font-size: 0.75rem; }
+  .is-today .day-number { padding: 2px 4px; }
+
+  /* Barres de réservation ultra fines pour le mobile */
+  .room-lane { height: 6px; margin-bottom: 2px; }
+  .day-cell.has-filter .room-lane { height: 12px; }
+
+  /* Adaptation des segments pour les très petites cases */
+  .booking-segment { border-radius: 2px !important; padding: 0; box-shadow: none; }
+  .booking-segment.full { width: 100%; margin: 0; border-radius: 0 !important; }
+  .booking-segment.check-out { width: 50%; margin-left: 0; border-radius: 0 !important; }
+  .booking-segment.check-in { width: 50%; margin-right: 0; border-radius: 0 !important; margin-left: auto; }
+
+  .segment-label { display: none; } /* Texte masqué sur téléphone */
+  .weekday-header { font-size: 0.7rem; padding: 4px 0; letter-spacing: 0; }
+  .calendar-header { margin-bottom: 12px; padding: 0 12px; }
+
+  /* Affiner les contrôles */
   .nav-controls { gap: 4px; }
-  .nav-btn { height: 32px; }
-  .view-title h2 { font-size: 1.1rem; }
+  .nav-btn { height: 32px; width: 32px; padding: 0; }
+  .view-title h2 { font-size: 1.1rem; padding: 0 12px; }
+  .legend { padding: 0 12px; }
 }
 
 .slide-enter-active, .slide-leave-active { transition: transform 0.3s ease; }
