@@ -401,8 +401,7 @@ function getCalendarDays(baseDate: Date) {
             color: room.color,
             status: normalizeStatus(booking[config.statusField]),
             label: getClientName(booking),
-            // Affiche le nom le Lundi uniquement (pour ne pas répéter le jour après le Check-In)
-            showLabel: date.getDay() === 1 && !isSameDay(date, addDays(bStart, 1)),
+            showLabel: date.getDay() === 1,
             connectLeft: true,
             connectRight: true
           });
@@ -647,91 +646,35 @@ onUnmounted(() => {
 /* Cellule neutre et sans overflow pour permettre aux segments de s'étendre sans être coupés */
 .day-cell { border-right: 1px solid var(--theme--border-color-subdued); border-bottom: 1px solid var(--theme--border-color-subdued); padding: 0; display: flex; flex-direction: column; position: relative; cursor: pointer; background: var(--theme--background); transition: background 0.15s; min-width: 0; }
 .day-cell:hover { background: var(--theme--background-subdued); }
-.day-cell.is-padding { opacity: 0.35; background: var(--theme--background-accent); }
+.day-cell.is-padding { opacity: 0.4; background: var(--theme--background-accent); }
 
-/* En-tête avec dimensions STRICTEMENT standardisées pour le numéro du jour */
-.day-header {
-  display: flex;
-  justify-content: flex-end;
-  margin-bottom: 4px;
-  z-index: 10;
-  min-width: 0;
-  padding: 4px 6px 0 6px;
-}
+.day-header { padding: 0 4px; display: flex; justify-content: flex-end; margin-bottom: 4px; z-index: 10; }
+.day-number { font-size: 0.8rem; font-weight: 700; opacity: 0.5; display: flex; align-items: center; justify-content: center; height: 24px; min-width: 24px; padding: 0 4px; border-radius: 12px; }
+.is-today .day-number { color: var(--theme--primary); opacity: 1; font-weight: 900; background: var(--theme--primary-subdued); }
 
-.day-number {
-  font-size: 0.8rem;
-  font-weight: 700;
-  opacity: 0.7;
-  color: var(--theme--foreground);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 24px;   /* Hauteur fixe (garantit l'alignement) */
-  min-width: 24px;/* Largeur fixe */
-  border-radius: 12px;
-  line-height: 1;
-}
+.day-content { flex: 1; display: flex; flex-direction: column; gap: 4px; justify-content: center; }
+.room-lane { height: 28px; display: flex; position: relative; width: 100%; }
+.day-cell.has-filter .room-lane { height: 48px; }
 
-/* Le mode "Today" change l'aspect mais préserve EXACTEMENT les dimensions */
-.is-today .day-number {
-  color: var(--theme--primary);
-  opacity: 1;
-  font-weight: 900;
-  background: var(--theme--primary-subdued);
-}
+.booking-segment { height: 100%; display: flex; align-items: center; padding: 0 8px; position: relative; z-index: 5; box-shadow: inset 0 1px 0 rgba(255,255,255,0.2); background-image: linear-gradient(to bottom, rgba(255,255,255,0.1), rgba(0,0,0,0.08)); }
+.booking-segment.connect-left { margin-left: -1px; border-top-left-radius: 0 !important; border-bottom-left-radius: 0 !important; }
+.booking-segment.connect-right { margin-right: -1px; border-top-right-radius: 0 !important; border-bottom-right-radius: 0 !important; z-index: 6; }
 
-.day-content { flex: 1; display: flex; flex-direction: column; gap: 4px; justify-content: center; min-width: 0; width: 100%; padding-bottom: 6px; }
+.booking-segment.full { width: 100%; margin: 0; border-radius: 4px; }
+.booking-segment.full.connect-left { width: calc(100% + 1px); border-radius: 0 4px 4px 0; }
+.booking-segment.full.connect-right { width: calc(100% + 1px); border-radius: 4px 0 0 4px; }
+.booking-segment.full.connect-left.connect-right { width: calc(100% + 2px); border-radius: 0; }
 
-/* Barres de réservation */
-.room-lane { height: 24px; display: flex; position: relative; gap: 0; margin: 0; width: 100%; min-width: 0; }
-.day-cell.has-filter .room-lane { height: 36px; }
+.booking-segment.check-out { width: 50%; margin: 0 auto 0 0; border-radius: 4px 0 0 4px; }
+.booking-segment.check-out.connect-left { width: calc(50% + 1px); border-radius: 0; }
 
-/* === LOGIQUE LIGNES DE RÉSERVATION CONTINUES PARFAITES === */
-.booking-segment {
-  height: 100%;
-  display: flex;
-  align-items: center;
-  padding: 0 6px;
-  position: relative;
-  /* Suppression du z-index statique pour permettre la surcouche dynamique du label */
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.2);
-  background-image: linear-gradient(to bottom, rgba(255,255,255,0.1) 0%, rgba(0,0,0,0.08) 100%);
-  transition: all 0.2s ease;
-  min-width: 0;
-  /* Plus d'overflow hidden pour laisser déborder le texte */
-}
+.booking-segment.check-in { width: 50%; margin: 0 0 0 auto; border-radius: 0 4px 4px 0; }
+.booking-segment.check-in.connect-right { width: calc(50% + 1px); border-radius: 0; }
 
-.booking-segment.connect-left { margin-left: -1px; border-top-left-radius: 0 !important; border-bottom-left-radius: 0 !important; box-shadow: inset 0 1px 0 rgba(255,255,255,0.1); }
-.booking-segment.connect-right { margin-right: -1px; border-top-right-radius: 0 !important; border-bottom-right-radius: 0 !important; box-shadow: inset 0 1px 0 rgba(255,255,255,0.1); }
+.booking-segment.is-blocked { background: #1a1a1a !important; }
 
-.booking-segment.full { width: calc(100% - 8px); margin: 0 4px; border-radius: 4px; }
-.booking-segment.full.connect-left { width: calc(100% - 4px); margin-left: 0; margin-right: 4px; border-radius: 0 4px 4px 0; box-shadow: inset 0 1px 0 rgba(255,255,255,0.1); }
-.booking-segment.full.connect-right { width: calc(100% - 4px + 1px); margin-right: -1px; margin-left: 4px; border-radius: 4px 0 0 4px; box-shadow: inset 0 1px 0 rgba(255,255,255,0.1); }
-.booking-segment.full.connect-left.connect-right { width: calc(100% + 1px); margin-left: 0; margin-right: -1px; border-radius: 0; box-shadow: inset 0 1px 0 rgba(255,255,255,0.1); }
-
-.booking-segment.check-out { width: calc(50% - 4px); margin-left: 4px; margin-right: auto; border-radius: 4px; }
-.booking-segment.check-out.connect-left { width: 50%; margin-left: 0; margin-right: auto; border-radius: 0 4px 4px 0; box-shadow: inset 0 1px 0 rgba(255,255,255,0.1); }
-
-.booking-segment.check-in { width: calc(50% - 4px); margin-right: 4px; margin-left: auto; border-radius: 4px; }
-.booking-segment.check-in.connect-right { width: calc(50% + 1px); margin-right: -1px; margin-left: auto; border-radius: 4px 0 0 4px; box-shadow: inset 0 1px 0 rgba(255,255,255,0.1); }
-
-.booking-segment.is-blocked { background: var(--theme--foreground-subdued) !important; color: var(--theme--background) !important; }
-
-/* Texte dans la barre : Libéré de ses contraintes, il s'étend naturellement sur la ligne du séjour */
-.segment-label {
-  font-size: 0.65rem;
-  font-weight: 800;
-  color: white;
-  white-space: nowrap;
-  text-shadow: 0 1px 3px rgba(0,0,0,0.6);
-  letter-spacing: 0.02em;
-  display: block;
-  pointer-events: none;
-  overflow: visible; /* La magie qui empêche le texte de se couper (Clien...) */
-}
-.day-cell.has-filter .segment-label { font-size: 0.75rem; }
-
+.segment-label { position: absolute; left: 8px; font-size: 0.65rem; font-weight: 800; color: white; white-space: nowrap; text-shadow: 0 1px 2px rgba(0,0,0,0.5); letter-spacing: 0.02em; z-index: 20; pointer-events: none; }
+.day-cell.has-filter .segment-label { font-size: 0.8rem; }
 .day-cell.is-selected { background: var(--theme--primary-subdued); box-shadow: inset 0 0 0 2px var(--theme--primary); }
 .day-cell.in-selection-range { background: rgba(var(--primary-rgb), 0.1); }
 
