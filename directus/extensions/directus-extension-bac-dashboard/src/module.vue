@@ -24,11 +24,14 @@
       <main class="module-wrapper">
         <!-- VUE: CHAMBRES -->
         <div v-if="currentTab === 'rooms'" class="rooms-dashboard">
-          <aside class="sidebar-column">
-            <PendingBookings />
-          </aside>
 
-          <section class="calendars-column">
+          <!-- SECTION 1: CONFIRMATION (En haut, pleine largeur) -->
+          <section class="confirmation-section">
+            <PendingBookings />
+          </section>
+
+          <!-- SECTION 2: CALENDRIERS (En dessous) -->
+          <section class="calendars-section">
             <!-- Calendrier Combiné -->
             <div class="calendar-card">
               <BookingCalendar title="Vue Combinée des Réservations" />
@@ -36,12 +39,13 @@
 
             <!-- Calendriers Séparés par Chambre (générés dynamiquement) -->
             <div class="split-calendars" v-if="rooms.length > 0">
-              <div v-for="room in rooms" :key="room.id" class="calendar-card half">
+              <div v-for="room in rooms" :key="room.id" class="calendar-card">
                 <BookingCalendar :title="room.nom" :room-filter="room.nom" />
               </div>
             </div>
             <div v-else class="loading-rooms">Chargement des chambres...</div>
           </section>
+
         </div>
 
         <!-- VUE: VISITES -->
@@ -57,15 +61,15 @@
 import { ref, onMounted } from 'vue';
 import { useApi } from '@directus/extensions-sdk';
 import { config } from './config';
+// Utilisez les bons noms de fichiers selon ce que vous avez configuré
 import PendingBookings from './components/room-confirmation.vue';
 import BookingCalendar from './components/room-calendar.vue';
-import TourDashboard from './components/tour-calendar.vue';
+import TourDashboard from './components/TourDashboard.vue';
 
 const api = useApi();
 const currentTab = ref('rooms');
 const rooms = ref<any[]>([]);
 
-// Charger la liste des chambres pour générer automatiquement les calendriers individuels
 onMounted(async () => {
   try {
     const res = await api.get(`/items/${config.roomsCollection}`);
@@ -121,19 +125,27 @@ onMounted(async () => {
   box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 
-/* Grille Responsive pour les chambres */
+/* --- NOUVEAU LAYOUT VERTICAL --- */
 .rooms-dashboard {
-  display: grid;
-  grid-template-columns: 350px 1fr;
-  gap: 24px;
-  align-items: start;
-}
-
-.calendars-column {
   display: flex;
   flex-direction: column;
-  gap: 24px;
-  min-width: 0;
+  gap: 32px; /* Espace entre les confirmations et les calendriers */
+  width: 100%;
+}
+
+.confirmation-section {
+  width: 100%;
+  max-height: 450px; /* Limite la hauteur pour ne pas pousser les calendriers hors de l'écran */
+  display: flex;
+  flex-direction: column;
+}
+
+.calendars-section {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  width: 100%;
+  min-width: 0; /* Empêche l'élargissement Flexbox */
 }
 
 .calendar-card {
@@ -143,20 +155,35 @@ onMounted(async () => {
   box-shadow: 0 4px 12px rgba(0,0,0,0.02);
   overflow: hidden;
   min-height: 500px;
+  min-width: 0; /* Crucial : Empêche le débordement natif */
+  width: 100%;
 }
 
+/* Grille pour les calendriers individuels */
 .split-calendars {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  /* LA CORRECTION MAGIQUE : minmax(0, 1fr) permet à la grille de s'écraser */
+  grid-template-columns: minmax(0, 1fr);
   gap: 24px;
+  width: 100%;
+  min-width: 0;
+}
+
+@media (min-width: 1000px) {
+  .split-calendars {
+    /* Sur PC, on remet les colonnes dynamiques */
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  }
 }
 
 .loading-rooms { padding: 24px; text-align: center; color: var(--theme--foreground-subdued); }
 
 /* Mobile Responsiveness */
 @media (max-width: 1000px) {
-  .rooms-dashboard { grid-template-columns: 1fr; }
-  .sidebar-column { height: 450px; }
-  .module-wrapper { padding: 12px; }
+  .module-wrapper {
+    padding: 12px;
+    min-width: 0;
+    overflow: hidden;
+  }
 }
 </style>
