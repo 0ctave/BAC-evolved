@@ -8,10 +8,16 @@
       <div class="calendar-header">
         <div class="nav-controls">
           <button class="nav-btn icon-btn" @click="changeMonth(-1)" title="Précédent">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M15 18l-6-6 6-6"/>
+            </svg>
           </button>
           <button class="nav-btn icon-btn" @click="changeMonth(1)" title="Suivant">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 18l6-6-6-6"/>
+            </svg>
           </button>
           <button class="nav-btn text-btn mobile-hide" @click="goToToday">Aujourd'hui</button>
         </div>
@@ -22,7 +28,11 @@
               :class="{ active: isSelectionMode }"
               @click.stop="toggleSelectionMode"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+            </svg>
             <span class="mobile-hide ml-2">{{ isSelectionMode ? 'Mode Blocage' : 'Bloquer Dates' }}</span>
           </button>
         </div>
@@ -37,6 +47,7 @@
         </div>
       </div>
 
+      <!-- La zone de défilement horizontal robuste -->
       <div class="calendar-scroll-area">
         <div class="calendars-row" :class="{ 'is-double': isDoubleView }">
           <div
@@ -128,7 +139,11 @@
             <div class="card-body">
               <div class="client-info">
                 <div class="client-icon">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                       stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                  </svg>
                 </div>
                 <div class="client-text">
                   <div class="name">{{ getClientName(booking) }}</div>
@@ -204,24 +219,26 @@
       </div>
     </div>
 
-    <div v-if="loading" class="loading-overlay"><div class="spinner"></div></div>
+    <div v-if="loading" class="loading-overlay">
+      <div class="spinner"></div>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { useApi } from '@directus/extensions-sdk';
-import { ref, onMounted, onUnmounted, computed, watch } from 'vue';
+import {useApi} from '@directus/extensions-sdk';
+import {ref, onMounted, onUnmounted, computed, watch} from 'vue';
 import {
   format, addMonths, subMonths, startOfMonth, endOfMonth,
   startOfWeek, endOfWeek, eachDayOfInterval, isSameMonth,
   isSameDay, parseISO, isWithinInterval, addDays, isBefore, isAfter
 } from 'date-fns';
-import { fr } from 'date-fns/locale';
-import { config, getRoomHexColor } from '../config';
+import {fr} from 'date-fns/locale';
+import {config, getRoomHexColor} from '../config';
 
 const props = defineProps({
-  title: { type: String, default: '' },
-  roomFilter: { type: String, default: '' }
+  title: {type: String, default: ''},
+  roomFilter: {type: String, default: ''}
 });
 
 const api = useApi();
@@ -244,10 +261,10 @@ let resizeObserver: ResizeObserver | null = null;
 const isDoubleView = computed(() => containerWidth.value > 900 && !props.roomFilter);
 
 const statusOptions = [
-  { value: 'en_attente', label: 'En Attente' },
-  { value: 'confirmee', label: 'Confirmée' },
-  { value: 'annulee', label: 'Annulée' },
-  { value: 'indisponible', label: 'Indisponible' },
+  {value: 'en_attente', label: 'En Attente'},
+  {value: 'confirmee', label: 'Confirmée'},
+  {value: 'annulee', label: 'Annulée'},
+  {value: 'indisponible', label: 'Indisponible'},
 ];
 const weekDays = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'];
 
@@ -273,15 +290,27 @@ function formatDateSafe(d: Date | string | null) {
   try {
     if (d instanceof Date) return format(d, 'dd/MM/yyyy');
     return format(parseISO(d), 'dd/MM/yyyy');
-  } catch (e) { return '-'; }
+  } catch (e) {
+    return '-';
+  }
 }
 
 function formatDateShort(d: string) {
   if (!d) return '-';
-  try { return format(parseISO(d), 'dd/MM/yyyy'); } catch (e) { return '-'; }
+  try {
+    return format(parseISO(d), 'dd/MM/yyyy');
+  } catch (e) {
+    return '-';
+  }
 }
-function formatFullDate(d: Date) { return d ? format(d, 'EEEE d MMMM yyyy', { locale: fr }) : ''; }
-function formatMonthTitle(d: Date) { return d ? format(d, 'MMMM yyyy', { locale: fr }) : ''; }
+
+function formatFullDate(d: Date) {
+  return d ? format(d, 'EEEE d MMMM yyyy', {locale: fr}) : '';
+}
+
+function formatMonthTitle(d: Date) {
+  return d ? format(d, 'MMMM yyyy', {locale: fr}) : '';
+}
 
 const monthsToDisplay = computed(() => {
   const months = [viewDate.value];
@@ -307,35 +336,45 @@ function getRoomNameFromBooking(b: any) {
   const found = roomsData.value.find(r => r.id == val);
   return found ? found[config.roomNameField] : 'Chambre';
 }
+
 function getRoomIdFromBooking(b: any) {
   const val = b?.[config.roomRelationField];
   return typeof val === 'object' ? val?.id : val;
 }
+
 function getRoomColor(b: any) {
   const name = getRoomNameFromBooking(b);
   const found = visibleRooms.value.find(r => r.name === name);
   return found ? found.color : '#ccc';
 }
+
 function getClientName(b: any) {
   if (normalizeStatus(b[config.statusField]) === 'indisponible') return 'Indisponible';
   const client = b[config.clientField];
   if (typeof client === 'object' && client !== null) return client.nom ? `${client.prenom || ''} ${client.nom}` : 'Client';
   return 'Client';
 }
-function getClientEmail(b: any) { return b?.[config.clientField]?.email || ''; }
+
+function getClientEmail(b: any) {
+  return b?.[config.clientField]?.email || '';
+}
 
 function toggleSelectionMode() {
   isSelectionMode.value = !isSelectionMode.value;
   cancelSelection();
 }
+
 function handleDayClick(day: any) {
   if (isSelectionMode.value) {
-    if (!selectionStart.value) { selectionStart.value = day.date; }
-    else if (!selectionEnd.value) {
+    if (!selectionStart.value) {
+      selectionStart.value = day.date;
+    } else if (!selectionEnd.value) {
       if (isBefore(day.date, selectionStart.value)) {
         selectionEnd.value = selectionStart.value;
         selectionStart.value = day.date;
-      } else { selectionEnd.value = day.date; }
+      } else {
+        selectionEnd.value = day.date;
+      }
       openBlockModal();
     } else {
       selectionStart.value = day.date;
@@ -345,41 +384,56 @@ function handleDayClick(day: any) {
     selectedDay.value = day.bookings.length > 0 ? day : null;
   }
 }
+
 function isDaySelected(date: Date) {
   if (!selectionStart.value) return false;
   return isSameDay(date, selectionStart.value) || (selectionEnd.value && isSameDay(date, selectionEnd.value));
 }
+
 function isInSelectionRange(date: Date) {
   if (!selectionStart.value || !selectionEnd.value) return false;
-  return isWithinInterval(date, { start: selectionStart.value, end: selectionEnd.value });
+  return isWithinInterval(date, {start: selectionStart.value, end: selectionEnd.value});
 }
+
 function openBlockModal() {
   if (props.roomFilter) {
     const r = visibleRooms.value[0];
     blockRoomId.value = r ? r.id : 'all';
-  } else { blockRoomId.value = 'all'; }
+  } else {
+    blockRoomId.value = 'all';
+  }
   showBlockModal.value = true;
 }
+
 function cancelSelection() {
   selectionStart.value = null;
   selectionEnd.value = null;
   showBlockModal.value = false;
   blockRoomId.value = 'all';
 }
-function openInDirectus(id: any) { window.open(`/admin/content/${config.roomBookingsCollection}/${id}`, '_blank'); }
-function changeMonth(delta: number) { viewDate.value = addMonths(viewDate.value, delta); }
-function goToToday() { viewDate.value = new Date(); }
+
+function openInDirectus(id: any) {
+  window.open(`/admin/content/${config.roomBookingsCollection}/${id}`, '_blank');
+}
+
+function changeMonth(delta: number) {
+  viewDate.value = addMonths(viewDate.value, delta);
+}
+
+function goToToday() {
+  viewDate.value = new Date();
+}
 
 function getCalendarDays(baseDate: Date) {
-  const start = startOfWeek(startOfMonth(baseDate), { weekStartsOn: 1 });
-  const end = endOfWeek(endOfMonth(baseDate), { weekStartsOn: 1 });
-  const days = eachDayOfInterval({ start, end });
+  const start = startOfWeek(startOfMonth(baseDate), {weekStartsOn: 1});
+  const end = endOfWeek(endOfMonth(baseDate), {weekStartsOn: 1});
+  const days = eachDayOfInterval({start, end});
 
   return days.map(date => {
     const dayBookings = bookings.value.filter(b => {
       const bStart = parseISO(b[config.roomStartDateField]);
       const bEnd = parseISO(b[config.roomEndDateField]);
-      return isWithinInterval(date, { start: bStart, end: bEnd });
+      return isWithinInterval(date, {start: bStart, end: bEnd});
     });
 
     const lanes = visibleRooms.value.map(room => {
@@ -394,25 +448,60 @@ function getCalendarDays(baseDate: Date) {
         const isStayOver = isAfter(date, bStart) && isBefore(date, bEnd);
 
         if (isStayOver) {
-          segments.push({ id: booking.id, type: 'full', color: room.color, status: normalizeStatus(booking[config.statusField]), label: getClientName(booking), showLabel: date.getDay() === 1 || isSameDay(date, addDays(bStart, 1)), connectLeft: true, connectRight: true });
+          segments.push({
+            id: booking.id,
+            type: 'full',
+            color: room.color,
+            status: normalizeStatus(booking[config.statusField]),
+            label: getClientName(booking),
+            showLabel: date.getDay() === 1 || isSameDay(date, addDays(bStart, 1)),
+            connectLeft: true,
+            connectRight: true
+          });
         } else if (isArrival) {
-          segments.push({ id: booking.id, type: 'check-in', color: room.color, status: normalizeStatus(booking[config.statusField]), label: getClientName(booking), showLabel: true, connectLeft: false, connectRight: !isDeparture });
+          segments.push({
+            id: booking.id,
+            type: 'check-in',
+            color: room.color,
+            status: normalizeStatus(booking[config.statusField]),
+            label: getClientName(booking),
+            showLabel: true,
+            connectLeft: false,
+            connectRight: !isDeparture
+          });
         } else if (isDeparture) {
-          segments.push({ id: booking.id, type: 'check-out', color: room.color, status: normalizeStatus(booking[config.statusField]), label: getClientName(booking), showLabel: false, connectLeft: true, connectRight: false });
+          segments.push({
+            id: booking.id,
+            type: 'check-out',
+            color: room.color,
+            status: normalizeStatus(booking[config.statusField]),
+            label: getClientName(booking),
+            showLabel: false,
+            connectLeft: true,
+            connectRight: false
+          });
         }
       });
       segments.sort((a, b) => (a.type === 'check-out' ? -1 : 1));
-      return { roomId: room.id, segments };
+      return {roomId: room.id, segments};
     });
 
-    return { date, iso: date.toISOString(), number: format(date, 'd'), isPadding: !isSameMonth(date, baseDate), isToday: isSameDay(date, new Date()), bookings: dayBookings, lanes };
+    return {
+      date,
+      iso: date.toISOString(),
+      number: format(date, 'd'),
+      isPadding: !isSameMonth(date, baseDate),
+      isToday: isSameDay(date, new Date()),
+      bookings: dayBookings,
+      lanes
+    };
   });
 }
 
 async function fetchData() {
   loading.value = true;
   try {
-    const roomsRes = await api.get(`/items/${config.roomsCollection}`, { params: { limit: -1 } });
+    const roomsRes = await api.get(`/items/${config.roomsCollection}`, {params: {limit: -1}});
     roomsData.value = roomsRes.data.data;
 
     const start = format(subMonths(startOfMonth(viewDate.value), 1), 'yyyy-MM-dd');
@@ -422,11 +511,15 @@ async function fetchData() {
       params: {
         limit: -1,
         fields: ['*', `${config.roomRelationField}.*`, `${config.clientField}.*`],
-        filter: { _and: [{ [config.roomEndDateField]: { _gte: start } }, { [config.roomStartDateField]: { _lte: end } }] }
+        filter: {_and: [{[config.roomEndDateField]: {_gte: start}}, {[config.roomStartDateField]: {_lte: end}}]}
       }
     });
     bookings.value = bookingsRes.data.data;
-  } catch (err: any) { console.error(err); } finally { loading.value = false; }
+  } catch (err: any) {
+    console.error(err);
+  } finally {
+    loading.value = false;
+  }
 }
 
 async function confirmBlockDates() {
@@ -445,17 +538,23 @@ async function confirmBlockDates() {
     cancelSelection();
     isSelectionMode.value = false;
     window.dispatchEvent(new Event('hotel-booking-updated'));
-  } catch (e: any) { console.error(e); } finally { submitting.value = false; }
+  } catch (e: any) {
+    console.error(e);
+  } finally {
+    submitting.value = false;
+  }
 }
 
 async function updateBookingStatus(booking: any, newStatus: string) {
   const old = booking[config.statusField];
   booking[config.statusField] = newStatus;
   try {
-    await api.patch(`/items/${config.roomBookingsCollection}/${booking.id}`, { [config.statusField]: newStatus });
+    await api.patch(`/items/${config.roomBookingsCollection}/${booking.id}`, {[config.statusField]: newStatus});
     await fetchData();
     window.dispatchEvent(new Event('hotel-booking-updated'));
-  } catch { booking[config.statusField] = old; }
+  } catch {
+    booking[config.statusField] = old;
+  }
 }
 
 async function deleteBooking(booking: any) {
@@ -465,10 +564,14 @@ async function deleteBooking(booking: any) {
     selectedDay.value = null;
     await fetchData();
     window.dispatchEvent(new Event('hotel-booking-updated'));
-  } catch (e) { console.error(e); }
+  } catch (e) {
+    console.error(e);
+  }
 }
 
-function handleGlobalUpdate() { fetchData(); }
+function handleGlobalUpdate() {
+  fetchData();
+}
 
 watch(() => [viewDate.value, isDoubleView.value], fetchData);
 
@@ -477,7 +580,9 @@ onMounted(() => {
   window.addEventListener('hotel-booking-updated', handleGlobalUpdate);
   if (containerRef.value) {
     resizeObserver = new ResizeObserver((entries) => {
-      for (const entry of entries) { containerWidth.value = entry.contentRect.width; }
+      for (const entry of entries) {
+        containerWidth.value = entry.contentRect.width;
+      }
     });
     resizeObserver.observe(containerRef.value);
   }
@@ -490,114 +595,576 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-.calendar-container { height: 100%; display: flex; flex-direction: column; position: relative; }
-.calendar-wrapper { padding: 24px; display: flex; flex-direction: column; height: 100%; }
-.view-title h2 { margin: 0 0 24px 0; font-size: 1.2rem; font-weight: 800; color: var(--theme--foreground); }
-
-.calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 16px; }
-.nav-controls { display: flex; align-items: center; gap: 8px; }
-.nav-btn { background: var(--theme--background-accent); border: 1px solid var(--theme--border-color-subdued); height: 36px; display: flex; align-items: center; justify-content: center; cursor: pointer; border-radius: 8px; color: var(--theme--foreground); transition: all 0.2s; }
-.nav-btn:hover { background: var(--theme--background-subdued); }
-.text-btn { padding: 0 16px; font-weight: 700; font-size: 0.85rem; }
-.mode-btn.active { background: var(--theme--primary); color: white; border-color: var(--theme--primary); }
-.month-label { font-size: 1rem; font-weight: 800; margin: 0; text-transform: capitalize; }
-
-.legend { display: flex; gap: 12px; flex-wrap: wrap; }
-.legend-item { display: flex; align-items: center; gap: 6px; font-size: 0.8rem; font-weight: 700; }
-.dot { width: 10px; height: 10px; border-radius: 50%; }
-
-.calendar-scroll-area {
-  flex: 1;
-  overflow-x: auto;
-  overflow-y: hidden;
-  border-radius: 8px;
-  border: 1px solid var(--theme--border-color-subdued);
+.calendar-container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  position: relative;
 }
 
-.calendars-row { display: flex; gap: 32px; min-width: 600px; height: 100%; }
-.single-calendar { flex: 1; display: flex; flex-direction: column; }
-.calendar-month-title { padding: 12px; margin: 0; text-transform: capitalize; font-weight: 800; text-align: center; border-bottom: 1px solid var(--theme--border-color-subdued); }
+.calendar-wrapper {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
 
-.weekdays-row { display: grid; grid-template-columns: repeat(7, 1fr); background: var(--theme--background-subdued); }
-.weekday-header { text-align: center; padding: 10px 0; font-weight: 800; color: var(--theme--foreground-subdued); font-size: 0.75rem; text-transform: uppercase; border-bottom: 1px solid var(--theme--border-color-subdued); border-right: 1px solid var(--theme--border-color-subdued); }
+.view-title h2 {
+  margin: 0 0 24px 0;
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: var(--theme--foreground);
+}
 
-.calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); grid-auto-rows: minmax(80px, 1fr); flex: 1; }
-.day-cell { border-right: 1px solid var(--theme--border-color-subdued); border-bottom: 1px solid var(--theme--border-color-subdued); padding: 6px 0; display: flex; flex-direction: column; position: relative; cursor: pointer; background: var(--theme--background); transition: background 0.15s; }
-.day-cell:hover { background: var(--theme--background-subdued); }
-.day-cell.is-padding { opacity: 0.4; background: var(--theme--background-accent); }
-.day-header { padding: 0 8px; display: flex; justify-content: flex-end; margin-bottom: 4px; z-index: 10; }
-.day-number { font-size: 0.8rem; font-weight: 700; opacity: 0.5; }
-.is-today .day-number { color: var(--theme--primary); opacity: 1; font-weight: 900; background: var(--theme--primary-subdued); padding: 2px 6px; border-radius: 12px; }
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
 
-.day-content { flex: 1; display: flex; flex-direction: column; gap: 4px; justify-content: center; }
-.room-lane { height: 28px; display: flex; position: relative; width: 100%; }
-.day-cell.has-filter .room-lane { height: 48px; }
+.nav-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
 
-.booking-segment { height: 100%; display: flex; align-items: center; padding: 0 8px; position: relative; z-index: 5; box-shadow: inset 0 1px 0 rgba(255,255,255,0.2); overflow: hidden; background-image: linear-gradient(to bottom, rgba(255,255,255,0.1), rgba(0,0,0,0.08)); }
-.booking-segment.connect-left { margin-left: -1px; border-top-left-radius: 0 !important; border-bottom-left-radius: 0 !important; }
-.booking-segment.connect-right { margin-right: -1px; border-top-right-radius: 0 !important; border-bottom-right-radius: 0 !important; z-index: 6; }
-.booking-segment.full { width: calc(100% - 4px); margin: 0 2px; border-radius: 4px; }
-.booking-segment.full.connect-left { width: calc(100% - 2px + 1px); }
-.booking-segment.full.connect-right { width: calc(100% - 2px + 1px); }
-.booking-segment.full.connect-left.connect-right { width: calc(100% + 2px); }
-.booking-segment.check-out { width: calc(50% - 4px); margin-left: 2px; border-radius: 4px 0 0 4px; }
-.booking-segment.check-out.connect-left { width: calc(50% - 2px + 1px); }
-.booking-segment.check-in { width: calc(50% - 4px); margin-right: 2px; border-radius: 0 4px 4px 0; margin-left: auto; }
-.booking-segment.check-in.connect-right { width: calc(50% - 2px + 1px); }
-.booking-segment.is-blocked { background: #1a1a1a !important; }
+.nav-btn {
+  background: var(--theme--background-accent);
+  border: 1px solid var(--theme--border-color-subdued);
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border-radius: 8px;
+  color: var(--theme--foreground);
+  transition: all 0.2s;
+}
 
-.segment-label { font-size: 0.65rem; font-weight: 800; color: white; white-space: nowrap; text-shadow: 0 1px 2px rgba(0,0,0,0.5); letter-spacing: 0.02em; }
-.day-cell.has-filter .segment-label { font-size: 0.8rem; }
-.day-cell.is-selected { background: var(--theme--primary-subdued); box-shadow: inset 0 0 0 2px var(--theme--primary); }
-.day-cell.in-selection-range { background: rgba(var(--primary-rgb), 0.1); }
+.nav-btn:hover {
+  background: var(--theme--background-subdued);
+}
+
+.text-btn {
+  padding: 0 16px;
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+.mode-btn.active {
+  background: var(--theme--primary);
+  color: white;
+  border-color: var(--theme--primary);
+}
+
+.month-label {
+  font-size: 1rem;
+  font-weight: 800;
+  margin: 0;
+  text-transform: capitalize;
+}
+
+.legend {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+/* --- CONTENEUR DE SCROLL HORIZONTAL FLUIDE (CRUCIAL POUR MOBILE) --- */
+.calendar-scroll-area {
+  flex: 1;
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch; /* Pour un défilement fluide sur iOS */
+  border-radius: 8px;
+  border: 1px solid var(--theme--border-color-subdued);
+  background: var(--theme--background);
+}
+
+.calendars-row {
+  display: flex;
+  gap: 32px;
+  height: 100%;
+}
+
+/* --- LARGEUR MINIMALE FIXE POUR NE JAMAIS ÉCRASER LES CELLULES --- */
+.single-calendar {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  /* Garantie absolue que le calendrier ne descendra jamais sous cette taille.
+     700px / 7 jours = 100px garantis par case. */
+  min-width: 700px;
+}
+
+.calendar-month-title {
+  padding: 12px;
+  margin: 0;
+  text-transform: capitalize;
+  font-weight: 800;
+  text-align: center;
+  border-bottom: 1px solid var(--theme--border-color-subdued);
+}
+
+/* En-tête des jours */
+.weekdays-row {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  background: var(--theme--background-subdued);
+}
+
+.weekday-header {
+  text-align: center;
+  padding: 10px 0;
+  font-weight: 800;
+  color: var(--theme--foreground-subdued);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--theme--border-color-subdued);
+  border-right: 1px solid var(--theme--border-color-subdued);
+}
+
+/* Grille des jours (cellules 100% égales avec 1fr) */
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  grid-auto-rows: minmax(80px, 1fr);
+  flex: 1;
+}
+
+.day-cell {
+  border-right: 1px solid var(--theme--border-color-subdued);
+  border-bottom: 1px solid var(--theme--border-color-subdued);
+  padding: 6px 0;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  cursor: pointer;
+  background: var(--theme--background);
+  transition: background 0.15s;
+}
+
+.day-cell:hover {
+  background: var(--theme--background-subdued);
+}
+
+.day-cell.is-padding {
+  opacity: 0.4;
+  background: var(--theme--background-accent);
+}
+
+.day-header {
+  padding: 0 8px;
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 4px;
+  z-index: 10;
+}
+
+.day-number {
+  font-size: 0.8rem;
+  font-weight: 700;
+  opacity: 0.5;
+}
+
+.is-today .day-number {
+  color: var(--theme--primary);
+  opacity: 1;
+  font-weight: 900;
+  background: var(--theme--primary-subdued);
+  padding: 2px 6px;
+  border-radius: 12px;
+}
+
+.day-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  justify-content: center;
+}
+
+.room-lane {
+  height: 28px;
+  display: flex;
+  position: relative;
+  width: 100%;
+}
+
+.day-cell.has-filter .room-lane {
+  height: 48px;
+}
+
+.booking-segment {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  padding: 0 8px;
+  position: relative;
+  z-index: 5;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  overflow: hidden;
+  background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.1), rgba(0, 0, 0, 0.08));
+}
+
+.booking-segment.connect-left {
+  margin-left: -1px;
+  border-top-left-radius: 0 !important;
+  border-bottom-left-radius: 0 !important;
+}
+
+.booking-segment.connect-right {
+  margin-right: -1px;
+  border-top-right-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+  z-index: 6;
+}
+
+.booking-segment.full {
+  width: calc(100% - 4px);
+  margin: 0 2px;
+  border-radius: 4px;
+}
+
+.booking-segment.full.connect-left {
+  width: calc(100% - 2px + 1px);
+}
+
+.booking-segment.full.connect-right {
+  width: calc(100% - 2px + 1px);
+}
+
+.booking-segment.full.connect-left.connect-right {
+  width: calc(100% + 2px);
+}
+
+.booking-segment.check-out {
+  width: calc(50% - 4px);
+  margin-left: 2px;
+  border-radius: 4px 0 0 4px;
+}
+
+.booking-segment.check-out.connect-left {
+  width: calc(50% - 2px + 1px);
+}
+
+.booking-segment.check-in {
+  width: calc(50% - 4px);
+  margin-right: 2px;
+  border-radius: 0 4px 4px 0;
+  margin-left: auto;
+}
+
+.booking-segment.check-in.connect-right {
+  width: calc(50% - 2px + 1px);
+}
+
+.booking-segment.is-blocked {
+  background: #1a1a1a !important;
+}
+
+.segment-label {
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: white;
+  white-space: nowrap;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  letter-spacing: 0.02em;
+}
+
+.day-cell.has-filter .segment-label {
+  font-size: 0.8rem;
+}
+
+.day-cell.is-selected {
+  background: var(--theme--primary-subdued);
+  box-shadow: inset 0 0 0 2px var(--theme--primary);
+}
+
+.day-cell.in-selection-range {
+  background: rgba(var(--primary-rgb), 0.1);
+}
 
 /* Drawer */
-.side-drawer { position: absolute; top: 0; right: 0; bottom: 0; width: 440px; background: var(--theme--background); z-index: 100; border-left: 1px solid var(--theme--border-color); display: flex; flex-direction: column; box-shadow: -15px 0 45px rgba(0,0,0,0.15); }
-.drawer-header { padding: 24px; border-bottom: 1px solid var(--theme--border-color-subdued); display: flex; justify-content: space-between; align-items: center; }
-.close-btn { background: none; border: none; font-size: 2rem; cursor: pointer; color: var(--theme--foreground-subdued); }
-.drawer-content { flex: 1; overflow-y: auto; padding: 24px; background: var(--theme--background-subdued); }
+.side-drawer {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 440px;
+  background: var(--theme--background);
+  z-index: 100;
+  border-left: 1px solid var(--theme--border-color);
+  display: flex;
+  flex-direction: column;
+  box-shadow: -15px 0 45px rgba(0, 0, 0, 0.15);
+}
 
-.booking-card { background: var(--theme--background); border-radius: 12px; margin-bottom: 16px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
-.card-header { padding: 16px; border-left: 6px solid #ccc; display: flex; justify-content: space-between; align-items: center; }
-.room-name { font-weight: 800; }
-.status-badge { font-size: 0.7rem; padding: 4px 10px; border-radius: 20px; font-weight: 800; text-transform: uppercase; }
-.status-badge.confirmee { background: #e6f4ea; color: #1e8e3e; }
-.status-badge.indisponible { background: #1a1a1a; color: white; }
+.drawer-header {
+  padding: 24px;
+  border-bottom: 1px solid var(--theme--border-color-subdued);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
 
-.card-body { padding: 16px; }
-.client-info { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
-.client-icon { width: 36px; height: 36px; background: var(--theme--background-accent); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: var(--theme--primary); }
-.client-text .name { font-weight: 800; }
-.client-text .email { font-size: 0.85rem; color: var(--theme--foreground-subdued); }
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 2rem;
+  cursor: pointer;
+  color: var(--theme--foreground-subdued);
+}
 
-.dates-info { background: var(--theme--background-subdued); padding: 12px; border-radius: 8px; font-size: 0.85rem; }
-.date-row { display: flex; justify-content: space-between; margin-bottom: 4px; }
-.status-pills { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
-.status-pill-btn { border: 1px solid var(--theme--border-color); background: none; font-size: 0.8rem; padding: 4px 12px; border-radius: 16px; cursor: pointer; font-weight: 700; }
-.status-pill-btn.active { background: var(--theme--primary); color: white; border-color: var(--theme--primary); }
-.card-footer { padding: 12px 16px; border-top: 1px solid var(--theme--border-color-subdued); display: flex; justify-content: space-between; background: var(--theme--background-subdued); }
-.btn-link { background: none; border: none; color: var(--theme--primary); font-size: 0.85rem; font-weight: 800; cursor: pointer; }
-.btn-link.delete { color: var(--theme--danger); }
+.drawer-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px;
+  background: var(--theme--background-subdued);
+}
+
+.booking-card {
+  background: var(--theme--background);
+  border-radius: 12px;
+  margin-bottom: 16px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.card-header {
+  padding: 16px;
+  border-left: 6px solid #ccc;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.room-name {
+  font-weight: 800;
+}
+
+.status-badge {
+  font-size: 0.7rem;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.status-badge.confirmee {
+  background: #e6f4ea;
+  color: #1e8e3e;
+}
+
+.status-badge.indisponible {
+  background: #1a1a1a;
+  color: white;
+}
+
+.card-body {
+  padding: 16px;
+}
+
+.client-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.client-icon {
+  width: 36px;
+  height: 36px;
+  background: var(--theme--background-accent);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--theme--primary);
+}
+
+.client-text .name {
+  font-weight: 800;
+}
+
+.client-text .email {
+  font-size: 0.85rem;
+  color: var(--theme--foreground-subdued);
+}
+
+.dates-info {
+  background: var(--theme--background-subdued);
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+}
+
+.date-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.status-pills {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+
+.status-pill-btn {
+  border: 1px solid var(--theme--border-color);
+  background: none;
+  font-size: 0.8rem;
+  padding: 4px 12px;
+  border-radius: 16px;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.status-pill-btn.active {
+  background: var(--theme--primary);
+  color: white;
+  border-color: var(--theme--primary);
+}
+
+.card-footer {
+  padding: 12px 16px;
+  border-top: 1px solid var(--theme--border-color-subdued);
+  display: flex;
+  justify-content: space-between;
+  background: var(--theme--background-subdued);
+}
+
+.btn-link {
+  background: none;
+  border: none;
+  color: var(--theme--primary);
+  font-size: 0.85rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.btn-link.delete {
+  color: var(--theme--danger);
+}
 
 /* Modals & Loaders */
-.modal-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 200; }
-.modal-card { background: var(--theme--background); padding: 32px; border-radius: 16px; width: 90%; max-width: 400px; box-shadow: 0 20px 60px rgba(0,0,0,0.2); }
-.modal-select { width: 100%; padding: 12px; border-radius: 8px; margin-top: 12px; border: 1px solid var(--theme--border-color); background: var(--theme--background); color: var(--theme--foreground); }
-.modal-actions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px; }
-.btn-confirm { background: var(--theme--primary); color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 800; }
+.modal-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+}
 
-.loading-overlay { position: absolute; inset: 0; background: rgba(255,255,255,0.7); z-index: 300; display: flex; align-items: center; justify-content: center; }
-.spinner { width: 40px; height: 40px; border: 4px solid #eee; border-top-color: var(--theme--primary); border-radius: 50%; animation: spin 0.8s linear infinite; }
-@keyframes spin { to { transform: rotate(360deg); } }
+.modal-card {
+  background: var(--theme--background);
+  padding: 32px;
+  border-radius: 16px;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+}
+
+.modal-select {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  margin-top: 12px;
+  border: 1px solid var(--theme--border-color);
+  background: var(--theme--background);
+  color: var(--theme--foreground);
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.btn-confirm {
+  background: var(--theme--primary);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.loading-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.7);
+  z-index: 300;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #eee;
+  border-top-color: var(--theme--primary);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
 
 /* Mobile Adjustments */
 @media (max-width: 768px) {
-  .side-drawer { width: 100%; border-left: none; }
-  .mobile-hide { display: none !important; }
-  .calendar-wrapper { padding: 12px; }
-  .nav-btn { padding: 0 10px; }
+  .side-drawer {
+    width: 100%;
+    border-left: none;
+  }
+
+  .mobile-hide {
+    display: none !important;
+  }
+
+  .calendar-wrapper {
+    padding: 12px;
+  }
+
+  .nav-btn {
+    padding: 0 10px;
+  }
 }
 
-.slide-enter-active, .slide-leave-active { transition: transform 0.3s ease; }
-.slide-enter-from, .slide-leave-to { transform: translateX(100%); }
+.slide-enter-active, .slide-leave-active {
+  transition: transform 0.3s ease;
+}
+
+.slide-enter-from, .slide-leave-to {
+  transform: translateX(100%);
+}
 </style>

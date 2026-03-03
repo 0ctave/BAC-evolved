@@ -143,7 +143,17 @@ onUnmounted(() => { window.removeEventListener('hotel-booking-updated', handleGl
 .refresh-btn:hover { color: var(--theme--primary); border-color: var(--theme--primary); }
 .spinning { animation: spin 1s linear infinite; }
 
-.booking-list { flex: 1; overflow-y: auto; display: flex; flex-direction: column; padding: 16px; gap: 12px; }
+/* MODIFICATION ICI: Utilisation de Grid pour un affichage pleine largeur optimisé */
+.booking-list {
+  flex: 1;
+  overflow-y: auto;
+  display: grid;
+  /* Crée automatiquement autant de colonnes que possible (min 320px par carte) */
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  align-content: start;
+  padding: 16px;
+  gap: 16px;
+}
 
 .booking-item { background: var(--theme--background); border: 1px solid var(--theme--border-color-subdued); border-radius: 10px; padding: 16px; display: flex; justify-content: space-between; align-items: center; transition: all 0.2s; border-left: 4px solid var(--warning); box-shadow: 0 2px 6px rgba(0,0,0,0.02); }
 .booking-item:hover { transform: translateY(-2px); box-shadow: 0 6px 12px rgba(0,0,0,0.06); }
