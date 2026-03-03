@@ -64,7 +64,7 @@ import { config } from './config';
 // Utilisez les bons noms de fichiers selon ce que vous avez configuré
 import PendingBookings from './components/room-confirmation.vue';
 import BookingCalendar from './components/room-calendar.vue';
-import TourDashboard from './components/TourDashboard.vue';
+import TourDashboard from './components/tour-calendar.vue';
 
 const api = useApi();
 const currentTab = ref('rooms');
