@@ -616,23 +616,23 @@ onUnmounted(() => {
   min-width: 0;
 }
 
-/* Modif : padding: 4px 0 pour retirer la marge invisible L/R qui causait le gap */
-.day-cell { border-right: 1px solid var(--theme--border-color-subdued); border-bottom: 1px solid var(--theme--border-color-subdued); padding: 4px 0; display: flex; flex-direction: column; position: relative; cursor: pointer; background: var(--theme--background); transition: background 0.15s; overflow: hidden; min-width: 0; }
+/* Modif : suppression totale du padding L/R et du overflow:hidden pour permettre aux segments de se chevaucher */
+.day-cell { border-right: 1px solid var(--theme--border-color-subdued); border-bottom: 1px solid var(--theme--border-color-subdued); padding: 0 0 4px 0; display: flex; flex-direction: column; position: relative; cursor: pointer; background: var(--theme--background); transition: background 0.15s; min-width: 0; }
 .day-cell:hover { background: var(--theme--background-subdued); }
 .day-cell.is-padding { opacity: 0.35; background: var(--theme--background-accent); }
 
-/* Modif : padding ajouté ici pour replacer le numéro du jour */
-.day-header { display: flex; justify-content: flex-end; margin-bottom: 4px; z-index: 10; min-width: 0; padding: 0 6px; }
+/* Modif : le padding est géré ici uniquement pour le numéro */
+.day-header { display: flex; justify-content: flex-end; margin-bottom: 4px; z-index: 10; min-width: 0; padding: 4px 6px 0 0; }
 .day-number { font-size: 0.8rem; font-weight: 700; opacity: 0.5; line-height: 1; }
 .is-today .day-number { color: var(--theme--primary); opacity: 1; font-weight: 900; background: var(--theme--primary-subdued); padding: 2px 6px; border-radius: 12px; }
 
-.day-content { flex: 1; display: flex; flex-direction: column; gap: 4px; justify-content: center; min-width: 0; width: 100%; }
+.day-content { flex: 1; display: flex; flex-direction: column; gap: 4px; justify-content: center; min-width: 0; width: 100%; padding-bottom: 4px; }
 
 /* Barres de réservation */
 .room-lane { height: 24px; display: flex; position: relative; gap: 0; margin: 0; width: 100%; min-width: 0; }
 .day-cell.has-filter .room-lane { height: 36px; }
 
-/* === LOGIQUE LIGNES DE RÉSERVATION CONTINUES === */
+/* === LOGIQUE LIGNES DE RÉSERVATION CONTINUES MAGIQUES === */
 .booking-segment {
   height: 100%;
   display: flex;
@@ -647,28 +647,29 @@ onUnmounted(() => {
   min-width: 0;
 }
 
-/* Connexions pour masquer la bordure inter-cases */
-.booking-segment.connect-left { margin-left: -1px; border-top-left-radius: 0 !important; border-bottom-left-radius: 0 !important; box-shadow: inset 0 1px 0 rgba(255,255,255,0.1); }
-.booking-segment.connect-right { margin-right: -1px; border-top-right-radius: 0 !important; border-bottom-right-radius: 0 !important; box-shadow: inset 0 1px 0 rgba(255,255,255,0.1); z-index: 6; }
+/* Nuit complète sans connexions (espacée au milieu) */
+.booking-segment.full { width: calc(100% - 8px); margin: 0 4px; border-radius: 4px; }
 
-/* Nuit complète */
-.booking-segment.full { width: calc(100% - 4px); margin: 0 2px; border-radius: 4px; }
-.booking-segment.full.connect-left { width: calc(100% - 2px + 1px); margin-left: -1px; margin-right: 2px; }
-.booking-segment.full.connect-right { width: calc(100% - 2px + 1px); margin-right: -1px; margin-left: 2px; }
-.booking-segment.full.connect-left.connect-right { width: calc(100% + 2px); margin-left: -1px; margin-right: -1px; }
+/* Le secret de la ligne continue :
+  margin-left: -1px décale le segment vers la gauche par-dessus la bordure !
+  Vu que la cellule n'a plus overflow: hidden, la jonction est parfaite et invisible.
+*/
+.booking-segment.full.connect-left { width: calc(100% - 4px + 1px); margin-left: -1px; margin-right: 4px; border-radius: 0 4px 4px 0; }
+.booking-segment.full.connect-right { width: calc(100% - 4px); margin-right: 0; margin-left: 4px; border-radius: 4px 0 0 4px; z-index: 6; }
+.booking-segment.full.connect-left.connect-right { width: calc(100% + 1px); margin-left: -1px; margin-right: 0; border-radius: 0; z-index: 6; }
 
 /* Fin de séjour : occupe exactement la moitié gauche */
-.booking-segment.check-out { width: calc(50% - 2px); margin-left: 2px; border-radius: 4px 0 0 4px; }
-.booking-segment.check-out.connect-left { width: calc(50% + 1px); margin-left: -1px; }
+.booking-segment.check-out { width: calc(50% - 4px); margin-left: 4px; margin-right: auto; border-radius: 4px; }
+.booking-segment.check-out.connect-left { width: calc(50% + 1px); margin-left: -1px; margin-right: auto; border-radius: 0 4px 4px 0; }
 
 /* Début de séjour : occupe exactement la moitié droite */
-.booking-segment.check-in { width: calc(50% - 2px); margin-right: 2px; margin-left: auto; border-radius: 0 4px 4px 0; }
-.booking-segment.check-in.connect-right { width: calc(50% + 1px); margin-right: -1px; }
+.booking-segment.check-in { width: calc(50% - 4px); margin-right: 4px; margin-left: auto; border-radius: 4px; }
+.booking-segment.check-in.connect-right { width: 50%; margin-right: 0; margin-left: auto; border-radius: 4px 0 0 4px; z-index: 6; }
 
 /* Remplacement du noir par une variable compatible Dark Mode */
 .booking-segment.is-blocked { background: var(--theme--foreground-subdued) !important; color: var(--theme--background) !important; }
 
-/* Texte dans la barre de réservation */
+/* Texte dans la barre de réservation (Shadow pour rester lisible mode dark/light sur des couleurs arbitraires) */
 .segment-label {
   font-size: 0.65rem;
   font-weight: 800;
@@ -749,30 +750,30 @@ onUnmounted(() => {
 
   .calendar-grid { grid-auto-rows: minmax(45px, 1fr); }
 
-  /* Modif mobile : 2px 0 garantit 100% de couverture de la largeur pour le segment mobile */
-  .day-cell { padding: 2px 0; border-bottom: 1px solid var(--theme--border-color-subdued); border-right: 1px solid var(--theme--border-color-subdued); min-width: 0; overflow: hidden; }
+  /* Plus de padding horizontal, on le garde juste pour le bottom */
+  .day-cell { padding: 0 0 2px 0; border-bottom: 1px solid var(--theme--border-color-subdued); border-right: 1px solid var(--theme--border-color-subdued); min-width: 0; }
   .day-content { gap: 2px; }
 
-  .day-header { justify-content: center; padding: 0 4px; margin-bottom: 1px; min-width: 0; }
+  .day-header { justify-content: center; padding: 2px 0 0 0; margin-bottom: 1px; min-width: 0; }
   .day-number { font-size: 0.7rem; }
   .is-today .day-number { padding: 1px 4px; }
 
   .room-lane { height: 6px; margin-bottom: 1px; }
   .day-cell.has-filter .room-lane { height: 10px; }
 
-  /* Lignes continues spécifiques pour mobile : Largeurs dynamiques mathématiquement parfaites */
-  .booking-segment { padding: 0 !important; box-shadow: none !important; margin: 0 1px !important; width: calc(100% - 2px) !important; border-radius: 2px !important; }
+  /* Lignes continues spécifiques pour mobile */
+  .booking-segment { padding: 0 !important; box-shadow: none !important; border-radius: 2px !important; }
 
-  .booking-segment.full { width: calc(100% - 2px) !important; margin: 0 1px !important; }
-  .booking-segment.full.connect-left { width: calc(100% - 1px + 1px) !important; margin-left: -1px !important; margin-right: 1px !important; border-top-left-radius: 0 !important; border-bottom-left-radius: 0 !important; }
-  .booking-segment.full.connect-right { width: calc(100% - 1px + 1px) !important; margin-right: -1px !important; margin-left: 1px !important; border-top-right-radius: 0 !important; border-bottom-right-radius: 0 !important; z-index: 6; }
-  .booking-segment.full.connect-left.connect-right { width: calc(100% + 2px) !important; margin-left: -1px !important; margin-right: -1px !important; border-radius: 0 !important; }
+  .booking-segment.full { width: calc(100% - 4px) !important; margin: 0 2px !important; }
+  .booking-segment.full.connect-left { width: calc(100% - 2px + 1px) !important; margin-left: -1px !important; margin-right: 2px !important; border-radius: 0 2px 2px 0 !important; }
+  .booking-segment.full.connect-right { width: calc(100% - 2px) !important; margin-right: 0 !important; margin-left: 2px !important; border-radius: 2px 0 0 2px !important; z-index: 6; }
+  .booking-segment.full.connect-left.connect-right { width: calc(100% + 1px) !important; margin-left: -1px !important; margin-right: 0 !important; border-radius: 0 !important; z-index: 6; }
 
-  .booking-segment.check-out { width: calc(50% - 1px) !important; margin-left: 1px !important; border-radius: 2px 0 0 2px !important; }
-  .booking-segment.check-out.connect-left { width: calc(50% + 1px) !important; margin-left: -1px !important; border-radius: 0 !important; }
+  .booking-segment.check-out { width: calc(50% - 2px) !important; margin-left: 2px !important; margin-right: auto !important; border-radius: 2px !important; }
+  .booking-segment.check-out.connect-left { width: calc(50% + 1px) !important; margin-left: -1px !important; margin-right: auto !important; border-radius: 0 2px 2px 0 !important; }
 
-  .booking-segment.check-in { width: calc(50% - 1px) !important; margin-right: 1px !important; margin-left: auto !important; border-radius: 0 2px 2px 0 !important; }
-  .booking-segment.check-in.connect-right { width: calc(50% + 1px) !important; margin-right: -1px !important; border-radius: 0 !important; z-index: 6; }
+  .booking-segment.check-in { width: calc(50% - 2px) !important; margin-right: 2px !important; margin-left: auto !important; border-radius: 2px !important; }
+  .booking-segment.check-in.connect-right { width: 50% !important; margin-right: 0 !important; margin-left: auto !important; border-radius: 2px 0 0 2px !important; z-index: 6; }
 
   .segment-label { display: none !important; }
 
