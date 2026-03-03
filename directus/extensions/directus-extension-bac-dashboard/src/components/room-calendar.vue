@@ -690,46 +690,56 @@ onUnmounted(() => {
 @media (max-width: 768px) {
   .mobile-hide { display: none !important; }
 
-  /* Compression de l'espace global */
-  .calendar-wrapper { padding: 12px 6px; }
+  /* Retrait total du padding horizontal pour fusionner avec l'écran du tel */
+  .calendar-wrapper { padding: 8px 0 !important; }
 
-  /* En-tête calendrier compact */
-  .calendar-header { margin-bottom: 12px; gap: 8px; }
-  .nav-controls { gap: 4px; }
-  .nav-btn { height: 32px; border-radius: 6px; }
-  .icon-btn { width: 32px; }
-  .view-title h2 { font-size: 1.1rem; margin-bottom: 12px; }
+  /* En-tête calendrier ultra compact */
+  .calendar-header { margin-bottom: 8px; gap: 6px; padding: 0 8px; }
+  .nav-controls { gap: 2px; }
+  .nav-btn { height: 28px; border-radius: 4px; padding: 0 4px; }
+  .icon-btn { width: 28px; padding: 0; }
+  .view-title h2 { font-size: 1rem; margin-bottom: 8px; padding: 0 8px; }
+  .month-label { font-size: 0.9rem; }
+  .legend { padding: 0 8px; gap: 8px; }
+  .legend-item { font-size: 0.7rem; }
 
-  /* Labels des jours courts */
+  /* Retrait des bordures latérales et arrondis de la zone globale */
+  .calendar-scroll-area { border-left: none; border-right: none; border-radius: 0; }
+
+  /* Labels des jours ultra courts */
   .desktop-day { display: none; }
-  .mobile-day { display: inline; font-size: 0.75rem; font-weight: 900; }
-  .weekday-header { font-size: 0.7rem; padding: 6px 0; }
+  .mobile-day { display: inline; font-size: 0.65rem; font-weight: 900; }
+  .weekday-header { font-size: 0.65rem; padding: 4px 0; border-right: 1px solid var(--theme--border-color-subdued); }
 
-  /* Grille compressée */
-  .calendar-grid { grid-auto-rows: minmax(45px, 1fr); }
-  .day-cell { padding: 2px; }
+  /* Grille hyper compressée */
+  .calendar-grid { grid-auto-rows: minmax(40px, 1fr); }
+  .day-cell { padding: 1px; border-bottom: 1px solid var(--theme--border-color-subdued); border-right: 1px solid var(--theme--border-color-subdued); }
+  .day-content { gap: 1px; }
 
-  /* En-tête des cellules */
-  .day-header { justify-content: center; padding: 0; margin-bottom: 2px; }
-  .day-number { font-size: 0.75rem; }
-  .is-today .day-number { padding: 2px 4px; }
+  /* En-tête des cellules : Chiffres minuscules */
+  .day-header { justify-content: center; padding: 0; margin-bottom: 1px; }
+  .day-number { font-size: 0.65rem; line-height: 1; }
+  .is-today .day-number { padding: 1px 3px; }
 
   /* Barres d'indicateurs extra fines */
-  .room-lane { height: 6px; margin-bottom: 2px; }
-  .day-cell.has-filter .room-lane { height: 8px; }
+  .room-lane { height: 4px; margin-bottom: 1px; }
+  .day-cell.has-filter .room-lane { height: 6px; }
 
-  /* Suppression de l'arrondi et du padding sur les barres */
-  .booking-segment { border-radius: 2px !important; padding: 0 !important; box-shadow: none !important; width: 100% !important; margin: 0 !important; }
+  /* Suppression de TOUS les paddings/arrondis sur les barres qui ajoutaient de la largeur invisible */
+  .booking-segment { border-radius: 1px !important; padding: 0 !important; box-shadow: none !important; width: 100% !important; margin: 0 !important; }
   .booking-segment.check-out { width: 50% !important; margin-left: 0 !important; }
   .booking-segment.check-in { width: 50% !important; margin-right: 0 !important; margin-left: auto !important; }
 
-  /* Cacher le texte dans les barres */
+  /* Cacher le texte dans les barres quoiqu'il arrive */
   .segment-label { display: none !important; }
 
-  /* Drawer pleine largeur */
+  /* Drawer pleine largeur adapté */
   .side-drawer { width: 100%; border-left: none; }
-  .drawer-header { padding: 16px; }
-  .drawer-content { padding: 16px; }
+  .drawer-header { padding: 12px; }
+  .drawer-header h3 { font-size: 1rem; margin: 0; }
+  .drawer-content { padding: 12px; }
+  .card-header, .card-body, .card-footer { padding: 10px; }
+  .status-pill-btn { font-size: 0.75rem; padding: 4px 8px; min-width: 0; }
 }
 
 .slide-enter-active, .slide-leave-active { transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
