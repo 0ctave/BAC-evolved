@@ -258,7 +258,8 @@ async function fetchData() {
       params: {
         filter: { date_heure_debut: { _gte: today } },
         sort: 'date_heure_debut',
-        fields: ['*', `${config.visiteRelationField}.nom`, `${config.visiteRelationField}.capacite_max`],
+        // FIX: Removed `${config.visiteRelationField}.capacite_max` from the array
+        fields: ['*', `${config.visiteRelationField}.nom`],
         limit: -1
       }
     });
