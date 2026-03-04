@@ -566,9 +566,9 @@ async function fetchData() {
     });
     bookings.value = bookingsRes.data.data;
 
-    // Récupérer la liste des clients pour le formulaire manuel
+    // CORRECTION : Tri par -id car date_created n'existe pas sur la collection clients
     const clientsRes = await api.get(`/items/clients`, {
-      params: { fields: ['id', 'nom', 'prenom', 'email'], limit: -1, sort: '-date_created' }
+      params: { fields: ['id', 'nom', 'prenom', 'email'], limit: -1, sort: '-id' }
     });
     clientsList.value = clientsRes.data.data;
 
