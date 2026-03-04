@@ -223,10 +223,10 @@
 <script setup lang="ts">
 import { useApi } from '@directus/extensions-sdk';
 import { ref, onMounted, computed } from 'vue';
-import { format, parseISO } from 'date-fns';
+import { format, parseISO, isAfter } from 'date-fns';
 import { fr } from 'date-fns/locale';
 
-// Configuration de la base de données : VÉRIFIEZ CES NOMS EXACTS DANS DIRECTUS
+// Configuration
 const config = {
   slotsCollection: 'creneaux_visites',
   bookingsCollection: 'reservations_visite',
@@ -254,11 +254,12 @@ async function fetchData() {
   loading.value = true;
   try {
     const today = new Date().toISOString().split('T')[0];
+
+    // EXPLICITEMENT retiré: visite_id.capacite_max
     const slotsRes = await api.get(`/items/${config.slotsCollection}`, {
       params: {
         filter: { date_heure_debut: { _gte: today } },
         sort: 'date_heure_debut',
-        // FIX: Removed `${config.visiteRelationField}.capacite_max` from the array
         fields: ['*', `${config.visiteRelationField}.nom`],
         limit: -1
       }
@@ -292,14 +293,10 @@ async function fetchData() {
 }
 
 // --- COMPUTED / LOGIQUE D'AFFICHAGE ---
-
-// NOUVEAU : Grouper les créneaux par Nom de Visite
 const groupedSlots = computed(() => {
   const groups: Record<string, any[]> = {};
   slots.value.forEach(slot => {
-    // Si la visite est supprimée ou sans nom, on la met dans 'Visite Standard'
     const visiteName = slot[config.visiteRelationField]?.nom || 'Visite Standard';
-
     if (!groups[visiteName]) groups[visiteName] = [];
     groups[visiteName].push(slot);
   });
@@ -318,7 +315,8 @@ function getSlotBookings(slotId: number | string) {
 }
 
 function getSlotMaxCapacity(slot: any) {
-  return slot.capacite_max || slot[config.visiteRelationField]?.capacite_max || config.defaultMaxCapacity;
+  // La capacite_max est uniquement récupérée sur le créneau directement (conformément à votre schéma)
+  return slot.capacite_max || config.defaultMaxCapacity;
 }
 
 function getSlotReservedCount(slotId: number | string) {
@@ -353,7 +351,6 @@ function getCapacityColorClass(slot: any) {
 }
 
 // --- ACTIONS ---
-
 function openSlot(slot: any) {
   selectedSlot.value = slot;
   isAddingManual.value = false;
@@ -436,7 +433,7 @@ function getClientName(b: any) {
 
 function formatShortDate(d: string) {
   if (!d) return '';
-  return format(parseISO(d), 'EEE d MMM', { locale: fr }); // ex: mer. 4 mars
+  return format(parseISO(d), 'EEE d MMM', { locale: fr });
 }
 
 function formatFullDate(d: string) {
@@ -570,7 +567,6 @@ onMounted(() => {
 }
 .slot-card:hover { background: var(--theme--background-subdued); }
 
-/* NOUVEAU: Le badge Date/Heure pour la carte */
 .slot-datetime-badge {
   display: flex;
   justify-content: space-between;
