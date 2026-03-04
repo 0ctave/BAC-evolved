@@ -1,5 +1,5 @@
 <template>
-  <private-view title="Gestion du Domaine">
+  <private-view title="Gestion Bordeaux à Coeur">
     <!-- Intégration des actions dans le header natif de Directus -->
     <template #actions>
       <div class="module-tabs">
@@ -8,14 +8,14 @@
             :class="{ active: currentTab === 'rooms' }"
             class="tab-btn"
         >
-          <span class="material-icons">bed</span> Chambres
+          Chambres d'Hôte
         </button>
         <button
             @click="currentTab = 'tours'"
             :class="{ active: currentTab === 'tours' }"
             class="tab-btn"
         >
-          <span class="material-icons">tour</span> Visites
+          Visites
         </button>
       </div>
     </template>
