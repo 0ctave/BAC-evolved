@@ -5,7 +5,7 @@
     <div class="header">
       <div class="title-group">
         <h2>Planning des Visites</h2>
-        <span class="subtitle">Aperçu des créneaux et réservations</span>
+        <span class="subtitle">Aperçu de vos créneaux regroupés par type de visite</span>
       </div>
       <button class="refresh-btn" @click="fetchData" :disabled="loading">
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" :class="{ spinning: loading }"><path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.3"/></svg>
@@ -34,20 +34,23 @@
 
     <!-- État vide -->
     <div v-else-if="slots.length === 0" class="empty-state">
-      <span class="material-icons icon-huge">event_busy</span>
+      <span class="material-icons icon-huge">tour</span>
       <h3>Aucun créneau à venir</h3>
       <p>Vous n'avez pas de visites prévues dans les prochains jours.</p>
     </div>
 
-    <!-- Timeline des créneaux -->
-    <div v-else class="timeline-container">
-      <div v-for="(group, dateStr) in groupedSlots" :key="dateStr" class="date-group">
-        <div class="date-header">
-          <div class="date-badge">
-            <span class="day-num">{{ formatDayNum(dateStr) }}</span>
-            <span class="day-month">{{ formatMonthStr(dateStr) }}</span>
+    <!-- Groupement par Visites -->
+    <div v-else class="tour-groups-container">
+      <div v-for="(group, visiteName) in groupedSlots" :key="visiteName" class="tour-group">
+
+        <div class="tour-header">
+          <div class="tour-icon-bg">
+            <span class="material-icons">local_activity</span>
           </div>
-          <h3 class="date-title">{{ formatFullDate(dateStr) }}</h3>
+          <div class="tour-header-text">
+            <h3 class="tour-title">{{ visiteName }}</h3>
+            <span class="tour-count">{{ group.length }} créneau(x) à venir</span>
+          </div>
         </div>
 
         <div class="slots-grid">
@@ -57,15 +60,19 @@
               class="slot-card"
               @click="openSlot(slot)"
           >
-            <div class="slot-time">
-              <span class="material-icons time-icon">schedule</span>
-              {{ formatTime(slot.date_heure_debut) }}
+            <!-- Badge Date/Heure mis en évidence -->
+            <div class="slot-datetime-badge">
+              <div class="slot-date">
+                <span class="material-icons date-icon">event</span>
+                {{ formatShortDate(slot.date_heure_debut) }}
+              </div>
+              <div class="slot-time">
+                <span class="material-icons time-icon">schedule</span>
+                {{ formatTime(slot.date_heure_debut) }}
+              </div>
             </div>
 
             <div class="slot-info">
-              <!-- Utilisation de la configuration pour le nom de la visite -->
-              <h4 class="tour-name">{{ slot[config.visiteRelationField]?.nom || 'Visite Standard' }}</h4>
-
               <div class="capacity-section">
                 <div class="capacity-labels">
                   <span class="reserved-count">
@@ -105,7 +112,6 @@
         <div class="drawer-header">
           <div>
             <span class="drawer-surtitle">{{ formatFullDate(selectedSlot.date_heure_debut) }} à {{ formatTime(selectedSlot.date_heure_debut) }}</span>
-            <!-- Utilisation de la configuration pour le nom de la visite -->
             <h3>{{ selectedSlot[config.visiteRelationField]?.nom || 'Détails du créneau' }}</h3>
           </div>
           <button class="close-btn" @click="closeDrawer">×</button>
@@ -217,16 +223,16 @@
 <script setup lang="ts">
 import { useApi } from '@directus/extensions-sdk';
 import { ref, onMounted, computed } from 'vue';
-import { format, parseISO, isAfter } from 'date-fns';
+import { format, parseISO } from 'date-fns';
 import { fr } from 'date-fns/locale';
 
 // Configuration de la base de données : VÉRIFIEZ CES NOMS EXACTS DANS DIRECTUS
 const config = {
-  slotsCollection: 'creneaux_visites', // Peut-être 'creneaux_visite' (singulier) ?
+  slotsCollection: 'creneaux_visites',
   bookingsCollection: 'reservations_visite',
   clientsCollection: 'clients',
   slotRelationField: 'creneau_visite',
-  visiteRelationField: 'visite_id', // Le champ relationnel vers la visite (peut-être juste 'visite' ?)
+  visiteRelationField: 'visite_id',
   statusField: 'statut',
   defaultMaxCapacity: 20
 };
@@ -247,21 +253,17 @@ const manualForm = ref({ client_id: '', quantite: 1 });
 async function fetchData() {
   loading.value = true;
   try {
-    // 1. Récupérer les créneaux à partir d'aujourd'hui
     const today = new Date().toISOString().split('T')[0];
     const slotsRes = await api.get(`/items/${config.slotsCollection}`, {
       params: {
         filter: { date_heure_debut: { _gte: today } },
         sort: 'date_heure_debut',
-        // CORRECTION ICI : On retire visite_id.capacite_max qui n'existe pas dans la table Visite !
-        // Le '*' va automatiquement récupérer le capacite_max du créneau lui-même.
-        fields: ['*', `${config.visiteRelationField}.nom`],
+        fields: ['*', `${config.visiteRelationField}.nom`, `${config.visiteRelationField}.capacite_max`],
         limit: -1
       }
     });
     slots.value = slotsRes.data.data;
 
-    // 2. S'il y a des créneaux, récupérer TOUTES leurs réservations
     if (slots.value.length > 0) {
       const slotIds = slots.value.map(s => s.id);
       const bookingsRes = await api.get(`/items/${config.bookingsCollection}`, {
@@ -276,7 +278,6 @@ async function fetchData() {
       allBookings.value = [];
     }
 
-    // 3. Charger la liste des clients pour le formulaire manuel
     const clientsRes = await api.get(`/items/${config.clientsCollection}`, {
       params: { fields: ['id', 'nom', 'prenom', 'email'], limit: 100 }
     });
@@ -291,14 +292,15 @@ async function fetchData() {
 
 // --- COMPUTED / LOGIQUE D'AFFICHAGE ---
 
-// Grouper les créneaux par date (ex: "2026-03-04")
+// NOUVEAU : Grouper les créneaux par Nom de Visite
 const groupedSlots = computed(() => {
   const groups: Record<string, any[]> = {};
   slots.value.forEach(slot => {
-    if(!slot.date_heure_debut) return;
-    const dateKey = slot.date_heure_debut.split('T')[0];
-    if (!groups[dateKey]) groups[dateKey] = [];
-    groups[dateKey].push(slot);
+    // Si la visite est supprimée ou sans nom, on la met dans 'Visite Standard'
+    const visiteName = slot[config.visiteRelationField]?.nom || 'Visite Standard';
+
+    if (!groups[visiteName]) groups[visiteName] = [];
+    groups[visiteName].push(slot);
   });
   return groups;
 });
@@ -320,7 +322,6 @@ function getSlotMaxCapacity(slot: any) {
 
 function getSlotReservedCount(slotId: number | string) {
   const bookings = getSlotBookings(slotId);
-  // On ne compte que les confirmés ou en attente (on ignore les annulés)
   const activeBookings = bookings.filter(b => {
     const s = normalizeStatus(b[config.statusField]);
     return s === 'confirmee' || s === 'en_attente';
@@ -365,7 +366,7 @@ function closeDrawer() {
 
 async function updateBookingStatus(booking: any, newStatus: string) {
   const oldStatus = booking[config.statusField];
-  booking[config.statusField] = newStatus; // Optimistic update
+  booking[config.statusField] = newStatus;
   try {
     await api.patch(`/items/${config.bookingsCollection}/${booking.id}`, { [config.statusField]: newStatus });
   } catch (e) {
@@ -393,17 +394,12 @@ async function submitManualReservation() {
       [config.slotRelationField]: selectedSlot.value.id,
       client: manualForm.value.client_id,
       quantite_billets: manualForm.value.quantite,
-      [config.statusField]: 'confirmee', // Une résa manuelle est confirmée par défaut
-      origine: 'hors-ligne' // Optionnel si vous avez ce champ
+      [config.statusField]: 'confirmee',
     };
 
     await api.post(`/items/${config.bookingsCollection}`, payload);
-
-    // Rafraîchir les données pour voir la nouvelle réservation
     await fetchData();
     isAddingManual.value = false;
-
-    // Mettre à jour le selectedSlot avec sa nouvelle référence si nécessaire
     selectedSlot.value = slots.value.find(s => s.id === selectedSlot.value.id) || null;
 
   } catch (err) {
@@ -437,12 +433,18 @@ function getClientName(b: any) {
   return 'Client';
 }
 
-function formatDayNum(d: string) { return format(parseISO(d), 'd'); }
-function formatMonthStr(d: string) { return format(parseISO(d), 'MMM', { locale: fr }); }
-function formatFullDate(d: string) { return format(parseISO(d), 'EEEE d MMMM yyyy', { locale: fr }); }
+function formatShortDate(d: string) {
+  if (!d) return '';
+  return format(parseISO(d), 'EEE d MMM', { locale: fr }); // ex: mer. 4 mars
+}
+
+function formatFullDate(d: string) {
+  if (!d) return '';
+  return format(parseISO(d), 'EEEE d MMMM yyyy', { locale: fr });
+}
+
 function formatTime(d: string) {
   if(!d) return '--:--';
-  // Parse l'ISO pour extraire l'heure proprement
   const dateObj = new Date(d);
   return format(dateObj, 'HH:mm');
 }
@@ -467,7 +469,7 @@ onMounted(() => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 24px;
+  margin-bottom: 32px;
   flex-wrap: wrap;
   gap: 16px;
 }
@@ -506,15 +508,15 @@ onMounted(() => {
 .alert-content strong { color: var(--theme--foreground); font-size: 1rem; }
 .alert-content span { color: var(--theme--foreground-subdued); font-size: 0.85rem; }
 
-/* === TIMELINE GRID === */
-.timeline-container {
+/* === TIMELINE / GROUPES === */
+.tour-groups-container {
   display: flex;
   flex-direction: column;
-  gap: 32px;
+  gap: 40px;
   padding-bottom: 40px;
 }
 
-.date-group {
+.tour-group {
   background: var(--theme--background);
   border: 1px solid var(--theme--border-color-subdued);
   border-radius: 16px;
@@ -522,31 +524,31 @@ onMounted(() => {
   box-shadow: 0 4px 12px rgba(0,0,0,0.02);
 }
 
-.date-header {
+.tour-header {
   display: flex;
   align-items: center;
   gap: 16px;
-  padding: 16px 24px;
+  padding: 20px 24px;
   background: var(--theme--background-subdued);
   border-bottom: 1px solid var(--theme--border-color-subdued);
 }
 
-.date-badge {
-  background: var(--theme--background);
-  border: 1px solid var(--theme--border-color);
-  border-radius: 8px;
+.tour-icon-bg {
+  background: var(--theme--primary-subdued);
+  color: var(--theme--primary);
   width: 48px;
   height: 48px;
+  border-radius: 12px;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
   box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
-.day-num { font-size: 1.1rem; font-weight: 900; line-height: 1; color: var(--theme--primary); }
-.day-month { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; color: var(--theme--foreground-subdued); }
+.tour-icon-bg .material-icons { font-size: 1.5rem; }
 
-.date-title { margin: 0; font-size: 1.1rem; font-weight: 800; text-transform: capitalize; color: var(--theme--foreground); }
+.tour-header-text { display: flex; flex-direction: column; }
+.tour-title { margin: 0; font-size: 1.2rem; font-weight: 800; color: var(--theme--foreground); }
+.tour-count { font-size: 0.85rem; color: var(--theme--foreground-subdued); font-weight: 600; margin-top: 4px; }
 
 .slots-grid {
   display: grid;
@@ -563,15 +565,26 @@ onMounted(() => {
   transition: background 0.2s;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 16px;
 }
 .slot-card:hover { background: var(--theme--background-subdued); }
 
-.slot-time { display: flex; align-items: center; gap: 6px; font-weight: 800; font-size: 1.1rem; color: var(--theme--foreground); }
-.time-icon { font-size: 1.2rem; color: var(--theme--foreground-subdued); }
+/* NOUVEAU: Le badge Date/Heure pour la carte */
+.slot-datetime-badge {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--theme--background-subdued);
+  border: 1px solid var(--theme--border-color-subdued);
+  border-radius: 8px;
+  padding: 8px 12px;
+}
+
+.slot-date { display: flex; align-items: center; gap: 6px; font-weight: 700; font-size: 0.9rem; color: var(--theme--foreground); text-transform: capitalize; }
+.slot-time { display: flex; align-items: center; gap: 6px; font-weight: 900; font-size: 1.1rem; color: var(--theme--primary); }
+.date-icon, .time-icon { font-size: 1.1rem; color: var(--theme--foreground-subdued); }
 
 .slot-info { display: flex; flex-direction: column; gap: 12px; }
-.tour-name { margin: 0; font-size: 1rem; font-weight: 700; color: var(--theme--foreground-subdued); }
 
 .capacity-section { display: flex; flex-direction: column; gap: 6px; }
 .capacity-labels { display: flex; justify-content: space-between; font-size: 0.85rem; }
