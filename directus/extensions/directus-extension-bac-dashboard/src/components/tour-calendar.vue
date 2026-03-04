@@ -63,7 +63,8 @@
             </div>
 
             <div class="slot-info">
-              <h4 class="tour-name">{{ slot.visite_id?.nom || 'Visite Standard' }}</h4>
+              <!-- Utilisation de la configuration pour le nom de la visite -->
+              <h4 class="tour-name">{{ slot[config.visiteRelationField]?.nom || 'Visite Standard' }}</h4>
 
               <div class="capacity-section">
                 <div class="capacity-labels">
@@ -104,7 +105,8 @@
         <div class="drawer-header">
           <div>
             <span class="drawer-surtitle">{{ formatFullDate(selectedSlot.date_heure_debut) }} à {{ formatTime(selectedSlot.date_heure_debut) }}</span>
-            <h3>{{ selectedSlot.visite_id?.nom || 'Détails du créneau' }}</h3>
+            <!-- Utilisation de la configuration pour le nom de la visite -->
+            <h3>{{ selectedSlot[config.visiteRelationField]?.nom || 'Détails du créneau' }}</h3>
           </div>
           <button class="close-btn" @click="closeDrawer">×</button>
         </div>
@@ -218,12 +220,13 @@ import { ref, onMounted, computed } from 'vue';
 import { format, parseISO, isAfter } from 'date-fns';
 import { fr } from 'date-fns/locale';
 
-// Configuration de la base de données (Assurez-vous que ces noms correspondent à vos collections exactes)
+// Configuration de la base de données : VÉRIFIEZ CES NOMS EXACTS DANS DIRECTUS
 const config = {
-  slotsCollection: 'creneaux_visites',
+  slotsCollection: 'creneaux_visites', // Peut-être 'creneaux_visite' (singulier) ?
   bookingsCollection: 'reservations_visite',
-  clientsCollection: 'clients', // Assumé basé sur le besoin d'ajouter un client manuellement
-  slotRelationField: 'creneau_visite', // Le champ dans reservations_visite qui pointe vers creneaux_visites
+  clientsCollection: 'clients',
+  slotRelationField: 'creneau_visite',
+  visiteRelationField: 'visite_id', // Le champ relationnel vers la visite (peut-être juste 'visite' ?)
   statusField: 'statut',
   defaultMaxCapacity: 20
 };
@@ -250,7 +253,9 @@ async function fetchData() {
       params: {
         filter: { date_heure_debut: { _gte: today } },
         sort: 'date_heure_debut',
-        fields: ['*', 'visite_id.nom', 'visite_id.capacite_max'],
+        // CORRECTION ICI : On retire visite_id.capacite_max qui n'existe pas dans la table Visite !
+        // Le '*' va automatiquement récupérer le capacite_max du créneau lui-même.
+        fields: ['*', `${config.visiteRelationField}.nom`],
         limit: -1
       }
     });
@@ -310,7 +315,7 @@ function getSlotBookings(slotId: number | string) {
 }
 
 function getSlotMaxCapacity(slot: any) {
-  return slot.capacite_max || slot.visite_id?.capacite_max || config.defaultMaxCapacity;
+  return slot.capacite_max || slot[config.visiteRelationField]?.capacite_max || config.defaultMaxCapacity;
 }
 
 function getSlotReservedCount(slotId: number | string) {
