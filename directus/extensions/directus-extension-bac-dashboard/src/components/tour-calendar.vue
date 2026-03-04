@@ -7,10 +7,22 @@
         <h2>Planning des Visites</h2>
         <span class="subtitle">Aperçu de vos créneaux regroupés par type de visite</span>
       </div>
-      <button class="refresh-btn" @click="fetchData" :disabled="loading">
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" :class="{ spinning: loading }"><path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.3"/></svg>
-        <span class="mobile-hide">Actualiser</span>
-      </button>
+
+      <!-- Actions Globales -->
+      <div class="header-actions">
+        <button class="btn-outline" @click="showCreateVisiteModal = true">
+          <span class="material-icons">add_box</span>
+          <span class="mobile-hide">Type de visite</span>
+        </button>
+        <button class="btn-primary" @click="showCreateSlotModal = true">
+          <span class="material-icons">add_alarm</span>
+          <span class="mobile-hide">Nouveau créneau</span>
+        </button>
+        <div class="divider mobile-hide"></div>
+        <button class="refresh-btn" @click="fetchData" :disabled="loading">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" :class="{ spinning: loading }"><path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.3"/></svg>
+        </button>
+      </div>
     </div>
 
     <!-- Alertes : Réservations en attente -->
@@ -37,6 +49,7 @@
       <span class="material-icons icon-huge">tour</span>
       <h3>Aucun créneau à venir</h3>
       <p>Vous n'avez pas de visites prévues dans les prochains jours.</p>
+      <button class="btn-primary mt-4" @click="showCreateSlotModal = true">Créer le premier créneau</button>
     </div>
 
     <!-- Groupement par Visites -->
@@ -134,8 +147,8 @@
           <div class="section-header">
             <h4>Liste des participants</h4>
             <button class="btn-add-manual" @click="isAddingManual = !isAddingManual">
-              <span class="material-icons">add</span>
-              Ajouter
+              <span class="material-icons">{{ isAddingManual ? 'close' : 'add' }}</span>
+              {{ isAddingManual ? 'Fermer' : 'Ajouter' }}
             </button>
           </div>
 
@@ -143,18 +156,56 @@
           <div v-if="isAddingManual" class="manual-add-card">
             <h5>Nouvelle Réservation (Hors-ligne)</h5>
 
-            <div class="form-group">
-              <label>Client</label>
+            <div class="client-toggle">
+              <button class="toggle-btn" :class="{ active: !isNewClient }" @click="isNewClient = false">Client existant</button>
+              <button class="toggle-btn" :class="{ active: isNewClient }" @click="isNewClient = true">Nouveau client</button>
+            </div>
+
+            <!-- Client existant -->
+            <div v-if="!isNewClient" class="form-group">
+              <label>Rechercher le client</label>
               <select v-model="manualForm.client_id" class="form-input">
                 <option value="">-- Sélectionner un client --</option>
                 <option v-for="client in clientsList" :key="client.id" :value="client.id">
-                  {{ client.prenom }} {{ client.nom }} ({{ client.email }})
+                  {{ client.prenom }} {{ client.nom }} ({{ client.email || 'Sans email' }})
                 </option>
               </select>
-              <small class="form-hint">Le client doit être préalablement enregistré dans la base.</small>
             </div>
 
-            <div class="form-group">
+            <!-- Nouveau Client -->
+            <div v-else class="new-client-form">
+              <div class="form-row">
+                <div class="form-group flex-1">
+                  <label>Prénom *</label>
+                  <input type="text" v-model="clientForm.prenom" class="form-input" placeholder="Jean" />
+                </div>
+                <div class="form-group flex-1">
+                  <label>Nom *</label>
+                  <input type="text" v-model="clientForm.nom" class="form-input" placeholder="Dupont" />
+                </div>
+              </div>
+              <div class="form-group">
+                <label>Email</label>
+                <input type="email" v-model="clientForm.email" class="form-input" placeholder="jean.dupont@email.com" />
+              </div>
+              <div class="form-row">
+                <div class="form-group flex-1">
+                  <label>Téléphone</label>
+                  <input type="tel" v-model="clientForm.numero" class="form-input" placeholder="+33 6..." />
+                </div>
+                <div class="form-group flex-1">
+                  <label>Langue *</label>
+                  <select v-model="clientForm.langue" class="form-input">
+                    <option value="fr">Français</option>
+                    <option value="en">Anglais</option>
+                    <option value="es">Espagnol</option>
+                    <option value="de">Allemand</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group mt-3">
               <label>Nombre de billets</label>
               <div class="ticket-counter">
                 <button class="counter-btn" @click="manualForm.quantite--" :disabled="manualForm.quantite <= 1">-</button>
@@ -165,7 +216,7 @@
 
             <div class="form-actions">
               <button class="btn-cancel" @click="isAddingManual = false">Annuler</button>
-              <button class="btn-confirm" @click="submitManualReservation" :disabled="submitting || !manualForm.client_id">
+              <button class="btn-confirm" @click="submitManualReservation" :disabled="submitting || !isManualFormValid">
                 {{ submitting ? 'Création...' : 'Valider la réservation' }}
               </button>
             </div>
@@ -217,17 +268,93 @@
     <!-- Overlay sombre quand le tiroir est ouvert -->
     <div v-if="selectedSlot" class="drawer-backdrop" @click="closeDrawer"></div>
 
+
+    <!-- === MODALS DE CRÉATION === -->
+
+    <!-- Modal : Nouvelle Visite (Type) -->
+    <div v-if="showCreateVisiteModal" class="modal-overlay" @click.self="showCreateVisiteModal = false">
+      <div class="modal-card">
+        <h3>Nouveau Type de Visite</h3>
+        <p class="modal-desc">Ajoutez une nouvelle offre de visite à votre catalogue.</p>
+
+        <div class="modal-body">
+          <div class="form-group">
+            <label>Nom de la visite *</label>
+            <input type="text" v-model="visiteForm.nom" class="form-input" placeholder="Ex: Visite Découverte des Chais" />
+          </div>
+          <div class="form-group">
+            <label>Description</label>
+            <textarea v-model="visiteForm.description" class="form-input" rows="3" placeholder="Brève description..."></textarea>
+          </div>
+          <div class="form-row">
+            <div class="form-group flex-1">
+              <label>Durée (minutes)</label>
+              <input type="number" v-model="visiteForm.duree_minutes" class="form-input" min="15" step="15" />
+            </div>
+            <div class="form-group flex-1">
+              <label>Prix unitaire (€)</label>
+              <input type="number" v-model="visiteForm.prix_unitaire" class="form-input" min="0" step="0.5" />
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button class="btn-cancel" @click="showCreateVisiteModal = false">Annuler</button>
+          <button class="btn-confirm" @click="submitVisite" :disabled="creatingData || !visiteForm.nom">
+            {{ creatingData ? '...' : 'Créer la visite' }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal : Nouveau Créneau -->
+    <div v-if="showCreateSlotModal" class="modal-overlay" @click.self="showCreateSlotModal = false">
+      <div class="modal-card">
+        <h3>Ouvrir un nouveau créneau</h3>
+        <p class="modal-desc">Programmez une session pour une visite existante.</p>
+
+        <div class="modal-body">
+          <div class="form-group">
+            <label>Type de visite *</label>
+            <select v-model="slotForm.visite_id" class="form-input">
+              <option value="" disabled>-- Sélectionner une visite --</option>
+              <option v-for="v in visitesList" :key="v.id" :value="v.id">{{ v.nom }}</option>
+            </select>
+            <small class="form-hint" v-if="visitesList.length === 0">Vous devez d'abord créer un type de visite.</small>
+          </div>
+
+          <div class="form-group">
+            <label>Date et Heure de début *</label>
+            <input type="datetime-local" v-model="slotForm.date_heure_debut" class="form-input" />
+          </div>
+
+          <div class="form-group">
+            <label>Capacité maximum (personnes) *</label>
+            <input type="number" v-model="slotForm.capacite_max" class="form-input" min="1" />
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button class="btn-cancel" @click="showCreateSlotModal = false">Annuler</button>
+          <button class="btn-confirm" @click="submitSlot" :disabled="creatingData || !slotForm.visite_id || !slotForm.date_heure_debut">
+            {{ creatingData ? '...' : 'Créer le créneau' }}
+          </button>
+        </div>
+      </div>
+    </div>
+
   </div>
 </template>
 
 <script setup lang="ts">
 import { useApi } from '@directus/extensions-sdk';
 import { ref, onMounted, computed } from 'vue';
-import { format, parseISO, isAfter } from 'date-fns';
+import { format, parseISO } from 'date-fns';
 import { fr } from 'date-fns/locale';
 
 // Configuration
 const config = {
+  visitesCollection: 'visites',
   slotsCollection: 'creneaux_visites',
   bookingsCollection: 'reservations_visite',
   clientsCollection: 'clients',
@@ -240,14 +367,28 @@ const config = {
 const api = useApi();
 const loading = ref(false);
 const submitting = ref(false);
+const creatingData = ref(false);
 
 const slots = ref<any[]>([]);
 const allBookings = ref<any[]>([]);
 const clientsList = ref<any[]>([]);
+const visitesList = ref<any[]>([]); // Liste des types de visites (pour le select)
 
 const selectedSlot = ref<any | null>(null);
+
+// Formulaire Ajout Réservation Manuelle
 const isAddingManual = ref(false);
+const isNewClient = ref(false);
 const manualForm = ref({ client_id: '', quantite: 1 });
+const clientForm = ref({ prenom: '', nom: '', email: '', numero: '', langue: 'fr' });
+
+// Modals de création
+const showCreateVisiteModal = ref(false);
+const visiteForm = ref({ nom: '', description: '', duree_minutes: 60, prix_unitaire: 10 });
+
+const showCreateSlotModal = ref(false);
+const slotForm = ref({ visite_id: '', date_heure_debut: '', capacite_max: 20 });
+
 
 // --- FETCH DATA ---
 async function fetchData() {
@@ -255,7 +396,7 @@ async function fetchData() {
   try {
     const today = new Date().toISOString().split('T')[0];
 
-    // EXPLICITEMENT retiré: visite_id.capacite_max
+    // 1. Récupérer les créneaux futurs
     const slotsRes = await api.get(`/items/${config.slotsCollection}`, {
       params: {
         filter: { date_heure_debut: { _gte: today } },
@@ -266,6 +407,7 @@ async function fetchData() {
     });
     slots.value = slotsRes.data.data;
 
+    // 2. Récupérer les réservations des créneaux
     if (slots.value.length > 0) {
       const slotIds = slots.value.map(s => s.id);
       const bookingsRes = await api.get(`/items/${config.bookingsCollection}`, {
@@ -280,10 +422,17 @@ async function fetchData() {
       allBookings.value = [];
     }
 
+    // 3. Récupérer la liste des clients
     const clientsRes = await api.get(`/items/${config.clientsCollection}`, {
-      params: { fields: ['id', 'nom', 'prenom', 'email'], limit: 100 }
+      params: { fields: ['id', 'nom', 'prenom', 'email'], limit: -1, sort: '-date_created' }
     });
     clientsList.value = clientsRes.data.data;
+
+    // 4. Récupérer la liste des types de visites (pour la création de créneau)
+    const visitesRes = await api.get(`/items/${config.visitesCollection}`, {
+      params: { fields: ['id', 'nom'], limit: -1 }
+    });
+    visitesList.value = visitesRes.data.data;
 
   } catch (err) {
     console.error("Erreur lors du chargement des visites:", err);
@@ -291,6 +440,39 @@ async function fetchData() {
     loading.value = false;
   }
 }
+
+// --- CREATION METHODES ---
+
+async function submitVisite() {
+  creatingData.value = true;
+  try {
+    await api.post(`/items/${config.visitesCollection}`, visiteForm.value);
+    showCreateVisiteModal.value = false;
+    visiteForm.value = { nom: '', description: '', duree_minutes: 60, prix_unitaire: 10 };
+    await fetchData(); // Met à jour la liste des visites pour le select
+  } catch (err) {
+    alert("Erreur lors de la création de la visite.");
+    console.error(err);
+  } finally {
+    creatingData.value = false;
+  }
+}
+
+async function submitSlot() {
+  creatingData.value = true;
+  try {
+    await api.post(`/items/${config.slotsCollection}`, slotForm.value);
+    showCreateSlotModal.value = false;
+    slotForm.value = { visite_id: '', date_heure_debut: '', capacite_max: 20 };
+    await fetchData(); // Met à jour la grille
+  } catch (err) {
+    alert("Erreur lors de la création du créneau.");
+    console.error(err);
+  } finally {
+    creatingData.value = false;
+  }
+}
+
 
 // --- COMPUTED / LOGIQUE D'AFFICHAGE ---
 const groupedSlots = computed(() => {
@@ -307,6 +489,13 @@ const globalPendingBookings = computed(() => {
   return allBookings.value.filter(b => normalizeStatus(b[config.statusField]) === 'en_attente');
 });
 
+const isManualFormValid = computed(() => {
+  if (isNewClient.value) {
+    return clientForm.value.prenom && clientForm.value.nom && clientForm.value.langue;
+  }
+  return !!manualForm.value.client_id;
+});
+
 function getSlotBookings(slotId: number | string) {
   return allBookings.value.filter(b => {
     const sId = typeof b[config.slotRelationField] === 'object' ? b[config.slotRelationField]?.id : b[config.slotRelationField];
@@ -315,7 +504,6 @@ function getSlotBookings(slotId: number | string) {
 }
 
 function getSlotMaxCapacity(slot: any) {
-  // La capacite_max est uniquement récupérée sur le créneau directement (conformément à votre schéma)
   return slot.capacite_max || config.defaultMaxCapacity;
 }
 
@@ -350,11 +538,13 @@ function getCapacityColorClass(slot: any) {
   return 'is-empty';
 }
 
-// --- ACTIONS ---
+// --- ACTIONS RESERVATIONS ---
 function openSlot(slot: any) {
   selectedSlot.value = slot;
   isAddingManual.value = false;
+  isNewClient.value = false;
   manualForm.value = { client_id: '', quantite: 1 };
+  clientForm.value = { prenom: '', nom: '', email: '', numero: '', langue: 'fr' };
 }
 
 function closeDrawer() {
@@ -384,24 +574,36 @@ async function deleteBooking(booking: any) {
 }
 
 async function submitManualReservation() {
-  if (!selectedSlot.value || !manualForm.value.client_id) return;
+  if (!selectedSlot.value || !isManualFormValid.value) return;
 
   submitting.value = true;
   try {
+    let finalClientId = manualForm.value.client_id;
+
+    // Si nouveau client, on le crée d'abord
+    if (isNewClient.value) {
+      const cRes = await api.post(`/items/${config.clientsCollection}`, clientForm.value);
+      finalClientId = cRes.data.data.id;
+    }
+
     const payload = {
       [config.slotRelationField]: selectedSlot.value.id,
-      client: manualForm.value.client_id,
+      client: finalClientId,
       quantite_billets: manualForm.value.quantite,
       [config.statusField]: 'confirmee',
     };
 
     await api.post(`/items/${config.bookingsCollection}`, payload);
+
+    // Rafraîchissement des données
     await fetchData();
     isAddingManual.value = false;
+
+    // Maintien du tiroir ouvert sur le bon créneau
     selectedSlot.value = slots.value.find(s => s.id === selectedSlot.value.id) || null;
 
   } catch (err) {
-    alert("Erreur lors de la création de la réservation manuelle.");
+    alert("Erreur lors de la création de la réservation.");
     console.error(err);
   } finally {
     submitting.value = false;
@@ -474,17 +676,41 @@ onMounted(() => {
 .title-group h2 { margin: 0; font-size: 1.6rem; font-weight: 900; color: var(--theme--primary); line-height: 1.2; }
 .subtitle { color: var(--theme--foreground-subdued); font-size: 0.9rem; font-weight: 600; }
 
-.refresh-btn {
-  background: var(--theme--background-subdued);
-  border: 1px solid var(--theme--border-color);
-  padding: 8px 16px;
-  border-radius: 8px;
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.btn-primary, .btn-outline {
   display: flex;
   align-items: center;
   gap: 8px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-primary { background: var(--theme--primary); color: white; border: 1px solid var(--theme--primary); }
+.btn-primary:hover { filter: brightness(1.1); }
+.btn-outline { background: transparent; border: 1px solid var(--theme--border-color); color: var(--theme--foreground); }
+.btn-outline:hover { background: var(--theme--background-subdued); border-color: var(--theme--primary); color: var(--theme--primary); }
+
+.divider { width: 1px; height: 32px; background: var(--theme--border-color-subdued); margin: 0 4px; }
+
+.refresh-btn {
+  background: var(--theme--background-subdued);
+  border: 1px solid var(--theme--border-color);
+  padding: 8px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
   color: var(--theme--foreground);
-  font-weight: 700;
   transition: all 0.2s;
 }
 .refresh-btn:hover { border-color: var(--theme--primary); color: var(--theme--primary); }
@@ -608,7 +834,8 @@ onMounted(() => {
 .drawer-header { padding: 24px; border-bottom: 1px solid var(--theme--border-color-subdued); display: flex; justify-content: space-between; align-items: flex-start; }
 .drawer-surtitle { font-size: 0.85rem; color: var(--theme--primary); font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; display: block; margin-bottom: 4px; }
 .drawer-header h3 { margin: 0; font-size: 1.4rem; font-weight: 900; line-height: 1.2; }
-.close-btn { background: var(--theme--background-subdued); border: none; width: 36px; height: 36px; border-radius: 50%; font-size: 1.5rem; cursor: pointer; color: var(--theme--foreground); display: flex; align-items: center; justify-content: center; }
+.close-btn { background: var(--theme--background-subdued); border: none; width: 36px; height: 36px; border-radius: 50%; font-size: 1.5rem; cursor: pointer; color: var(--theme--foreground); display: flex; align-items: center; justify-content: center; transition: background 0.2s; }
+.close-btn:hover { background: var(--theme--border-color-subdued); }
 
 .drawer-stats { padding: 24px; display: flex; align-items: center; gap: 20px; background: var(--theme--background-page); border-bottom: 1px solid var(--theme--border-color-subdued); }
 .stat-circle { width: 70px; height: 70px; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; background: var(--theme--background); border: 4px solid var(--theme--border-color); }
@@ -624,25 +851,31 @@ onMounted(() => {
 
 .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
 .section-header h4 { margin: 0; font-size: 1.1rem; font-weight: 800; }
-.btn-add-manual { background: var(--theme--primary); color: white; border: none; padding: 6px 12px; border-radius: 8px; font-weight: 700; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; gap: 4px; }
+.btn-add-manual { background: var(--theme--primary); color: white; border: none; padding: 6px 12px; border-radius: 8px; font-weight: 700; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; gap: 4px; transition: filter 0.2s; }
+.btn-add-manual:hover { filter: brightness(1.1); }
 
-/* Formulaire Manuel */
+/* Formulaire Manuel & Toggle Client */
 .manual-add-card { background: var(--theme--background); border: 1px solid var(--theme--primary); border-radius: 12px; padding: 20px; margin-bottom: 24px; box-shadow: 0 8px 24px rgba(var(--primary-rgb), 0.15); }
 .manual-add-card h5 { margin: 0 0 16px 0; color: var(--theme--primary); font-size: 1rem; font-weight: 800; }
+
+.client-toggle { display: flex; background: var(--theme--background-subdued); border-radius: 8px; padding: 4px; margin-bottom: 20px; }
+.toggle-btn { flex: 1; padding: 8px; border: none; background: transparent; border-radius: 6px; font-size: 0.85rem; font-weight: 700; color: var(--theme--foreground-subdued); cursor: pointer; transition: all 0.2s; }
+.toggle-btn.active { background: var(--theme--background); color: var(--theme--primary); box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+
+.form-row { display: flex; gap: 12px; }
+.flex-1 { flex: 1; min-width: 0; }
+
 .form-group { margin-bottom: 16px; }
 .form-group label { display: block; font-size: 0.85rem; font-weight: 700; margin-bottom: 6px; color: var(--theme--foreground-subdued); }
-.form-input { width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--theme--border-color); background: var(--theme--background); color: var(--theme--foreground); font-family: inherit; }
+.form-input { width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--theme--border-color); background: var(--theme--background); color: var(--theme--foreground); font-family: inherit; font-size: 0.95rem; }
 .form-hint { display: block; margin-top: 4px; font-size: 0.75rem; color: var(--theme--foreground-subdued); }
+.mt-3 { margin-top: 12px; }
+.mt-4 { margin-top: 16px; }
 
 .ticket-counter { display: flex; align-items: center; gap: 16px; }
 .counter-btn { width: 36px; height: 36px; border-radius: 8px; border: 1px solid var(--theme--border-color); background: var(--theme--background-subdued); font-size: 1.2rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--theme--foreground); }
 .counter-btn:disabled { opacity: 0.3; cursor: not-allowed; }
 .counter-val { font-size: 1.2rem; font-weight: 900; min-width: 20px; text-align: center; }
-
-.form-actions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--theme--border-color-subdued); }
-.btn-cancel { background: transparent; border: 1px solid var(--theme--border-color); padding: 8px 16px; border-radius: 8px; font-weight: 700; cursor: pointer; color: var(--theme--foreground); }
-.btn-confirm { background: var(--theme--primary); color: white; border: none; padding: 8px 16px; border-radius: 8px; font-weight: 700; cursor: pointer; }
-.btn-confirm:disabled { opacity: 0.5; cursor: not-allowed; }
 
 /* Liste Réservations */
 .booking-list { display: flex; flex-direction: column; gap: 12px; }
@@ -665,10 +898,22 @@ onMounted(() => {
 .btn-quick-confirm { background: var(--success); color: white; border: none; padding: 6px 12px; border-radius: 6px; font-weight: 700; font-size: 0.8rem; cursor: pointer; }
 .btn-text-danger { background: transparent; border: none; color: var(--danger); font-weight: 700; font-size: 0.8rem; cursor: pointer; text-decoration: underline; }
 
-/* Utilitaires */
+/* Utilitaires & Modals */
 .empty-state { padding: 64px 20px; text-align: center; color: var(--theme--foreground-subdued); display: flex; flex-direction: column; align-items: center; }
 .icon-huge { font-size: 4rem; opacity: 0.3; margin-bottom: 16px; }
 .no-data-small { text-align: center; padding: 32px; color: var(--theme--foreground-subdued); font-style: italic; }
+
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 200; padding: 16px; }
+.modal-card { background: var(--theme--background); padding: 32px; border-radius: 16px; width: 100%; max-width: 500px; box-shadow: 0 20px 60px rgba(0,0,0,0.2); max-height: 90vh; overflow-y: auto; }
+.modal-card h3 { margin: 0 0 8px 0; color: var(--theme--primary); font-weight: 900; font-size: 1.4rem; }
+.modal-desc { color: var(--theme--foreground-subdued); margin: 0 0 24px 0; font-size: 0.95rem; }
+
+.modal-actions, .form-actions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--theme--border-color-subdued); }
+.btn-cancel { background: transparent; border: 1px solid var(--theme--border-color); padding: 10px 20px; border-radius: 8px; font-weight: 700; cursor: pointer; color: var(--theme--foreground); transition: all 0.2s; }
+.btn-cancel:hover { background: var(--theme--background-subdued); }
+.btn-confirm { background: var(--theme--primary); color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 800; transition: filter 0.2s; }
+.btn-confirm:hover:not(:disabled) { filter: brightness(1.1); }
+.btn-confirm:disabled { opacity: 0.5; cursor: not-allowed; }
 
 @keyframes spin { to { transform: rotate(360deg); } }
 .spinner { width: 32px; height: 32px; border: 3px solid var(--theme--border-color); border-top-color: var(--theme--primary); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 16px; }
@@ -680,12 +925,14 @@ onMounted(() => {
 /* Mobile Strict */
 @media (max-width: 768px) {
   .mobile-hide { display: none !important; }
-  .header { flex-direction: column; align-items: stretch; gap: 12px; }
-  .refresh-btn { justify-content: center; }
+  .header { flex-direction: column; align-items: stretch; gap: 16px; }
+  .header-actions { justify-content: stretch; width: 100%; }
+  .header-actions button { flex: 1; justify-content: center; }
 
   .slots-grid { grid-template-columns: 1fr; }
   .slot-card { border-right: none; }
 
   .side-drawer { width: 100%; border-left: none; }
+  .form-row { flex-direction: column; gap: 0; }
 }
 </style>
