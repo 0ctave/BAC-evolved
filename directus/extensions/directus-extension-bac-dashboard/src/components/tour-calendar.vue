@@ -11,11 +11,11 @@
       <!-- Actions Globales -->
       <div class="header-actions">
         <button class="btn-outline" @click="showCreateVisiteModal = true">
-          <span class="material-icons">add_box</span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
           <span class="mobile-hide">Type de visite</span>
         </button>
         <button class="btn-primary" @click="showCreateSlotModal = true">
-          <span class="material-icons">add_alarm</span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="12" y1="14" x2="12" y2="18"/><line x1="10" y1="16" x2="14" y2="16"/></svg>
           <span class="mobile-hide">Nouveau créneau</span>
         </button>
         <div class="divider mobile-hide"></div>
@@ -29,7 +29,7 @@
     <div class="pending-alerts" v-if="globalPendingBookings.length > 0">
       <div class="alert-box">
         <div class="alert-icon">
-          <span class="material-icons">notification_important</span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
         </div>
         <div class="alert-content">
           <strong>{{ globalPendingBookings.length }} réservation(s) de visite en attente.</strong>
@@ -46,7 +46,7 @@
 
     <!-- État vide -->
     <div v-else-if="slots.length === 0" class="empty-state">
-      <span class="material-icons icon-huge">tour</span>
+      <svg class="icon-huge" xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/><line x1="9" y1="3" x2="9" y2="18"/><line x1="15" y1="6" x2="15" y2="21"/></svg>
       <h3>Aucun créneau à venir</h3>
       <p>Vous n'avez pas de visites prévues dans les prochains jours.</p>
       <button class="btn-primary mt-4" @click="showCreateSlotModal = true">Créer le premier créneau</button>
@@ -58,7 +58,7 @@
 
         <div class="tour-header">
           <div class="tour-icon-bg">
-            <span class="material-icons">local_activity</span>
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/></svg>
           </div>
           <div class="tour-header-text">
             <h3 class="tour-title">{{ visiteName }}</h3>
@@ -76,11 +76,11 @@
             <!-- Badge Date/Heure mis en évidence -->
             <div class="slot-datetime-badge">
               <div class="slot-date">
-                <span class="material-icons date-icon">event</span>
+                <svg class="date-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
                 {{ formatShortDate(slot.date_heure_debut) }}
               </div>
               <div class="slot-time">
-                <span class="material-icons time-icon">schedule</span>
+                <svg class="time-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                 {{ formatTime(slot.date_heure_debut) }}
               </div>
             </div>
@@ -127,7 +127,9 @@
             <span class="drawer-surtitle">{{ formatFullDate(selectedSlot.date_heure_debut) }} à {{ formatTime(selectedSlot.date_heure_debut) }}</span>
             <h3>{{ selectedSlot[config.visiteRelationField]?.nom || 'Détails du créneau' }}</h3>
           </div>
-          <button class="close-btn" @click="closeDrawer">×</button>
+          <button class="close-btn" @click="closeDrawer">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
         </div>
 
         <div class="drawer-stats">
@@ -147,7 +149,8 @@
           <div class="section-header">
             <h4>Liste des participants</h4>
             <button class="btn-add-manual" @click="isAddingManual = !isAddingManual">
-              <span class="material-icons">{{ isAddingManual ? 'close' : 'add' }}</span>
+              <svg v-if="!isAddingManual" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              <svg v-else xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
               {{ isAddingManual ? 'Fermer' : 'Ajouter' }}
             </button>
           </div>
@@ -236,7 +239,7 @@
             >
               <div class="b-header">
                 <div class="b-client">
-                  <span class="material-icons">person</span>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                   {{ getClientName(booking) }}
                 </div>
                 <div class="b-tickets">
@@ -352,7 +355,6 @@ import { ref, onMounted, computed } from 'vue';
 import { format, parseISO } from 'date-fns';
 import { fr } from 'date-fns/locale';
 
-// Configuration
 const config = {
   visitesCollection: 'visites',
   slotsCollection: 'creneaux_visites',
@@ -372,17 +374,15 @@ const creatingData = ref(false);
 const slots = ref<any[]>([]);
 const allBookings = ref<any[]>([]);
 const clientsList = ref<any[]>([]);
-const visitesList = ref<any[]>([]); // Liste des types de visites (pour le select)
+const visitesList = ref<any[]>([]);
 
 const selectedSlot = ref<any | null>(null);
 
-// Formulaire Ajout Réservation Manuelle
 const isAddingManual = ref(false);
 const isNewClient = ref(false);
 const manualForm = ref({ client_id: '', quantite: 1 });
 const clientForm = ref({ prenom: '', nom: '', email: '', numero: '', langue: 'fr' });
 
-// Modals de création
 const showCreateVisiteModal = ref(false);
 const visiteForm = ref({ nom: '', description: '', duree_minutes: 60, prix_unitaire: 10 });
 
@@ -390,13 +390,11 @@ const showCreateSlotModal = ref(false);
 const slotForm = ref({ visite_id: '', date_heure_debut: '', capacite_max: 20 });
 
 
-// --- FETCH DATA ---
 async function fetchData() {
   loading.value = true;
   try {
     const today = new Date().toISOString().split('T')[0];
 
-    // 1. Récupérer les créneaux futurs
     const slotsRes = await api.get(`/items/${config.slotsCollection}`, {
       params: {
         filter: { date_heure_debut: { _gte: today } },
@@ -407,7 +405,6 @@ async function fetchData() {
     });
     slots.value = slotsRes.data.data;
 
-    // 2. Récupérer les réservations des créneaux
     if (slots.value.length > 0) {
       const slotIds = slots.value.map(s => s.id);
       const bookingsRes = await api.get(`/items/${config.bookingsCollection}`, {
@@ -422,13 +419,11 @@ async function fetchData() {
       allBookings.value = [];
     }
 
-    // 3. Récupérer la liste des clients
     const clientsRes = await api.get(`/items/${config.clientsCollection}`, {
       params: { fields: ['id', 'nom', 'prenom', 'email'], limit: -1, sort: '-date_created' }
     });
     clientsList.value = clientsRes.data.data;
 
-    // 4. Récupérer la liste des types de visites (pour la création de créneau)
     const visitesRes = await api.get(`/items/${config.visitesCollection}`, {
       params: { fields: ['id', 'nom'], limit: -1 }
     });
@@ -441,15 +436,13 @@ async function fetchData() {
   }
 }
 
-// --- CREATION METHODES ---
-
 async function submitVisite() {
   creatingData.value = true;
   try {
     await api.post(`/items/${config.visitesCollection}`, visiteForm.value);
     showCreateVisiteModal.value = false;
     visiteForm.value = { nom: '', description: '', duree_minutes: 60, prix_unitaire: 10 };
-    await fetchData(); // Met à jour la liste des visites pour le select
+    await fetchData();
   } catch (err) {
     alert("Erreur lors de la création de la visite.");
     console.error(err);
@@ -464,7 +457,7 @@ async function submitSlot() {
     await api.post(`/items/${config.slotsCollection}`, slotForm.value);
     showCreateSlotModal.value = false;
     slotForm.value = { visite_id: '', date_heure_debut: '', capacite_max: 20 };
-    await fetchData(); // Met à jour la grille
+    await fetchData();
   } catch (err) {
     alert("Erreur lors de la création du créneau.");
     console.error(err);
@@ -474,7 +467,6 @@ async function submitSlot() {
 }
 
 
-// --- COMPUTED / LOGIQUE D'AFFICHAGE ---
 const groupedSlots = computed(() => {
   const groups: Record<string, any[]> = {};
   slots.value.forEach(slot => {
@@ -538,7 +530,6 @@ function getCapacityColorClass(slot: any) {
   return 'is-empty';
 }
 
-// --- ACTIONS RESERVATIONS ---
 function openSlot(slot: any) {
   selectedSlot.value = slot;
   isAddingManual.value = false;
@@ -580,7 +571,6 @@ async function submitManualReservation() {
   try {
     let finalClientId = manualForm.value.client_id;
 
-    // Si nouveau client, on le crée d'abord
     if (isNewClient.value) {
       const cRes = await api.post(`/items/${config.clientsCollection}`, clientForm.value);
       finalClientId = cRes.data.data.id;
@@ -594,12 +584,8 @@ async function submitManualReservation() {
     };
 
     await api.post(`/items/${config.bookingsCollection}`, payload);
-
-    // Rafraîchissement des données
     await fetchData();
     isAddingManual.value = false;
-
-    // Maintien du tiroir ouvert sur le bon créneau
     selectedSlot.value = slots.value.find(s => s.id === selectedSlot.value.id) || null;
 
   } catch (err) {
@@ -610,7 +596,6 @@ async function submitManualReservation() {
   }
 }
 
-// --- FORMATTING HELPERS ---
 function normalizeStatus(val: string) {
   if (!val) return 'en_attente';
   const v = val.toLowerCase();
@@ -768,7 +753,6 @@ onMounted(() => {
   justify-content: center;
   box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
-.tour-icon-bg .material-icons { font-size: 1.5rem; }
 
 .tour-header-text { display: flex; flex-direction: column; }
 .tour-title { margin: 0; font-size: 1.2rem; font-weight: 800; color: var(--theme--foreground); }
@@ -805,7 +789,7 @@ onMounted(() => {
 
 .slot-date { display: flex; align-items: center; gap: 6px; font-weight: 700; font-size: 0.9rem; color: var(--theme--foreground); text-transform: capitalize; }
 .slot-time { display: flex; align-items: center; gap: 6px; font-weight: 900; font-size: 1.1rem; color: var(--theme--primary); }
-.date-icon, .time-icon { font-size: 1.1rem; color: var(--theme--foreground-subdued); }
+.date-icon, .time-icon { color: var(--theme--foreground-subdued); }
 
 .slot-info { display: flex; flex-direction: column; gap: 12px; }
 
@@ -884,7 +868,7 @@ onMounted(() => {
 
 .b-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
 .b-client { display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 1.05rem; }
-.b-client .material-icons { color: var(--theme--foreground-subdued); font-size: 1.2rem; }
+.b-client svg { color: var(--theme--foreground-subdued); }
 .b-tickets { background: var(--theme--background-subdued); padding: 4px 10px; border-radius: 20px; font-size: 0.85rem; color: var(--theme--foreground-subdued); }
 .b-tickets strong { color: var(--theme--foreground); font-size: 1rem; }
 
@@ -900,7 +884,7 @@ onMounted(() => {
 
 /* Utilitaires & Modals */
 .empty-state { padding: 64px 20px; text-align: center; color: var(--theme--foreground-subdued); display: flex; flex-direction: column; align-items: center; }
-.icon-huge { font-size: 4rem; opacity: 0.3; margin-bottom: 16px; }
+.icon-huge { opacity: 0.3; margin-bottom: 16px; color: var(--theme--primary); }
 .no-data-small { text-align: center; padding: 32px; color: var(--theme--foreground-subdued); font-style: italic; }
 
 .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 200; padding: 16px; }

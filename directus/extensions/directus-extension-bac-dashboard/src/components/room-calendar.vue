@@ -16,14 +16,20 @@
           <button class="nav-btn text-btn mobile-hide" @click="goToToday">Aujourd'hui</button>
         </div>
 
-        <div class="mode-controls">
+        <div class="header-actions">
           <button
               class="nav-btn text-btn mode-btn"
               :class="{ active: isSelectionMode }"
               @click.stop="toggleSelectionMode"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
             <span class="mobile-hide ml-2">{{ isSelectionMode ? 'Mode Blocage' : 'Bloquer Dates' }}</span>
+          </button>
+
+          <!-- NOUVEAU BOUTON : Création Réservation Manuelle -->
+          <button class="btn-primary" @click="openCreateBookingModal">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            <span class="mobile-hide ml-2">Nouvelle Réservation</span>
           </button>
         </div>
 
@@ -108,7 +114,9 @@
       <div v-if="selectedDay" class="side-drawer" @click.stop>
         <div class="drawer-header">
           <h3>{{ formatFullDate(selectedDay.date) }}</h3>
-          <button class="close-btn" @click="selectedDay = null">×</button>
+          <button class="close-btn" @click="selectedDay = null">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
         </div>
 
         <div class="drawer-content">
@@ -129,7 +137,7 @@
             <div class="card-body">
               <div class="client-info">
                 <div class="client-icon">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                 </div>
                 <div class="client-text">
                   <div class="name">{{ getClientName(booking) }}</div>
@@ -177,7 +185,7 @@
       </div>
     </transition>
 
-    <!-- Block Dates Modal -->
+    <!-- Modal : Bloquer des dates -->
     <div v-if="showBlockModal" class="modal-overlay" @click.self="cancelSelection">
       <div class="modal-card">
         <h3>Bloquer une période</h3>
@@ -200,6 +208,102 @@
           <button class="btn-cancel" @click="cancelSelection">Annuler</button>
           <button class="btn-confirm" @click="confirmBlockDates" :disabled="!blockRoomId || submitting">
             {{ submitting ? '...' : 'Confirmer le blocage' }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal : Ajouter une Réservation Manuelle (Chambre) -->
+    <div v-if="showCreateBookingModal" class="modal-overlay" @click.self="showCreateBookingModal = false">
+      <div class="modal-card">
+        <h3>Nouvelle Réservation</h3>
+        <p class="modal-desc">Ajoutez manuellement une réservation de chambre.</p>
+
+        <div class="modal-body">
+          <!-- Sélection Chambre et Dates -->
+          <div class="form-group" v-if="!roomFilter">
+            <label>Chambre *</label>
+            <select v-model="manualForm.chambre_id" class="form-input">
+              <option value="" disabled>-- Sélectionner une chambre --</option>
+              <option v-for="r in visibleRooms" :key="r.id" :value="r.id">{{ r.name }}</option>
+            </select>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group flex-1">
+              <label>Date d'arrivée *</label>
+              <input type="date" v-model="manualForm.date_arrivee" class="form-input" />
+            </div>
+            <div class="form-group flex-1">
+              <label>Date de départ *</label>
+              <input type="date" v-model="manualForm.date_depart" class="form-input" />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Option Parking</label>
+            <select v-model="manualForm.parking" class="form-input">
+              <option value="no_parking">Sans Parking</option>
+              <option value="parking">Avec Parking</option>
+            </select>
+          </div>
+
+          <hr class="modal-divider" />
+
+          <!-- Partie Client -->
+          <div class="client-toggle">
+            <button class="toggle-btn" :class="{ active: !isNewClient }" @click="isNewClient = false">Client existant</button>
+            <button class="toggle-btn" :class="{ active: isNewClient }" @click="isNewClient = true">Nouveau client</button>
+          </div>
+
+          <div v-if="!isNewClient" class="form-group">
+            <label>Rechercher le client *</label>
+            <select v-model="manualForm.client_id" class="form-input">
+              <option value="">-- Sélectionner un client --</option>
+              <option v-for="client in clientsList" :key="client.id" :value="client.id">
+                {{ client.prenom }} {{ client.nom }} ({{ client.email || 'Sans email' }})
+              </option>
+            </select>
+          </div>
+
+          <div v-else class="new-client-form">
+            <div class="form-row">
+              <div class="form-group flex-1">
+                <label>Prénom *</label>
+                <input type="text" v-model="clientForm.prenom" class="form-input" placeholder="Jean" />
+              </div>
+              <div class="form-group flex-1">
+                <label>Nom *</label>
+                <input type="text" v-model="clientForm.nom" class="form-input" placeholder="Dupont" />
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Email</label>
+              <input type="email" v-model="clientForm.email" class="form-input" placeholder="jean.dupont@email.com" />
+            </div>
+            <div class="form-row">
+              <div class="form-group flex-1">
+                <label>Téléphone</label>
+                <input type="tel" v-model="clientForm.numero" class="form-input" placeholder="+33 6..." />
+              </div>
+              <div class="form-group flex-1">
+                <label>Langue *</label>
+                <select v-model="clientForm.langue" class="form-input">
+                  <option value="fr">Français</option>
+                  <option value="en">Anglais</option>
+                  <option value="es">Espagnol</option>
+                  <option value="de">Allemand</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="form-actions">
+          <button class="btn-cancel" @click="showCreateBookingModal = false">Annuler</button>
+          <button class="btn-confirm" @click="submitManualReservation" :disabled="submitting || !isManualFormValid">
+            {{ submitting ? 'Création...' : 'Valider la réservation' }}
           </button>
         </div>
       </div>
@@ -251,6 +355,13 @@ const statusOptions = [
   { value: 'indisponible', label: 'Indisponible' },
 ];
 const weekDays = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'];
+
+// --- NOUVEAU : DONNÉES RÉSERVATION MANUELLE ---
+const clientsList = ref<any[]>([]);
+const showCreateBookingModal = ref(false);
+const isNewClient = ref(false);
+const manualForm = ref({ chambre_id: '', date_arrivee: '', date_depart: '', client_id: '', parking: 'no_parking' });
+const clientForm = ref({ prenom: '', nom: '', email: '', numero: '', langue: 'fr' });
 
 // --- Helpers ---
 function normalizeStatus(val: string) {
@@ -401,7 +512,6 @@ function getCalendarDays(baseDate: Date) {
             color: room.color,
             status: normalizeStatus(booking[config.statusField]),
             label: getClientName(booking),
-            // Affiche le nom le Lundi, SAUF si le client est arrivé la veille (dimanche)
             showLabel: date.getDay() === 1 && isAfter(date, addDays(bStart, 1)),
             connectLeft: true,
             connectRight: true
@@ -413,7 +523,7 @@ function getCalendarDays(baseDate: Date) {
             color: room.color,
             status: normalizeStatus(booking[config.statusField]),
             label: getClientName(booking),
-            showLabel: true, // Toujours afficher au Check-In
+            showLabel: true,
             connectLeft: false,
             connectRight: !isDeparture
           });
@@ -455,8 +565,74 @@ async function fetchData() {
       }
     });
     bookings.value = bookingsRes.data.data;
+
+    // Récupérer la liste des clients pour le formulaire manuel
+    const clientsRes = await api.get(`/items/clients`, {
+      params: { fields: ['id', 'nom', 'prenom', 'email'], limit: -1, sort: '-date_created' }
+    });
+    clientsList.value = clientsRes.data.data;
+
   } catch (err: any) { console.error(err); } finally { loading.value = false; }
 }
+
+// --- ACTIONS RESERVATIONS MANUELLES ---
+
+function openCreateBookingModal() {
+  manualForm.value = {
+    chambre_id: props.roomFilter ? (visibleRooms.value[0]?.id || '') : '',
+    date_arrivee: '',
+    date_depart: '',
+    client_id: '',
+    parking: 'no_parking'
+  };
+  clientForm.value = { prenom: '', nom: '', email: '', numero: '', langue: 'fr' };
+  isNewClient.value = false;
+  showCreateBookingModal.value = true;
+}
+
+const isManualFormValid = computed(() => {
+  if (!manualForm.value.chambre_id || !manualForm.value.date_arrivee || !manualForm.value.date_depart) return false;
+  if (isNewClient.value) {
+    return clientForm.value.prenom && clientForm.value.nom && clientForm.value.langue;
+  }
+  return !!manualForm.value.client_id;
+});
+
+async function submitManualReservation() {
+  if (!isManualFormValid.value) return;
+
+  submitting.value = true;
+  try {
+    let finalClientId = manualForm.value.client_id;
+
+    if (isNewClient.value) {
+      const cRes = await api.post(`/items/clients`, clientForm.value);
+      finalClientId = cRes.data.data.id;
+    }
+
+    const payload = {
+      [config.roomRelationField]: manualForm.value.chambre_id,
+      client: finalClientId,
+      [config.roomStartDateField]: manualForm.value.date_arrivee,
+      [config.roomEndDateField]: manualForm.value.date_depart,
+      parking: manualForm.value.parking,
+      [config.statusField]: 'confirmee',
+    };
+
+    await api.post(`/items/${config.roomBookingsCollection}`, payload);
+    await fetchData();
+    showCreateBookingModal.value = false;
+    window.dispatchEvent(new Event('hotel-booking-updated'));
+
+  } catch (err) {
+    alert("Erreur lors de la création de la réservation.");
+    console.error(err);
+  } finally {
+    submitting.value = false;
+  }
+}
+
+// ----------------------------------------
 
 async function confirmBlockDates() {
   if (!selectionStart.value || !selectionEnd.value || !blockRoomId.value) return;
@@ -520,9 +696,7 @@ onUnmounted(() => {
 
 <style scoped>
 /* === RESETS ET CONTENEUR PRINCIPAL === */
-.calendar-container, .calendar-container * {
-  box-sizing: border-box;
-}
+.calendar-container, .calendar-container * { box-sizing: border-box; }
 
 .calendar-container {
   height: 100%;
@@ -585,8 +759,16 @@ onUnmounted(() => {
 .icon-btn { width: 40px; padding: 0; }
 .text-btn { padding: 0 16px; font-weight: 700; font-size: 0.9rem; }
 
-.mode-controls { min-width: 0; flex-shrink: 1; }
-.mode-btn.active { background: var(--theme--primary); color: white; border-color: var(--theme--primary); }
+.header-actions { display: flex; align-items: center; gap: 12px; min-width: 0; }
+
+.btn-primary {
+  display: flex; align-items: center; justify-content: center;
+  background: var(--theme--primary); color: white; border: 1px solid var(--theme--primary);
+  padding: 0 16px; height: 40px; border-radius: 10px; font-weight: 700; font-size: 0.9rem; cursor: pointer; transition: all 0.2s;
+}
+.btn-primary:hover { filter: brightness(1.1); transform: scale(1.02); }
+
+.mode-btn.active { background: var(--theme--background-subdued); border-color: var(--theme--foreground); color: var(--theme--foreground); }
 
 .month-label { font-size: 1.1rem; font-weight: 800; margin: 0; text-transform: capitalize; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; color: var(--theme--foreground); }
 
@@ -601,7 +783,7 @@ onUnmounted(() => {
   min-width: 0;
   display: flex;
   flex-direction: column;
-} /* CORRECTION DE L'ACCOLADE MANQUANTE ICI ! */
+}
 
 .calendars-row {
   display: flex;
@@ -611,28 +793,18 @@ onUnmounted(() => {
   width: 100%;
   min-width: 0;
 }
-@media (min-width: 900px) {
-  .calendars-row { flex-direction: row; }
-}
+@media (min-width: 900px) { .calendars-row { flex-direction: row; } }
 
-.single-calendar {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-  width: 100%;
-}
+.single-calendar { flex: 1; display: flex; flex-direction: column; min-width: 0; width: 100%; }
 
 .calendar-month-title { padding: 12px; margin: 0; text-transform: capitalize; font-weight: 800; text-align: center; border-bottom: 1px solid var(--theme--border-color-subdued); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--theme--foreground); }
 
-/* En-tête des jours */
 .weekdays-row { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); margin-bottom: 12px; width: 100%; min-width: 0; }
 .weekday-header { text-align: center; font-weight: 800; color: var(--theme--foreground-subdued); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; overflow: hidden; text-overflow: ellipsis; }
 
 .desktop-day { display: inline; }
 .mobile-day { display: none; font-weight: 900; font-size: 0.75rem; }
 
-/* Grille principale */
 .calendar-grid {
   display: grid;
   grid-template-columns: repeat(7, minmax(0, 1fr));
@@ -644,53 +816,22 @@ onUnmounted(() => {
   min-width: 0;
 }
 
-/* Cellule neutre et sans overflow pour permettre aux segments de s'étendre sans être coupés */
 .day-cell { border-right: 1px solid var(--theme--border-color-subdued); border-bottom: 1px solid var(--theme--border-color-subdued); padding: 0; display: flex; flex-direction: column; position: relative; cursor: pointer; background: var(--theme--background); transition: background 0.15s; min-width: 0; }
 .day-cell:hover { background: var(--theme--background-subdued); }
 .day-cell.is-padding { opacity: 0.35; background: var(--theme--background-accent); }
 
-/* En-tête avec dimensions STRICTEMENT standardisées pour le numéro du jour */
-.day-header {
-  display: flex;
-  justify-content: flex-end;
-  margin-bottom: 4px;
-  z-index: 10;
-  min-width: 0;
-  padding: 4px 6px 0 6px;
-}
-
-.day-number {
-  font-size: 0.8rem;
-  font-weight: 700;
-  opacity: 0.7;
-  color: var(--theme--foreground);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 24px;   /* Hauteur fixe (garantit l'alignement vertical) */
-  min-width: 24px;/* Largeur fixe */
-  border-radius: 12px;
-  line-height: 1;
-}
-
-/* Le mode "Today" (corrigé sans glow, couleur texte rouge) */
-.is-today .day-number {
-  color: var(--theme--danger);
-  opacity: 1;
-  font-weight: 900;
-  background: transparent;
-}
+.day-header { display: flex; justify-content: flex-end; margin-bottom: 4px; z-index: 10; min-width: 0; padding: 4px 6px 0 6px; }
+.day-number { font-size: 0.8rem; font-weight: 700; opacity: 0.7; color: var(--theme--foreground); display: flex; align-items: center; justify-content: center; height: 24px; min-width: 24px; border-radius: 12px; line-height: 1; }
+.is-today .day-number { color: var(--theme--danger); opacity: 1; font-weight: 900; background: transparent; }
 
 .day-content { flex: 1; display: flex; flex-direction: column; gap: 4px; justify-content: center; min-width: 0; width: 100%; padding-bottom: 6px; }
 
-/* Barres de réservation */
 .room-lane { height: 24px; display: flex; position: relative; gap: 0; margin: 0; width: 100%; min-width: 0; }
 .day-cell.has-filter .room-lane { height: 36px; }
 
-/* === LOGIQUE LIGNES DE RÉSERVATION CONTINUES PARFAITES === */
 .booking-segment {
   height: 100%;
-  position: absolute; /* Sortie du flux pour ignorer les contraintes de flexbox et fusionner les bordures */
+  position: absolute;
   top: 0;
   display: flex;
   align-items: center;
@@ -700,42 +841,18 @@ onUnmounted(() => {
   transition: all 0.2s ease;
 }
 
-/* Nuit complète sans connexions (espacée au centre de la case) */
 .booking-segment.full { left: 4px; right: 4px; border-radius: 4px; }
-
-/* Les connexions utilisent left: 0 ou right: -1px pour recouvrir la bordure d'1px au millimètre près */
 .booking-segment.full.connect-left { left: 0; right: 4px; border-radius: 0 4px 4px 0; box-shadow: inset 0 1px 0 rgba(255,255,255,0.1); }
 .booking-segment.full.connect-right { left: 4px; right: -1px; border-radius: 4px 0 0 4px; box-shadow: inset 0 1px 0 rgba(255,255,255,0.1); z-index: 6; }
 .booking-segment.full.connect-left.connect-right { left: 0; right: -1px; border-radius: 0; box-shadow: inset 0 1px 0 rgba(255,255,255,0.1); z-index: 6; }
-
-/* Fin de séjour : occupe exactement la moitié gauche */
 .booking-segment.check-out { left: 4px; width: calc(50% - 4px); border-radius: 4px; }
 .booking-segment.check-out.connect-left { left: 0; width: 50%; border-radius: 0 4px 4px 0; box-shadow: inset 0 1px 0 rgba(255,255,255,0.1); }
-
-/* Début de séjour : occupe exactement la moitié droite */
 .booking-segment.check-in { right: 4px; width: calc(50% - 4px); border-radius: 4px; }
 .booking-segment.check-in.connect-right { right: -1px; width: calc(50% + 1px); border-radius: 4px 0 0 4px; box-shadow: inset 0 1px 0 rgba(255,255,255,0.1); z-index: 6; }
-
-/* Variables compatibles Light et Dark Mode pour le segment indisponible */
 .booking-segment.is-blocked { background: var(--theme--foreground-subdued) !important; color: var(--theme--background) !important; }
 
-/* Texte dans la barre : Totalement libéré, il s'étend naturellement au-dessus des cases suivantes */
-.segment-label {
-  position: absolute;
-  left: 6px;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 0.65rem;
-  font-weight: 800;
-  color: white;
-  white-space: nowrap;
-  text-shadow: 0 1px 3px rgba(0,0,0,0.6);
-  letter-spacing: 0.02em;
-  z-index: 20;
-  pointer-events: none;
-}
+.segment-label { position: absolute; left: 6px; top: 50%; transform: translateY(-50%); font-size: 0.65rem; font-weight: 800; color: white; white-space: nowrap; text-shadow: 0 1px 3px rgba(0,0,0,0.6); letter-spacing: 0.02em; z-index: 20; pointer-events: none; }
 .day-cell.has-filter .segment-label { font-size: 0.75rem; }
-
 .day-cell.is-selected { background: var(--theme--primary-subdued); box-shadow: inset 0 0 0 2px var(--theme--primary); }
 .day-cell.in-selection-range { background: rgba(var(--primary-rgb), 0.1); }
 
@@ -750,8 +867,6 @@ onUnmounted(() => {
 .card-header { padding: 16px 20px; border-left: 6px solid var(--theme--border-color); display: flex; justify-content: space-between; align-items: center; background: var(--theme--background); }
 .room-name { font-weight: 800; font-size: 1rem; color: var(--theme--foreground); }
 .status-badge { font-size: 0.7rem; padding: 4px 12px; border-radius: 20px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.03em; }
-
-/* Variables Dark Mode compatibles pour le status */
 .status-badge.confirmee { background: var(--theme--primary-subdued); color: var(--theme--primary); }
 .status-badge.indisponible { background: var(--theme--foreground-subdued); color: var(--theme--background); }
 
@@ -768,17 +883,32 @@ onUnmounted(() => {
 .status-pill-btn { border: 1px solid var(--theme--border-color); background: none; font-size: 0.8rem; padding: 6px 14px; border-radius: 20px; cursor: pointer; font-weight: 700; transition: all 0.2s; flex: 1; min-width: 100px; text-align: center; color: var(--theme--foreground); }
 .status-pill-btn.active { background: var(--theme--primary); color: white; border-color: var(--theme--primary); box-shadow: 0 4px 8px var(--theme--primary-subdued); }
 .card-footer { padding: 16px 20px; border-top: 1px solid var(--theme--border-color-subdued); display: flex; justify-content: space-between; background: var(--theme--background-subdued); gap: 8px; }
-.btn-link { background: none; border: none; color: var(--theme--primary); font-size: 0.85rem; font-weight: 800; cursor: pointer; text-decoration: none; white-space: nowrap; }
-.btn-link.delete { color: var(--theme--danger); }
+.btn-link { background: none; border: none; color: var(--theme--danger); font-size: 0.85rem; font-weight: 800; cursor: pointer; text-decoration: underline; white-space: nowrap; }
 
-.modal-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 200; padding: 16px; }
-.modal-card { background: var(--theme--background); padding: 32px; border-radius: 20px; width: 100%; max-width: 400px; box-shadow: 0 20px 60px rgba(0,0,0,0.4); }
-.modal-card h3 { color: var(--theme--foreground); margin-top: 0; }
-.modal-select { width: 100%; padding: 12px; border-radius: 10px; margin-top: 12px; border: 1px solid var(--theme--border-color); font-weight: 600; background: var(--theme--background); color: var(--theme--foreground); }
-.modal-actions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px; flex-wrap: wrap; }
-.btn-confirm { background: var(--theme--primary); color: white; border: none; padding: 10px 24px; border-radius: 10px; cursor: pointer; font-weight: 800; width: 100%; }
-.btn-cancel { width: 100%; padding: 10px; background: none; border: 1px solid var(--theme--border-color); border-radius: 8px; cursor: pointer; font-weight: 700; color: var(--theme--foreground); }
-@media (min-width: 400px) { .btn-confirm { width: auto; } .btn-cancel { width: auto; } }
+/* MODALS */
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 200; padding: 16px; }
+.modal-card { background: var(--theme--background); padding: 32px; border-radius: 16px; width: 100%; max-width: 500px; box-shadow: 0 20px 60px rgba(0,0,0,0.2); max-height: 90vh; overflow-y: auto; }
+.modal-card h3 { margin: 0 0 8px 0; color: var(--theme--primary); font-weight: 900; font-size: 1.4rem; }
+.modal-desc { color: var(--theme--foreground-subdued); margin: 0 0 24px 0; font-size: 0.95rem; }
+
+.modal-divider { border: 0; border-top: 1px solid var(--theme--border-color-subdued); margin: 24px 0; }
+
+.client-toggle { display: flex; background: var(--theme--background-subdued); border-radius: 8px; padding: 4px; margin-bottom: 20px; }
+.toggle-btn { flex: 1; padding: 8px; border: none; background: transparent; border-radius: 6px; font-size: 0.85rem; font-weight: 700; color: var(--theme--foreground-subdued); cursor: pointer; transition: all 0.2s; }
+.toggle-btn.active { background: var(--theme--background); color: var(--theme--primary); box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+
+.form-row { display: flex; gap: 12px; }
+.flex-1 { flex: 1; min-width: 0; }
+.form-group { margin-bottom: 16px; }
+.form-group label { display: block; font-size: 0.85rem; font-weight: 700; margin-bottom: 6px; color: var(--theme--foreground-subdued); }
+.form-input { width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--theme--border-color); background: var(--theme--background); color: var(--theme--foreground); font-family: inherit; font-size: 0.95rem; }
+
+.modal-actions, .form-actions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--theme--border-color-subdued); }
+.btn-cancel { background: transparent; border: 1px solid var(--theme--border-color); padding: 10px 20px; border-radius: 8px; font-weight: 700; cursor: pointer; color: var(--theme--foreground); transition: all 0.2s; }
+.btn-cancel:hover { background: var(--theme--background-subdued); }
+.btn-confirm { background: var(--theme--primary); color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 800; transition: filter 0.2s; }
+.btn-confirm:hover:not(:disabled) { filter: brightness(1.1); }
+.btn-confirm:disabled { opacity: 0.5; cursor: not-allowed; }
 
 .loading-overlay { position: absolute; inset: 0; background: var(--theme--background); opacity: 0.8; z-index: 300; display: flex; align-items: center; justify-content: center; }
 .spinner { width: 40px; height: 40px; border: 4px solid var(--theme--border-color-subdued); border-top-color: var(--theme--primary); border-radius: 50%; animation: spin 0.8s linear infinite; }
@@ -791,7 +921,9 @@ onUnmounted(() => {
   .calendar-wrapper { padding: 12px 0px !important; }
 
   .calendar-header { flex-direction: column; align-items: stretch; gap: 12px; margin-bottom: 12px; padding: 0 12px; }
-  .nav-controls { justify-content: space-between; }
+  .header-actions { justify-content: stretch; width: 100%; gap: 8px; }
+  .header-actions button { flex: 1; justify-content: center; }
+
   .view-title h1, .view-title h2 { font-size: 1.1rem; text-align: center; margin-bottom: 8px; padding: 0 12px;}
   .month-label { text-align: center; }
   .legend { justify-content: center; padding: 0 12px; }
@@ -801,12 +933,9 @@ onUnmounted(() => {
   .weekday-header { font-size: 0.65rem; padding: 6px 0; border-right: 1px solid var(--theme--border-color-subdued); }
 
   .calendar-grid { grid-auto-rows: minmax(45px, 1fr); }
-
-  /* Plus aucun padding sur la cellule ! */
   .day-cell { padding: 0; border-bottom: 1px solid var(--theme--border-color-subdued); border-right: 1px solid var(--theme--border-color-subdued); min-width: 0; }
   .day-content { gap: 2px; padding-bottom: 2px; }
 
-  /* L'en-tête du jour gère les espacements en hauteur fixe */
   .day-header { justify-content: center; padding: 2px 2px 0 2px; margin-bottom: 1px; min-width: 0; }
   .day-number { font-size: 0.7rem; height: 18px; min-width: 18px; padding: 0 2px; }
 
@@ -815,7 +944,6 @@ onUnmounted(() => {
   .room-lane { height: 8px; margin-bottom: 1px; }
   .day-cell.has-filter .room-lane { height: 12px; }
 
-  /* Lignes continues absolues adaptées pour mobile */
   .booking-segment { border-radius: 2px !important; box-shadow: none !important; }
 
   .booking-segment.full { left: 2px !important; right: 2px !important; }
@@ -834,6 +962,8 @@ onUnmounted(() => {
   .side-drawer { width: 100%; border-left: none; max-width: 100vw; }
   .drawer-header, .drawer-content { padding: 16px; }
   .card-header, .card-body, .card-footer { padding: 12px; }
+
+  .form-row { flex-direction: column; gap: 0; }
 }
 
 .slide-enter-active, .slide-leave-active { transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
