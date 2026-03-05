@@ -326,9 +326,16 @@
             <small class="form-hint" v-if="visitesList.length === 0">Vous devez d'abord créer un type de visite.</small>
           </div>
 
-          <div class="form-group">
-            <label>Date et Heure de début *</label>
-            <input type="datetime-local" v-model="slotForm.date_heure_debut" class="form-input" />
+          <!-- Remplacement du datetime-local par deux champs séparés -->
+          <div class="form-row">
+            <div class="form-group flex-1">
+              <label>Date *</label>
+              <input type="date" v-model="slotForm.date" class="form-input" />
+            </div>
+            <div class="form-group flex-1">
+              <label>Heure *</label>
+              <input type="time" v-model="slotForm.time" class="form-input" />
+            </div>
           </div>
 
           <div class="form-group">
@@ -339,7 +346,7 @@
 
         <div class="modal-actions">
           <button class="btn-cancel" @click="showCreateSlotModal = false">Annuler</button>
-          <button class="btn-confirm" @click="submitSlot" :disabled="creatingData || !slotForm.visite_id || !slotForm.date_heure_debut">
+          <button class="btn-confirm" @click="submitSlot" :disabled="creatingData || !slotForm.visite_id || !slotForm.date || !slotForm.time">
             {{ creatingData ? '...' : 'Créer le créneau' }}
           </button>
         </div>
@@ -387,7 +394,8 @@ const showCreateVisiteModal = ref(false);
 const visiteForm = ref({ nom: '', description: '', duree_minutes: 60, prix_unitaire: 10 });
 
 const showCreateSlotModal = ref(false);
-const slotForm = ref({ visite_id: '', date_heure_debut: '', capacite_max: 20 });
+// Modification de la structure du formulaire pour séparer date et time
+const slotForm = ref({ visite_id: '', date: '', time: '', capacite_max: 20 });
 
 
 async function fetchData() {
@@ -455,9 +463,17 @@ async function submitVisite() {
 async function submitSlot() {
   creatingData.value = true;
   try {
-    await api.post(`/items/${config.slotsCollection}`, slotForm.value);
+    // Recombinaison de la date et de l'heure au format ISO pour Directus
+    const payload = {
+      visite_id: slotForm.value.visite_id,
+      date_heure_debut: `${slotForm.value.date}T${slotForm.value.time}:00`,
+      capacite_max: slotForm.value.capacite_max
+    };
+
+    await api.post(`/items/${config.slotsCollection}`, payload);
     showCreateSlotModal.value = false;
-    slotForm.value = { visite_id: '', date_heure_debut: '', capacite_max: 20 };
+    // Réinitialisation du formulaire avec les nouveaux champs
+    slotForm.value = { visite_id: '', date: '', time: '', capacite_max: 20 };
     await fetchData();
   } catch (err) {
     alert("Erreur lors de la création du créneau.");
