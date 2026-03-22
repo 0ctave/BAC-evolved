@@ -19,7 +19,7 @@
         <span class="text-xs font-bold text-primary tracking-widest uppercase">{l.tour_list_label || 'Activité'}</span>
     </div>
 
-    <div class="flex gap-4 overflow-x-auto pb-4 custom-scrollbar no-scrollbar scroll-smooth snap-x">
+    <div class="flex gap-4 overflow-x-auto pb-4 custom-scrollbar scroll-smooth snap-x">
         {#if loading}
             {#each Array(3) as _}
                 <div class="h-16 w-40 bg-limestone-100 dark:bg-iron-light/30 rounded-xl animate-pulse border border-black/5"></div>
@@ -69,6 +69,9 @@
 </div>
 
 <style>
-    .no-scrollbar::-webkit-scrollbar { display: none; }
-    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    .custom-scrollbar::-webkit-scrollbar { height: 6px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background-color: rgba(0,0,0,0.15); border-radius: 10px; }
+    :global(.dark) .custom-scrollbar::-webkit-scrollbar-thumb { background-color: rgba(255,255,255,0.15); }
+    .custom-scrollbar { scrollbar-width: thin; scrollbar-color: rgba(0,0,0,0.15) transparent; }
 </style>

@@ -113,7 +113,7 @@ const pageFields = [
 					block_split: [
 						'id',
 						'layout',
-						'image',
+						{ images: ['id', 'directus_file', 'sort'] },
 						{
 							traductions: ['langues_code', 'tagline', 'headline', 'content']
 						},
@@ -172,7 +172,7 @@ const pageFields = [
 						'layout',
 						{
 							traductions: ['langues_code', 'tagline', 'headline', 'description', 'address']
-						},
+						}
 					]
 				}
 			}

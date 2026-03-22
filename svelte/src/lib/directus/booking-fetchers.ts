@@ -24,7 +24,7 @@ export const fetchRooms = async (fetch: any) => {
 						'capacite_adultes',
 						'capacite_enfants',
 						'capacite_max',
-						'image', // <--- UPDATED: Fetch all fields within the image object
+						'image.*' // Fetch full image metadata
 					]
 				})
 			)
@@ -46,7 +46,6 @@ export const fetchRoomReservations = async (roomId: number | string, fetch: any)
 	const todayStr = new Date().toISOString().split('T')[0];
 
 	try {
-		// @ts-ignore : La collection reservations_chambre n'est pas dans votre schema TS partiel
 		const reservations = await directus.request(
 			withToken(
 				PUBLIC_DIRECTUS_TOKEN,
@@ -54,8 +53,8 @@ export const fetchRoomReservations = async (roomId: number | string, fetch: any)
 					filter: {
 						_and: [
 							{ chambre: { _eq: roomId } },
-							{ statut: { _in: ['confirmee', 'en_attente', 'indisponible'] } }, // On bloque aussi les "en attente" par sécurité
-							{ date_depart: { _gte: todayStr } } // Inutile de charger les vieilles réservations
+							{ statut: { _in: ['confirmee', 'en_attente', 'indisponible'] } },
+							{ date_depart: { _gte: todayStr } }
 						]
 					},
 					fields: ['date_arrivee', 'date_depart']
@@ -68,7 +67,6 @@ export const fetchRoomReservations = async (roomId: number | string, fetch: any)
 		return [];
 	}
 };
-
 
 /**
  * Récupère tous les créneaux de visite à venir pour le calendrier global
@@ -90,11 +88,6 @@ export const fetchAllUpcomingSlots = async (fetch: any) => {
 						'id',
 						'date_heure_debut',
 						'capacite_max',
-						// We fetch reservations to aggregate booked tickets manually
-						// @ts-ignore
-						'reservations.quantite_billets',
-						// @ts-ignore
-						'reservations.statut',
 						// @ts-ignore
 						'visite_id.id',
 						// @ts-ignore
@@ -108,7 +101,39 @@ export const fetchAllUpcomingSlots = async (fetch: any) => {
 				})
 			)
 		);
-		return slots as any[];
+
+		// Manual fetch of reservations to avoid nested field permission or alias issues
+		const slotIds = slots.map((s: any) => s.id);
+		let reservations: any[] = [];
+
+		if (slotIds.length > 0) {
+			reservations = await directus.request(
+				withToken(
+					PUBLIC_DIRECTUS_TOKEN,
+					readItems('reservations_visite', {
+						filter: {
+							creneau_visite: { _in: slotIds },
+							statut: { _in: ['confirmee', 'en_attente'] }
+						},
+						fields: ['creneau_visite', 'quantite_billets', 'statut'],
+						limit: -1
+					})
+				)
+			);
+		}
+
+		// Merge reservations into slots
+		return slots.map((slot: any) => {
+			const slotReservations = reservations.filter((r: any) => {
+				const rSlotId =
+					typeof r.creneau_visite === 'object' ? r.creneau_visite?.id : r.creneau_visite;
+				return String(rSlotId) === String(slot.id);
+			});
+			return {
+				...slot,
+				reservations_visite: slotReservations
+			};
+		});
 	} catch (error) {
 		console.error('Error fetching all slots:', error);
 		return [];
@@ -142,7 +167,7 @@ export const fetchVisites = async (fetch: any) => {
  * Récupère les détails d'un créneau pour le récapitulatif
  */
 export const fetchSlotDetails = async (slotId: number | string, fetch: any) => {
-	const { getDirectus, readItem, withToken } = useDirectus();
+	const { getDirectus, readItem, readItems, withToken } = useDirectus();
 	const directus = getDirectus(fetch);
 
 	const slot = await directus.request(
@@ -152,10 +177,6 @@ export const fetchSlotDetails = async (slotId: number | string, fetch: any) => {
 				fields: [
 					'date_heure_debut',
 					'capacite_max',
-					// @ts-ignore
-					'reservations.quantite_billets',
-					// @ts-ignore
-					'reservations.statut',
 					// @ts-ignore
 					'visite_id.nom',
 					// @ts-ignore
@@ -167,7 +188,23 @@ export const fetchSlotDetails = async (slotId: number | string, fetch: any) => {
 		)
 	);
 
-	return slot as any;
+	const reservations = await directus.request(
+		withToken(
+			PUBLIC_DIRECTUS_TOKEN,
+			readItems('reservations_visite', {
+				filter: {
+					creneau_visite: { _eq: slotId },
+					statut: { _in: ['confirmee', 'en_attente'] }
+				},
+				fields: ['quantite_billets', 'statut']
+			})
+		)
+	);
+
+	return {
+		...slot,
+		reservations_visite: reservations
+	} as any;
 };
 
 /**
@@ -183,7 +220,7 @@ export const fetchRoomDetails = async (roomId: number | string, fetch: any) => {
 		withToken(
 			PUBLIC_DIRECTUS_TOKEN,
 			readItem('chambres', safeId, {
-				fields: ['nom', 'prix_nuit', 'description', 'images']
+				fields: ['nom', 'prix_nuit', 'description', 'images.*']
 			})
 		)
 	);
@@ -205,7 +242,7 @@ export const fetchPricingRules = async (fetch: any) => {
 					filter: { statut: { _eq: 'actif' } },
 					fields: [
 						'*',
-						// @ts-ignore - Fetching the junction table data for related rooms
+						// @ts-ignore
 						'chambres_concernees.*',
 						// @ts-ignore
 						'visites_concernees.*'

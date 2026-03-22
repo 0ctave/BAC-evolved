@@ -51,16 +51,38 @@
 	const currentDbLocale = $derived(pageStore.data.locale || defaultLocale);
 
 	const href = $derived.by(() => {
-		if (type === 'page' && page) {
-			return getPageLink(page, currentDbLocale);
-		}
-		if (type === 'post' && post?.slug) {
-			const blogPrefix = currentDbLocale === 'fr' ? '/blog' : `/${currentDbLocale}/blog`;
-			return `${blogPrefix}/${post.slug}`;
-		}
-		return url || undefined;
-	});
+		let basePath = '';
 
+		// 1. Resolve internal paths
+		if (type === 'page' && page) {
+			basePath = getPageLink(page, currentDbLocale);
+		} else if (type === 'post' && post?.slug) {
+			const blogPrefix = currentDbLocale === defaultLocale ? '/blog' : `/${currentDbLocale}/blog`;
+			basePath = `${blogPrefix}/${post.slug}`;
+		}
+
+		// 2. If it's an internal link, check if the URL field has parameters to append
+		if (basePath) {
+			if (url) {
+				// Automatically prefix with '?' if the user forgot it (unless it's an anchor link starting with '#')
+				const prefix = url.startsWith('?') || url.startsWith('#') ? '' : '?';
+				return `${basePath}${prefix}${url}`;
+			}
+			return basePath;
+		}
+
+		// 3. Fallback: Standard URL linking logic with locale protection
+		if (url) {
+			if (url.startsWith('/')) {
+				if (currentDbLocale !== defaultLocale && !url.startsWith(`/${currentDbLocale}/`) && url !== `/${currentDbLocale}`) {
+					return url === '/' ? `/${currentDbLocale}` : `/${currentDbLocale}${url}`;
+				}
+			}
+			return url;
+		}
+
+		return undefined;
+	});
 
 	const buttonClasses = $derived(cn(
 			variant === 'default' && 'btn-atelier-primary',
@@ -94,7 +116,7 @@
 {/snippet}
 
 {#if href}
-	<a {href} class={buttonClasses} onclick={onClick} target={href.startsWith('/') ? undefined : '_blank'} rel={href.startsWith('/') ? undefined : 'noopener noreferrer'}>
+	<a {href} class={buttonClasses} onclick={onClick} target={href.startsWith('/') || href.startsWith('#') || href.startsWith('?') ? undefined : '_blank'} rel={href.startsWith('/') || href.startsWith('#') || href.startsWith('?') ? undefined : 'noopener noreferrer'}>
 		{@render content()}
 	</a>
 {:else}

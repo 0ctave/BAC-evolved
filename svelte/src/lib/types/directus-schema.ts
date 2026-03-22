@@ -374,10 +374,10 @@ export interface BlockSplit {
 	date_created?: string | null;
 	user_updated?: DirectusUser | string | null;
 	date_updated?: string | null;
-	image?: DirectusFile | string | null;
 	layout?: 'image_left' | 'image_right' | null;
 	bouton_groupe?: BlockButtonGroup | string | null;
 	traductions?: BlockSplitTranslation[] | null;
+	images?: BlockSplitImage[] | string[];
 }
 
 export interface BlockSplitBlockButtonGroup {
@@ -385,6 +385,14 @@ export interface BlockSplitBlockButtonGroup {
 	id: number;
 	block_split_id?: BlockSplit | string | null;
 	block_button_group_id?: BlockButtonGroup | string | null;
+}
+
+export interface BlockSplitImage {
+	/** @primaryKey */
+	id: number;
+	block_split?: BlockSplit | string | null;
+	directus_file?: DirectusFile | string | null;
+	sort?: number | null;
 }
 
 export interface BlockSplitTranslation {
@@ -1294,6 +1302,7 @@ export interface Schema {
 	block_richtext_translations: BlockRichtextTranslation[];
 	block_split: BlockSplit[];
 	block_split_block_button_group: BlockSplitBlockButtonGroup[];
+	block_split_images: BlockSplitImage[];
 	block_split_translations: BlockSplitTranslation[];
 	chambres: Chambre[];
 	chambres_files: ChambresFile[];
@@ -1378,6 +1387,7 @@ export enum CollectionNames {
 	block_richtext_translations = 'block_richtext_translations',
 	block_split = 'block_split',
 	block_split_block_button_group = 'block_split_block_button_group',
+	block_split_images = 'block_split_images',
 	block_split_translations = 'block_split_translations',
 	chambres = 'chambres',
 	chambres_files = 'chambres_files',

@@ -118,12 +118,13 @@
 @layer components {
 	/* --- GLASS PANEL (Strong Borders) --- */
 	.panel-backdrop {
-		@apply bg-limestone-50/80 dark:bg-[#181719]/80 backdrop-blur-md
-			/* Strong Black/White Borders */
-		border-2 border-black dark:border-white
-			/* Optional: Hard Shadow for pop */
-		shadow-[4px_4px_0px_0px_#000] dark:shadow-[4px_4px_0px_0px_#fff]
-		transition-all duration-300;
+		@apply transition-all duration-300
+			/* Background & Blur on desktop only */
+		bg-limestone-50/80 dark:bg-[#181719]/80 backdrop-blur-md
+			/* Borders on desktop only */
+		border-2 md:border-black md:dark:border-white
+			/* Shadow on desktop only */
+		md:shadow-[4px_4px_0px_0px_#000] md:dark:shadow-[4px_4px_0px_0px_#fff];
 	}
 
 	/* --- TYPOGRAPHY --- */
@@ -333,6 +334,6 @@
 	}
 
 	.legend-indicator.past {
-		@apply bg-iron/5 border-iron/10 opacity-30 dark:bg-limestone-100/5 dark:border-limestone-100/10;
+		@apply bg-iron/5 border-iron/10 dark:bg-limestone-100/5 dark:border-limestone-100/10;
 	}
 }

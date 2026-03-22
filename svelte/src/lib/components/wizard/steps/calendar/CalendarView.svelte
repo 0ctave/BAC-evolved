@@ -1,6 +1,6 @@
 <script lang="ts">
-    import { RangeCalendar, type DateValue, type DateRange } from "bits-ui";
-    import { getLocalTimeZone, today, isSameDay, DateFormatter } from "@internationalized/date";
+    import { RangeCalendar, type DateRange } from "bits-ui";
+    import { getLocalTimeZone, today, isSameDay, type DateValue, DateFormatter } from "@internationalized/date";
     import { slide, scale, fade } from 'svelte/transition';
     import { quintOut, cubicOut } from 'svelte/easing';
     import { page } from "$app/state";

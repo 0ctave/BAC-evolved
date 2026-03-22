@@ -1,7 +1,7 @@
 <script lang="ts">
     import { slide, fade, fly, scale } from 'svelte/transition';
     import { booking } from '$lib/logic/booking.svelte';
-    import type { CreneauxVisite, Visite } from '$lib/types/directus-schema';
+    import type { CreneauxVisite, Visite, ReservationsVisite } from '$lib/types/directus-schema';
 
     interface Props {
         slots: CreneauxVisite[];
@@ -37,8 +37,25 @@
         });
     }
 
-    function getRemaining(slot: CreneauxVisite) {
-        return Math.max(0, slot.capacite_max - (slot.place_reservee || 0));
+    /**
+     * Capacity Calculation
+     */
+    function getRemaining(slot: any) {
+        const total = Number(slot.capacite_max) || 0;
+        let reserved = 0;
+
+        const reservations = slot.reservations_visite;
+
+        if (Array.isArray(reservations)) {
+            reserved = reservations.reduce((acc: number, r: ReservationsVisite) => {
+                if (r && (r.statut === 'confirmee' || r.statut === 'en_attente')) {
+                    return acc + (Number(r.quantite_billets) || 0);
+                }
+                return acc;
+            }, 0);
+        }
+
+        return Math.max(0, total - reserved);
     }
 </script>
 
@@ -78,10 +95,10 @@
                             class="p-5 rounded-2xl border-2 transition-all duration-300 flex items-center justify-between group relative overflow-hidden
                         {isSelected
                             ? 'border-primary bg-primary text-white shadow-sm translate-y-[-2px]'
-                            : 'border-iron/10 bg-white dark:bg-[#252426] text-iron hover:border-primary/50'}"
+                            : 'border-iron/10 bg-white dark:bg-[#252426] text-iron hover:border-primary/50'}
+                        {remaining <= 0 ? 'opacity-50 cursor-not-allowed grayscale' : ''}"
                     >
                         <div class="flex items-center gap-6 relative z-10 min-w-0 flex-1 text-left">
-                            <!-- TIME RANGE ON THE LEFT -->
                             <div class="flex-shrink-0 w-32">
                                 <span class="text-xl font-bold tabular-nums leading-none tracking-tight">
                                     {formatTimeRange(slot.date_heure_debut, v?.duree_minutes || 0)}
@@ -99,7 +116,9 @@
                         </div>
 
                         <div class="text-right relative z-10 flex flex-col items-end ml-4">
-                            <span class="text-[10px] font-bold uppercase tracking-widest opacity-70 block mb-1 leading-none">Places</span>
+                            <span class="text-[10px] font-bold uppercase tracking-widest opacity-70 block mb-1 leading-none">
+                                {remaining <= 0 ? 'Complet' : 'Places'}
+                            </span>
                             <div class="flex items-center gap-2">
                                 <span class="font-bold text-lg tabular-nums">{remaining}</span>
                                 {#if remaining > 0 && remaining < 5}

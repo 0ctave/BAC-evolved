@@ -1,4 +1,4 @@
-import { CalendarDate, today, getLocalTimeZone } from '@internationalized/date';
+import { CalendarDate, today, getLocalTimeZone, parseDate } from '@internationalized/date';
 
 export type BookingType = 'CHAMBRE' | 'VISITE' | null;
 
@@ -53,35 +53,79 @@ class BookingMachine {
 		this.labels = newLabels || {};
 	}
 
+	initFromUrl(url: URL) {
+		const params = url.searchParams;
+
+		// 1. Type
+		const t = params.get('type') as BookingType;
+		if (t === 'CHAMBRE' || t === 'VISITE') {
+			this.type = t;
+			this.step = 1; // Auto-advance past the initial selection step
+		}
+
+		// 2. Room pre-selection
+		const roomId = params.get('room');
+		if (roomId) this.roomSelection.chambre = Number(roomId);
+
+		const checkin = params.get('checkin');
+		if (checkin) {
+			try {
+				this.roomSelection.date_arrivee = parseDate(checkin);
+			} catch (e) {
+				console.warn('Invalid checkin URL format (use YYYY-MM-DD)');
+			}
+		}
+
+		const checkout = params.get('checkout');
+		if (checkout) {
+			try {
+				this.roomSelection.date_depart = parseDate(checkout);
+			} catch (e) {
+				console.warn('Invalid checkout URL format (use YYYY-MM-DD)');
+			}
+		}
+
+		const adults = params.get('adults');
+		if (adults) this.roomSelection.adults = parseInt(adults, 10) || 1;
+
+		const children = params.get('children');
+		if (children) this.roomSelection.children = parseInt(children, 10) || 0;
+
+		// 3. Tour pre-selection
+		const tourId = params.get('tour');
+		if (tourId) this.tourSelection.creneau_visite = tourId;
+
+		const tickets = params.get('tickets');
+		if (tickets) this.tourSelection.quantite_billets = parseInt(tickets, 10) || 1;
+
+		// 4. Override step if explicitly provided (e.g., skip to summary if you passed EVERYTHING)
+		const stepParam = params.get('step');
+		if (stepParam) {
+			const parsedStep = parseInt(stepParam, 10);
+			if (!isNaN(parsedStep) && parsedStep >= 0 && parsedStep <= 3) {
+				this.step = parsedStep;
+			}
+		}
+	}
+
 	// Validation Granulaire (utilisée pour afficher les erreurs dans l'UI)
 	errors = $derived.by(() => {
 		return {
 			room: {
-				dates: (!this.roomSelection.date_arrivee || !this.roomSelection.date_depart)
-					? this.labels.error_room_dates_missing
-					: null,
-				chambre: (!this.roomSelection.chambre)
-					? this.labels.error_room_missing
-					: null
+				dates:
+					!this.roomSelection.date_arrivee || !this.roomSelection.date_depart
+						? this.labels.error_room_dates_missing
+						: null,
+				chambre: !this.roomSelection.chambre ? this.labels.error_room_missing : null
 			},
 			customer: {
-				prenom:
-					this.customer.prenom.trim().length < 2
-						? this.labels.error_firstname_short
-						: null,
-				nom:
-					this.customer.nom.trim().length < 2
-						? this.labels.error_lastname_short
-						: null,
+				prenom: this.customer.prenom.trim().length < 2 ? this.labels.error_firstname_short : null,
+				nom: this.customer.nom.trim().length < 2 ? this.labels.error_lastname_short : null,
 				email: !this.EMAIL_REGEX.test(this.customer.email.toLowerCase())
 					? this.labels.error_email_invalid
 					: null,
-				telephone: !this.customer.isPhoneValid
-					? this.labels.error_phone_invalid
-					: null,
-				langue: !this.customer.langue
-					? this.labels.error_lang_required
-					: null
+				telephone: !this.customer.isPhoneValid ? this.labels.error_phone_invalid : null,
+				langue: !this.customer.langue ? this.labels.error_lang_required : null
 			}
 		};
 	});

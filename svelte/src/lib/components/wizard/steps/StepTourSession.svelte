@@ -5,8 +5,8 @@
     import type { DateValue } from "@internationalized/date";
     import { onMount, untrack } from 'svelte';
     import { fade, slide } from 'svelte/transition';
+    import type { ReservationsVisite } from '$lib/types/directus-schema';
 
-    // Sub-components using absolute paths
     import TourCalendarView from "$lib/components/wizard/steps/tour/TourCalendarView.svelte";
     import TourList from "$lib/components/wizard/steps/tour/TourList.svelte";
     import SlotSelector from "$lib/components/wizard/steps/tour/SlotSelector.svelte";
@@ -16,7 +16,6 @@
     let allSlots = $state<any[]>([]);
     let loadingData = $state(true);
 
-    // Filter states
     let value = $state<DateValue | undefined>(
         booking.tourSelection.selectedDate ? (booking.tourSelection.selectedDate as unknown as DateValue) : undefined
     );
@@ -38,7 +37,6 @@
         }
     });
 
-    // Calendar indicators (dots) strictly for the chosen activity
     const availableDates = $derived.by(() => {
         const set = new Set<string>();
         allSlots.forEach(slot => {
@@ -51,11 +49,6 @@
         return set;
     });
 
-    /**
-     * PERSISTENT SLOT LOGIC:
-     * - If date is selected: show slots for that day.
-     * - If no date selected: show next 3 sessions chronologicaly.
-     */
     let filteredSlots = $derived.by(() => {
         let base = allSlots.filter(slot => {
             const sId = typeof slot.visite_id === 'object' ? slot.visite_id?.id : slot.visite_id;
@@ -86,7 +79,39 @@
         return visites.find(v => String(v.id) === String(sId));
     });
 
-    const maxPlacesAvailable = $derived(currentSlot ? (currentSlot.capacite_max - (currentSlot.place_reservee || 0)) : 10);
+    /**
+     * Capacity Calculation
+     */
+    const maxPlacesAvailable = $derived.by(() => {
+        if (!currentSlot) return 0;
+
+        const total = Number(currentSlot.capacite_max) || 0;
+        let reserved = 0;
+
+        const reservations = currentSlot.reservations_visite;
+
+        if (Array.isArray(reservations)) {
+            reserved = reservations.reduce((acc, r: ReservationsVisite) => {
+                if (r && (r.statut === 'confirmee' || r.statut === 'en_attente')) {
+                    return acc + (Number(r.quantite_billets) || 0);
+                }
+                return acc;
+            }, 0);
+        }
+
+        return Math.max(0, total - reserved);
+    });
+
+    $effect(() => {
+        const max = maxPlacesAvailable;
+        untrack(() => {
+            if (booking.tourSelection.quantite_billets > max && max > 0) {
+                booking.tourSelection.quantite_billets = max;
+            } else if (max <= 0 && booking.tourSelection.creneau_visite) {
+                booking.tourSelection.quantite_billets = 0;
+            }
+        });
+    });
 
     function handleVisiteSelect(id: number | 'all') {
         selectedVisiteId = id;
@@ -142,7 +167,6 @@
             </h3>
         </div>
 
-        <!-- LIST PERSISTENCE: Slot list stays visible -->
         <SlotSelector
                 slots={filteredSlots}
                 visites={visites}
@@ -166,18 +190,24 @@
 
         <div class="mt-auto pt-6 border-t-2 border-iron/5">
             {#if currentSlot && currentVisite}
-                <div class="bg-primary/5 border border-primary/20 rounded-2xl p-8 flex flex-col items-center justify-center text-center space-y-2 relative overflow-hidden" in:fade>
-                    <div class="absolute inset-0 bg-gradient-to-tr from-white/10 to-transparent pointer-events-none mix-blend-overlay"></div>
-                    <p class="text-sm text-iron-muted dark:text-limestone-400 font-bold uppercase tracking-widest">{l.price_est_total_label || 'Total estimé'}</p>
-                    <div class="flex flex-col items-center relative z-10">
-                        <span class="text-6xl font-bold text-primary tabular-nums tracking-tighter leading-none italic">
-                            {(Number(currentVisite.prix_unitaire || 0) * booking.tourSelection.quantite_billets).toFixed(0)}€
-                        </span>
-                        <span class="text-[10px] text-iron-muted/60 dark:text-limestone-400/60 font-bold uppercase tracking-widest mt-1">
-                            {l.price_est_tax_included || 'Taxes incluses'}
-                        </span>
+                {#if maxPlacesAvailable > 0}
+                    <div class="bg-primary/5 border border-primary/20 rounded-2xl p-8 flex flex-col items-center justify-center text-center space-y-2 relative overflow-hidden" in:fade>
+                        <div class="absolute inset-0 bg-gradient-to-tr from-white/10 to-transparent pointer-events-none mix-blend-overlay"></div>
+                        <p class="text-sm text-iron-muted dark:text-limestone-400 font-bold uppercase tracking-widest">{l.price_est_total_label || 'Total estimé'}</p>
+                        <div class="flex flex-col items-center relative z-10">
+                            <span class="text-6xl font-bold text-primary tabular-nums tracking-tighter leading-none italic">
+                                {(Number(currentVisite.prix_unitaire || 0) * booking.tourSelection.quantite_billets).toFixed(0)}€
+                            </span>
+                            <span class="text-[10px] text-iron-muted/60 dark:text-limestone-400/60 font-bold uppercase tracking-widest mt-1">
+                                {l.price_est_tax_included || 'Taxes incluses'}
+                            </span>
+                        </div>
                     </div>
-                </div>
+                {:else}
+                    <div class="bg-red-50 dark:bg-red-900/10 border-2 border-dashed border-red-200 rounded-2xl p-10 text-center text-red-600 text-base italic flex flex-col items-center justify-center min-h-[128px]">
+                        <p>Désolé, ce créneau est désormais complet.</p>
+                    </div>
+                {/if}
             {:else}
                 <div class="bg-limestone-50 dark:bg-iron/5 border-2 border-dashed border-iron/10 rounded-2xl p-10 text-center text-iron-muted/60 text-base italic flex flex-col items-center justify-center min-h-[128px]">
                     <p>{value ? 'Veuillez choisir un créneau horaire' : 'Veuillez choisir une date sur le calendrier'}</p>

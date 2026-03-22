@@ -131,7 +131,7 @@
         }
         const durationForCalc = Math.max(1, days);
         let activeRules = pricingRules.filter(r => {
-            const types = Array.isArray(r.type) ? r.type : [r.type];
+            const types = Array.isArray(r.type_reduction) ? r.type_reduction : [r.type_reduction];
             if (!types.includes('parking')) return false;
             if (r.duree_min && durationForCalc < r.duree_min) return false;
             if (r.duree_max && durationForCalc > r.duree_max) return false;

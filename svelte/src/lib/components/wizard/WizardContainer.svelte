@@ -49,6 +49,11 @@
 
     onMount(() => {
         isLoaded = true;
+
+        if (page.url) {
+            booking.initFromUrl(page.url);
+        }
+
         return () => {
             booking.step = 0;
             if (typeof booking.reset === 'function') booking.reset();

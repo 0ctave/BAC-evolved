@@ -139,7 +139,7 @@
                                     {room.nom}
                                 </h4>
                                 <div class="flex items-center gap-3 mt-2 text-xs text-iron-muted dark:text-limestone-400 font-bold uppercase tracking-wider">
-                                    <span>{(l.room_list_capacity_max || "").replace('{total}', (room.capacite_adultes || 2) + (room.capacite_enfants || 0))}</span>
+                                    <span>{(l.room_list_capacity_max || "").replace('{adulte}', room.capacite_adultes).replace('{enfant}', room.capacite_enfants)}</span>
                                 </div>
                             </div>
 
