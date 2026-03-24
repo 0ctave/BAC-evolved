@@ -132,7 +132,7 @@ export interface BlockButton {
 	id: string;
 	sort?: number | null;
 	/** @description What type of link is this? Page and Post allow you to link to internal content. URL is for external content. Group can contain other menu items. */
-	type?: 'page' | 'post' | 'url' | null;
+	type?: 'page' | 'post' | null;
 	/** @description The internal post to link to. */
 	post?: Post | string | null;
 	/** @description What type of button */
@@ -617,6 +617,22 @@ export interface Langue {
 	is_default?: boolean | null;
 }
 
+export interface MailTemplate {
+	/** @primaryKey */
+	id: number;
+	nom?: string | null;
+	traductions?: MailTemplatesTranslation[] | null;
+}
+
+export interface MailTemplatesTranslation {
+	/** @primaryKey */
+	id: number;
+	mail_templates_id?: MailTemplate | string | null;
+	langues_code?: Langue | string | null;
+	content?: string | null;
+	sujet?: string | null;
+}
+
 export interface Navigation {
 	/** @description Unique identifier for this menu. Can't be edited after creation. @primaryKey */
 	id: string;
@@ -771,6 +787,10 @@ export interface ReservationsChambre {
 	statut: 'en_attente' | 'confirmee' | 'annulee' | 'indisponible';
 	/** @required */
 	parking: 'no_parking' | 'parking';
+	/** @required */
+	adulte: number;
+	/** @required */
+	enfant: number;
 }
 
 export interface ReservationsVisite {
@@ -1319,6 +1339,8 @@ export interface Schema {
 	globals: Globals;
 	languages: Language[];
 	langues: Langue[];
+	mail_templates: MailTemplate[];
+	mail_templates_translations: MailTemplatesTranslation[];
 	navigation: Navigation[];
 	navigation_items: NavigationItem[];
 	navigation_items_translations: NavigationItemsTranslation[];
@@ -1404,6 +1426,8 @@ export enum CollectionNames {
 	globals = 'globals',
 	languages = 'languages',
 	langues = 'langues',
+	mail_templates = 'mail_templates',
+	mail_templates_translations = 'mail_templates_translations',
 	navigation = 'navigation',
 	navigation_items = 'navigation_items',
 	navigation_items_translations = 'navigation_items_translations',

@@ -12,6 +12,8 @@
     import {defaultLocale} from "$lib/i18n";
     import {page} from "$app/state";
     import StepTourSession from "$lib/components/wizard/steps/StepTourSession.svelte";
+    import { Turnstile } from 'svelte-turnstile';
+    import {PUBLIC_TURNSTILE_SITE_KEY} from "$env/static/public"; // Nouvel import
 
     interface Props {
         data: any; // We accept any structure since it contains dynamic labels
@@ -80,14 +82,35 @@
         if (booking.step > i) booking.step = i;
     }
 
+    let turnstileToken = $state<string>(""); // Stockage du token Captcha
+    let turnstileInstance = $state<any>(null); // Permet de contrôler le widget
+
+    function handleTurnstileError() {
+        turnstileToken = "";
+        error = l.wizard_error_captcha_failed || "Le système anti-robot a rencontré une erreur. Veuillez rafraîchir la page.";
+    }
+
+    function handleTurnstileExpired() {
+        turnstileToken = "";
+        error = l.wizard_error_captcha_expired || "La vérification de sécurité a expiré. Veuillez patienter pendant son rechargement.";
+        // On force le widget à se recharger pour obtenir un nouveau token
+        if (turnstileInstance) turnstileInstance.reset();
+    }
+
     async function onFinalize() {
+        if (!turnstileToken) {
+            error = "Veuillez patienter, validation de sécurité en cours...";
+            return;
+        }
+
         loading = true;
         error = "";
         try {
-            await submitBooking();
+            await submitBooking(turnstileToken);
             success = true;
         } catch (e: any) {
             error = e.message || l.wizard_error_generic;
+            turnstileToken = "";
         } finally {
             loading = false;
         }
@@ -116,7 +139,7 @@
         };
     }
 
-    const currentSlug = $derived(page.data.langSlug || defaultLocale);
+    const currentSlug = $derived(page.data.locale || defaultLocale);
 
 </script>
 
@@ -154,7 +177,7 @@
                         {(l.wizard_success_desc || '').replace('{name}', booking.customer.prenom)}
                     </p>
                     <div in:fly={{ y: 20, duration: 400, delay: 300 }}>
-                        <Button url={currentSlug === defaultLocale ? '/' : `/${currentSlug}`} variant="outline"
+                        <Button url="/" variant="outline"
                                 label={l.wizard_btn_home} id="home"/>
                     </div>
                 </div>
@@ -237,17 +260,31 @@
                                 />
                             </div>
                         {:else if booking.step === 3}
-                            <button onclick={onFinalize} disabled={loading}
-                                    class="btn-atelier-primary group relative overflow-hidden disabled:opacity-50">
-                                {#if loading}
-                                 <span class="flex items-center gap-2 relative z-10">
-                                     <div class="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full"></div>
-                                     {l.wizard_loading_validation}
-                                 </span>
-                                {:else}
-                                    <span class="relative z-10">{l.wizard_btn_confirm}</span>
-                                {/if}
-                            </button>
+                            <div class="flex items-center gap-4">
+                                <Turnstile
+                                        siteKey={PUBLIC_TURNSTILE_SITE_KEY}
+                                        theme="auto"
+                                        bind:this={turnstileInstance}
+                                        on:turnstile-callback={(e) => {
+                                            turnstileToken = e.detail.token;
+                                            error = ""; // On efface l'erreur si le captcha réussit
+                                        }}
+                                        on:turnstile-error={handleTurnstileError}
+                                        on:turnstile-timeout={handleTurnstileExpired}
+                                        on:turnstile-expired={handleTurnstileExpired}
+                                />
+                                <button onclick={onFinalize} disabled={loading|| !turnstileToken}
+                                        class="btn-atelier-primary group relative overflow-hidden disabled:opacity-50">
+                                    {#if loading}
+                                     <span class="flex items-center gap-2 relative z-10">
+                                         <div class="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full"></div>
+                                         {l.wizard_loading_validation}
+                                     </span>
+                                    {:else}
+                                        <span class="relative z-10">{l.wizard_btn_confirm}</span>
+                                    {/if}
+                                </button>
+                            </div>
                         {/if}
                     </div>
                 </div>

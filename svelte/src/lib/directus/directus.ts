@@ -1,18 +1,18 @@
+import type { RestClient } from '@directus/sdk';
 import {
 	createDirectus,
-	readItems,
-	readItem,
-	readSingleton,
-	rest,
-	readUser,
 	createItem,
+	readItem,
+	readItems,
+	readSingleton,
+	readUser,
+	rest,
 	uploadFiles,
-	withToken,
+	withToken
 } from '@directus/sdk';
-import type { RestClient } from '@directus/sdk';
 import Queue from 'p-queue';
 import type { Schema } from '../types/directus-schema';
-import { PUBLIC_DIRECTUS_URL } from '$env/static/public';
+import { PUBLIC_DIRECTUS_URL, PUBLIC_DIRECTUS_TOKEN } from '$env/static/public';
 
 // Helper for retrying fetch requests
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -34,14 +34,14 @@ const queue = new Queue({ intervalCap: 10, interval: 500, carryoverConcurrencyCo
 const directusUrl = PUBLIC_DIRECTUS_URL;
 
 const getDirectus = (fetch: Function) => {
-	const directus = createDirectus<Schema>(directusUrl, {
+
+	return createDirectus<Schema>(directusUrl,
+		{
 		globals: {
 			fetch: (...args) => queue.add(() => fetchRetry(fetch, 0, ...args))
 		}
 	})
 		.with(rest());
-
-	return directus;
 };
 
 export const useDirectus = () => ({

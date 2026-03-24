@@ -1,6 +1,6 @@
 import { PUBLIC_DIRECTUS_TOKEN } from '$env/static/public';
 import { useDirectus } from './directus';
-import type { Chambre, Visite, CreneauxVisite, TarifsSpeciaux } from '../types/directus-schema';
+import type { Chambre, Visite, TarifsSpeciaux } from '../types/directus-schema';
 
 /**
  * Récupère les chambres disponibles (statut 'disponible')

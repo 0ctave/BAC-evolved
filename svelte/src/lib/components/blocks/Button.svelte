@@ -2,7 +2,7 @@
 	import { Icon as Icontype, ArrowLeft, ArrowRight, Plus } from '@lucide/svelte';
 	import { cn } from '$lib/utils';
 	import { page as pageStore } from '$app/state';
-	import { getPageLink } from '$lib/directus/directus-utils';
+	import {getNavUrl, getPageLink} from '$lib/directus/directus-utils';
 	import {defaultLocale} from "$lib/i18n";
 
 	export interface ButtonProps {
@@ -73,12 +73,7 @@
 
 		// 3. Fallback: Standard URL linking logic with locale protection
 		if (url) {
-			if (url.startsWith('/')) {
-				if (currentDbLocale !== defaultLocale && !url.startsWith(`/${currentDbLocale}/`) && url !== `/${currentDbLocale}`) {
-					return url === '/' ? `/${currentDbLocale}` : `/${currentDbLocale}${url}`;
-				}
-			}
-			return url;
+			return getNavUrl(url, currentDbLocale);
 		}
 
 		return undefined;

@@ -1,74 +1,31 @@
 import { booking } from './booking.svelte';
-import { PUBLIC_DIRECTUS_URL, PUBLIC_DIRECTUS_FORM_TOKEN } from '$env/static/public';
 
-function formatDate(date: any) {
-	if (!date) return null;
-	return date.toString();
-}
-
-async function fetchWithAuth(endpoint: string, options: RequestInit = {}) {
-	const url = `${PUBLIC_DIRECTUS_URL}${endpoint}`;
-
-	const headers = {
-		'Content-Type': 'application/json',
-		Authorization: `Bearer ${PUBLIC_DIRECTUS_FORM_TOKEN}`,
-		...options.headers
-	};
-
-	const res = await fetch(url, { ...options, headers });
-	return res;
-}
-
-export async function submitBooking() {
+export async function submitBooking(captchaToken: string) {
 	try {
-		// 1. Gérer le Client
-		const clientSearchResponse = await fetchWithAuth(
-			`/items/clients?filter[email][_eq]=${booking.customer.email}`
-		);
-		const clientData = await clientSearchResponse.json();
+		const formattedRoomSelection =
+			booking.type === 'CHAMBRE'
+				? {
+						...booking.roomSelection,
+						date_arrivee: booking.roomSelection.date_arrivee
+							? booking.roomSelection.date_arrivee.toString()
+							: null,
+						date_depart: booking.roomSelection.date_depart
+							? booking.roomSelection.date_depart.toString()
+							: null
+					}
+				: undefined;
 
-		let clientId;
+		const payload = {
+			captchaToken,
+			type: booking.type,
+			customer: booking.customer,
+			roomSelection: formattedRoomSelection, // On utilise la version formatée
+			tourSelection: booking.type === 'VISITE' ? booking.tourSelection : undefined
+		};
 
-		if (clientData.data && clientData.data.length > 0) {
-			clientId = clientData.data[0].id;
-		} else {
-			const newClientResponse = await fetchWithAuth(`/items/clients`, {
-				method: 'POST',
-				body: JSON.stringify({
-					prenom: booking.customer.prenom,
-					nom: booking.customer.nom,
-					email: booking.customer.email,
-					telephone: booking.customer.telephone,
-					langue: booking.customer.langue
-				})
-			});
-			const createdClient = await newClientResponse.json();
-			if (createdClient.errors) throw new Error(createdClient.errors[0].message);
-			clientId = createdClient.data.id;
-		}
-
-		// 2. Préparation de la réservation
-		const isChambre = booking.type === 'CHAMBRE';
-		const collection = isChambre ? 'reservations_chambre' : 'reservations_visite';
-
-		const payload = isChambre
-			? {
-					chambre: booking.roomSelection.chambre,
-					client: clientId,
-					date_arrivee: formatDate(booking.roomSelection.date_arrivee),
-					date_depart: formatDate(booking.roomSelection.date_depart),
-					statut: 'en_attente',
-					parking: booking.roomSelection.parking // <-- Ajout ici
-				}
-			: {
-					creneau_visite: booking.tourSelection.creneau_visite,
-					client: clientId,
-					quantite_billets: booking.tourSelection.quantite_billets,
-					statut: 'en_attente'
-				};
-
-		const res = await fetchWithAuth(`/items/${collection}`, {
+		const res = await fetch('/api/reserver', {
 			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify(payload)
 		});
 

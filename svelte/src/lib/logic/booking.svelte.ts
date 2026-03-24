@@ -65,7 +65,7 @@ class BookingMachine {
 
 		// 2. Room pre-selection
 		const roomId = params.get('room');
-		if (roomId) this.roomSelection.chambre = Number(roomId);
+		if (roomId) this.roomSelection.chambre = roomId;
 
 		const checkin = params.get('checkin');
 		if (checkin) {

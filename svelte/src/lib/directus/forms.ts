@@ -1,5 +1,4 @@
 import { useDirectus } from './directus';
-import { PUBLIC_DIRECTUS_FORM_TOKEN } from '$env/static/public';
 interface SubmissionValue {
 	field: string;
 	value?: string;
@@ -11,7 +10,7 @@ export const submitForm = async (
 	fields: { id: string; name: string; type: string }[],
 	data: Record<string, any>
 ) => {
-	const { getDirectus, uploadFiles, createItem, withToken } = useDirectus();
+	/*const { getDirectus, uploadFiles, createItem, withToken } = useDirectus();
 	const TOKEN = PUBLIC_DIRECTUS_FORM_TOKEN;
 	const directus = getDirectus(fetch);
 
@@ -56,5 +55,5 @@ export const submitForm = async (
 	} catch (error) {
 		console.error('Error submitting form:', error);
 		throw new Error('Failed to submit form');
-	}
+	}*/
 };

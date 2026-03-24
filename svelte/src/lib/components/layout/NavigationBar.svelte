@@ -7,7 +7,7 @@
     import {ChevronDown, Menu, X} from '@lucide/svelte';
     import setAttr from '$lib/directus/visualEditing';
     import {flatten, flattenTree, getNavUrl, getPageLink} from '$lib/directus/directus-utils';
-    import {defaultLocale} from '$lib/i18n';
+    import {defaultLocale, normalizeLocale} from '$lib/i18n';
     import Button from "$lib/components/blocks/Button.svelte";
     import {cn} from '$lib/utils';
     import {slide} from 'svelte/transition';
@@ -67,7 +67,7 @@
     <Container class="relative">
         <nav class="flex h-30 items-center justify-between">
             <!-- Logo -->
-            <a href="/" class="relative z-10 flex shrink-0 items-center gap-2" onclick={closeMenu}>
+            <a href={getNavUrl("/", currentDbLocale)} class="relative z-10 flex shrink-0 items-center gap-2" onclick={closeMenu}>
                 <img
                         src={lightLogoUrl}
                         alt="Logo"
