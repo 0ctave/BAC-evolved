@@ -19,7 +19,7 @@
     let value = $state<DateValue | undefined>(
         booking.tourSelection.selectedDate ? (booking.tourSelection.selectedDate as unknown as DateValue) : undefined
     );
-    let placeholder = $state<DateValue>(value ?? today(getLocalTimeZone()));
+    let placeholder = $derived<DateValue>(value ?? today(getLocalTimeZone()));
     let selectedVisiteId = $state<number | 'all'>('all');
 
     const l = $derived(booking.labels);
