@@ -66,7 +66,7 @@ export async function POST({ request, fetch }) {
 						prenom: customer.prenom,
 						nom: customer.nom,
 						email: customer.email,
-						telephone: customer.telephone,
+						numero: customer.telephone,
 						langue: customer.langue
 					})
 				)
