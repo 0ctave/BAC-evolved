@@ -13,6 +13,9 @@ export const config = {
     toursCollection: 'visites',
     tourSlotsCollection: 'creneaux_visites',
 
+    // --- Commentaires ---
+    commentsCollection: 'commentaires',
+
     // --- Partagé ---
     clientField: 'client', // Relation vers clients (prenom, nom, email)
     statusField: 'statut', // 'en_attente' | 'confirmee' | 'annulee' | 'indisponible'

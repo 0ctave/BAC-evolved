@@ -17,6 +17,13 @@
         >
           Visites
         </button>
+        <button
+            @click="currentTab = 'comments'"
+            :class="{ active: currentTab === 'comments' }"
+            class="tab-btn"
+        >
+          Commentaires
+        </button>
       </div>
     </template>
 
@@ -49,8 +56,13 @@
         </div>
 
         <!-- VUE: VISITES -->
-        <div v-else class="tours-dashboard">
+        <div v-else-if="currentTab === 'tours'" class="tours-dashboard">
           <TourDashboard />
+        </div>
+
+        <!-- VUE: COMMENTAIRES -->
+        <div v-else-if="currentTab === 'comments'" class="comments-dashboard">
+          <CommentManagement />
         </div>
       </main>
     </div>
@@ -65,6 +77,7 @@ import { config } from './config';
 import PendingBookings from './components/room-confirmation.vue';
 import BookingCalendar from './components/room-calendar.vue';
 import TourDashboard from './components/tour-calendar.vue';
+import CommentManagement from './components/comment-management.vue';
 
 const api = useApi();
 const currentTab = ref('rooms');
