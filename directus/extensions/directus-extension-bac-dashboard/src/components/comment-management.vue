@@ -143,7 +143,7 @@ const replyContent = ref('');
 const notification = ref<{ message: string; type: string } | null>(null);
 
 const tabs = [
-  { label: 'À relire', value: 'draft', count: computed(() => comments.value.filter(c => c.status === 'draft' && !c.parent).length) },
+  { label: 'À relire', value: 'en_attente', count: computed(() => comments.value.filter(c => c.status === 'en_attente' && !c.parent).length) },
   { label: 'Publiés', value: 'published', count: null },
   { label: 'Archivés', value: 'archived', count: null },
   { label: 'Tous', value: 'all', count: null }
