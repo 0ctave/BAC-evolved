@@ -33,7 +33,7 @@
     <div v-else-if="filteredComments.length === 0" class="empty-state">
       <svg class="icon-huge" xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
       <h3>Aucun commentaire</h3>
-      <p v-if="currentTab === 'draft'">Tous les nouveaux commentaires ont été traités !</p>
+      <p v-if="currentTab === 'en_attente'">Tous les nouveaux commentaires ont été traités !</p>
       <p v-else>Il n'y a aucun commentaire dans cette catégorie.</p>
     </div>
 
@@ -43,7 +43,7 @@
           <div class="avatar">
             {{ getInitials(comment) }}
           </div>
-          <div v-if="comment.status === 'draft'" class="status-indicator warning" title="En attente de relecture"></div>
+          <div v-if="comment.status === 'en_attente'" class="status-indicator warning" title="En attente de relecture"></div>
           <div v-else-if="comment.status === 'published'" class="status-indicator success" title="Publié"></div>
         </div>
 
@@ -76,7 +76,7 @@
 
           <div class="comment-actions">
             <div class="main-actions">
-              <button v-if="comment.status === 'draft'" class="btn-approve" @click="updateStatus(comment, 'published')" :disabled="processing === comment.id">
+              <button v-if="comment.status === 'en_attente'" class="btn-approve" @click="updateStatus(comment, 'published')" :disabled="processing === comment.id">
                 Approuver
               </button>
               <button class="btn-reply" @click="toggleReply(comment.id)">
@@ -87,7 +87,7 @@
               <button v-if="comment.status !== 'archived'" class="btn-archive" @click="updateStatus(comment, 'archived')" :disabled="processing === comment.id">
                 Archiver
               </button>
-              <button v-if="comment.status === 'archived'" class="btn-restore" @click="updateStatus(comment, 'draft')" :disabled="processing === comment.id">
+              <button v-if="comment.status === 'archived'" class="btn-restore" @click="updateStatus(comment, 'en_attente')" :disabled="processing === comment.id">
                 Restaurer
               </button>
               <button class="btn-delete" @click="deleteComment(comment)" :disabled="processing === comment.id">
@@ -137,7 +137,7 @@ const loading = ref(false);
 const submitting = ref(false);
 const processing = ref<number | null>(null);
 const comments = ref<any[]>([]);
-const currentTab = ref('draft');
+const currentTab = ref('en_attente');
 const activeReplyId = ref<number | null>(null);
 const replyContent = ref('');
 const notification = ref<{ message: string; type: string } | null>(null);
@@ -235,8 +235,8 @@ async function submitReply(parentComment: any) {
 
     const res = await api.post(`/items/${config.commentsCollection}`, payload);
     
-    // Si le parent était en draft, on le publie aussi car on y répond
-    if (parentComment.status === 'draft') {
+    // Si le parent était en attente, on le publie aussi car on y répond
+    if (parentComment.status === 'en_attente') {
       await api.patch(`/items/${config.commentsCollection}/${parentComment.id}`, { status: 'published' });
       parentComment.status = 'published';
     }
@@ -380,7 +380,7 @@ onMounted(() => {
   box-shadow: 0 8px 24px rgba(0,0,0,0.04);
 }
 
-.comment-item.draft { border-left: 5px solid var(--warning); }
+.comment-item.en_attente { border-left: 5px solid var(--warning); }
 .comment-item.published { border-left: 5px solid var(--success); }
 
 .comment-sidebar {
