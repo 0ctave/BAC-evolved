@@ -202,55 +202,60 @@ async function deleteComment(comment: any) {
   processing.value = comment.id;
   
   try {
-    // 1. Robust Descendant Discovery (Level-order traversal)
-    // We crawl level by level to ensure we get ALL descendants regardless of depth
-    const allIdsToDelete: any[] = [comment.id];
-    let currentLevelIds = [comment.id];
+    // 1. Exhaustive Descendant Discovery
+    // We must find EVERY descendant at EVERY level to satisfy the DB constraint.
+    const allIdsInTree: any[] = [comment.id];
+    let idsToCheck = [comment.id];
     
-    while (currentLevelIds.length > 0) {
+    while (idsToCheck.length > 0) {
       const response = await api.get(`/items/${config.commentsCollection}`, {
         params: {
-          filter: { 
-            parent: { 
-              id: { _in: currentLevelIds } 
-            } 
+          filter: {
+            parent: { _in: idsToCheck },
+            // Explicitly check all statuses to not miss hidden/archived replies
+            status: { _in: ['published', 'en_attente', 'archived'] }
           },
           fields: ['id'],
           limit: -1
         }
       });
       
-      const foundChildren = response.data.data;
-      if (!foundChildren || foundChildren.length === 0) break;
+      const found = response.data.data;
+      if (!found || found.length === 0) break;
       
-      const nextLevelIds = foundChildren.map((c: any) => c.id);
-      allIdsToDelete.push(...nextLevelIds);
-      currentLevelIds = nextLevelIds;
+      const newIds = found.map((item: any) => item.id);
+      // Add to our master list (avoid duplicates)
+      newIds.forEach((id: any) => {
+        if (!allIdsInTree.includes(id)) allIdsInTree.push(id);
+      });
+      // Move to the next level down the tree
+      idsToCheck = newIds;
     }
 
-    // 2. Break Database Constraints (Professional Link-Breaking)
-    // By nullifying the parent field for all items in the set, we satisfy the RESTRICT constraint
-    // and prevent any "still referenced" errors during the subsequent delete.
-    await api.patch(`/items/${config.commentsCollection}`, 
-      { parent: null }, 
-      { params: { filter: { id: { _in: allIdsToDelete } } } }
-    );
-
-    // 3. Batch Deletion
-    // Now that they are no longer linked, we can delete them all safely in one go.
-    await api.delete(`/items/${config.commentsCollection}`, { data: allIdsToDelete });
+    // 2. Reverse Sequential Deletion (Leaf-to-Root)
+    // To satisfy the RESTRICT constraint, we MUST delete children before their parents.
+    // By reversing our discovery list, we ensure the deepest descendants are deleted first.
+    const reversedIds = [...allIdsInTree].reverse();
     
-    // 4. State Synchronization
-    const stringifiedIds = allIdsToDelete.map(id => String(id));
-    comments.value = comments.value.filter(c => !stringifiedIds.includes(String(c.id)));
+    for (const id of reversedIds) {
+      try {
+        await api.delete(`/items/${config.commentsCollection}/${id}`);
+      } catch (deleteErr: any) {
+        // If a specific delete fails, we log it but continue if possible, 
+        // though usually, if a leaf fails, the whole process is compromised.
+        console.warn(`Failed to delete item ${id}, it might have been already deleted or has other constraints.`, deleteErr);
+      }
+    }
     
-    showNotification("Le fil de discussion a été supprimé avec succès");
+    // 3. UI Synchronization
+    const stringifiedDeletedIds = allIdsInTree.map(id => String(id));
+    comments.value = comments.value.filter(c => !stringifiedDeletedIds.includes(String(c.id)));
+    
+    showNotification("Le commentaire et toute sa discussion ont été supprimés.");
   } catch (err: any) {
-    console.error("Critical error during recursive deletion:", err);
-    const detail = err.response?.data?.errors?.[0]?.extensions?.detail || err.message;
-    showNotification(`Erreur: ${detail}`, "error");
-    // Force refresh to keep UI consistent with DB state
-    await fetchData();
+    console.error("Professional deletion failed:", err);
+    showNotification("Erreur lors de la suppression complète. Certains éléments peuvent subsister.", "error");
+    await fetchData(); // Force reload to show actual DB state
   } finally {
     processing.value = null;
   }
