@@ -201,10 +201,17 @@ async function deleteComment(comment: any) {
   if (!confirm("Voulez-vous vraiment supprimer définitivement ce commentaire ?")) return;
   processing.value = comment.id;
   try {
+    const replies = getReplies(comment.id);
+    if (replies.length > 0) {
+      const replyIds = replies.map(r => r.id);
+      await api.delete(`/items/${config.commentsCollection}`, { data: replyIds });
+    }
     await api.delete(`/items/${config.commentsCollection}/${comment.id}`);
-    comments.value = comments.value.filter(c => c.id !== comment.id);
+    const deletedIds = [comment.id, ...replies.map(r => r.id)];
+    comments.value = comments.value.filter(c => !deletedIds.includes(c.id));
     showNotification("Commentaire supprimé");
   } catch (err) {
+    console.error("Erreur lors de la suppression:", err);
     showNotification("Erreur lors de la suppression", "error");
   } finally {
     processing.value = null;
