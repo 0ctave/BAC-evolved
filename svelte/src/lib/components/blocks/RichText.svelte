@@ -71,8 +71,7 @@
 			{/if}
 
 			{#if content}
-				<div i
-					 n:fly={{ y: 20, duration: 600, delay: 500 }}>
+				<div in:fly={{ y: 20, duration: 600, delay: 500 }}>
 					<Text
 						{content}
 						data-directus={setAttr({
