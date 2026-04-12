@@ -26,7 +26,6 @@
             <span class="mobile-hide ml-2">{{ isSelectionMode ? 'Mode Blocage' : 'Bloquer Dates' }}</span>
           </button>
 
-          <!-- NOUVEAU BOUTON : Création Réservation Manuelle -->
           <button class="btn-primary" @click="openCreateBookingModal">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
             <span class="mobile-hide ml-2">Nouvelle Réservation</span>
@@ -114,7 +113,7 @@
       <div v-if="selectedDay" class="side-drawer" @click.stop>
         <div class="drawer-header">
           <h3>{{ formatFullDate(selectedDay.date) }}</h3>
-          <button class="close-btn" @click="selectedDay = null">
+          <button class="close-btn" @click="selectedDay = null" aria-label="Fermer">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
           </button>
         </div>
@@ -220,7 +219,6 @@
         <p class="modal-desc">Ajoutez manuellement une réservation de chambre.</p>
 
         <div class="modal-body">
-          <!-- Sélection Chambre et Dates -->
           <div class="form-group" v-if="!roomFilter">
             <label>Chambre *</label>
             <select v-model="manualForm.chambre_id" class="form-input">
@@ -250,7 +248,6 @@
 
           <hr class="modal-divider" />
 
-          <!-- Partie Client -->
           <div class="client-toggle">
             <button class="toggle-btn" :class="{ active: !isNewClient }" @click="isNewClient = false">Client existant</button>
             <button class="toggle-btn" :class="{ active: isNewClient }" @click="isNewClient = true">Nouveau client</button>
@@ -323,6 +320,7 @@ import {
 } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { config, getRoomHexColor } from '../config';
+import type { Chambre, ReservationChambre, Client } from '../types';
 
 const props = defineProps({
   title: { type: String, default: '' },
@@ -332,8 +330,8 @@ const props = defineProps({
 const api = useApi();
 const loading = ref(false);
 const submitting = ref(false);
-const bookings = ref<any[]>([]);
-const roomsData = ref<any[]>([]);
+const bookings = ref<ReservationChambre[]>([]);
+const roomsData = ref<Chambre[]>([]);
 const viewDate = ref(new Date());
 const selectedDay = ref<any | null>(null);
 
@@ -357,7 +355,7 @@ const statusOptions = [
 const weekDays = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'];
 
 // --- NOUVEAU : DONNÉES RÉSERVATION MANUELLE ---
-const clientsList = ref<any[]>([]);
+const clientsList = ref<Client[]>([]);
 const showCreateBookingModal = ref(false);
 const isNewClient = ref(false);
 const manualForm = ref({ chambre_id: '', date_arrivee: '', date_depart: '', client_id: '', parking: 'no_parking' });
@@ -404,8 +402,8 @@ const monthsToDisplay = computed(() => {
 const visibleRooms = computed(() => {
   let rooms = roomsData.value.map(r => ({
     id: r.id,
-    name: r[config.roomNameField] || `Room ${r.id}`,
-    color: getRoomHexColor(r[config.roomColorField])
+    name: r.nom || `Room ${r.id}`,
+    color: getRoomHexColor(r.couleur)
   }));
   if (props.roomFilter) {
     rooms = rooms.filter(r => r.name.toLowerCase() === props.roomFilter.toLowerCase());
@@ -413,28 +411,28 @@ const visibleRooms = computed(() => {
   return rooms.sort((a, b) => String(a.id).localeCompare(String(b.id)));
 });
 
-function getRoomNameFromBooking(b: any) {
-  const val = b?.[config.roomRelationField];
-  if (typeof val === 'object') return val?.[config.roomNameField] || 'Chambre';
+function getRoomNameFromBooking(b: ReservationChambre) {
+  const val = b[config.roomRelationField as keyof ReservationChambre];
+  if (typeof val === 'object') return (val as Chambre).nom || 'Chambre';
   const found = roomsData.value.find(r => r.id == val);
-  return found ? found[config.roomNameField] : 'Chambre';
+  return found ? found.nom : 'Chambre';
 }
-function getRoomIdFromBooking(b: any) {
-  const val = b?.[config.roomRelationField];
-  return typeof val === 'object' ? val?.id : val;
+function getRoomIdFromBooking(b: ReservationChambre) {
+  const val = b[config.roomRelationField as keyof ReservationChambre];
+  return typeof val === 'object' ? (val as Chambre).id : val;
 }
-function getRoomColor(b: any) {
+function getRoomColor(b: ReservationChambre) {
   const name = getRoomNameFromBooking(b);
   const found = visibleRooms.value.find(r => r.name === name);
   return found ? found.color : '#ccc';
 }
-function getClientName(b: any) {
-  if (normalizeStatus(b[config.statusField]) === 'indisponible') return 'Indisponible';
-  const client = b[config.clientField];
+function getClientName(b: ReservationChambre) {
+  if (normalizeStatus(b.statut) === 'indisponible') return 'Indisponible';
+  const client = b.client as Client;
   if (typeof client === 'object' && client !== null) return client.nom ? `${client.prenom || ''} ${client.nom}` : 'Client';
   return 'Client';
 }
-function getClientEmail(b: any) { return b?.[config.clientField]?.email || ''; }
+function getClientEmail(b: ReservationChambre) { return (b.client as Client)?.email || ''; }
 
 function toggleSelectionMode() {
   isSelectionMode.value = !isSelectionMode.value;
@@ -489,8 +487,8 @@ function getCalendarDays(baseDate: Date) {
 
   return days.map(date => {
     const dayBookings = bookings.value.filter(b => {
-      const bStart = parseISO(b[config.roomStartDateField]);
-      const bEnd = parseISO(b[config.roomEndDateField]);
+      const bStart = parseISO(b.date_arrivee);
+      const bEnd = parseISO(b.date_depart);
       return isWithinInterval(date, { start: bStart, end: bEnd });
     });
 
@@ -499,8 +497,8 @@ function getCalendarDays(baseDate: Date) {
       const segments: any[] = [];
 
       roomBookings.forEach(booking => {
-        const bStart = parseISO(booking[config.roomStartDateField]);
-        const bEnd = parseISO(booking[config.roomEndDateField]);
+        const bStart = parseISO(booking.date_arrivee);
+        const bEnd = parseISO(booking.date_depart);
         const isArrival = isSameDay(date, bStart);
         const isDeparture = isSameDay(date, bEnd);
         const isStayOver = isAfter(date, bStart) && isBefore(date, bEnd);
@@ -510,7 +508,7 @@ function getCalendarDays(baseDate: Date) {
             id: booking.id,
             type: 'full',
             color: room.color,
-            status: normalizeStatus(booking[config.statusField]),
+            status: normalizeStatus(booking.statut),
             label: getClientName(booking),
             showLabel: date.getDay() === 1 && isAfter(date, addDays(bStart, 1)),
             connectLeft: true,
@@ -521,7 +519,7 @@ function getCalendarDays(baseDate: Date) {
             id: booking.id,
             type: 'check-in',
             color: room.color,
-            status: normalizeStatus(booking[config.statusField]),
+            status: normalizeStatus(booking.statut),
             label: getClientName(booking),
             showLabel: true,
             connectLeft: false,
@@ -532,7 +530,7 @@ function getCalendarDays(baseDate: Date) {
             id: booking.id,
             type: 'check-out',
             color: room.color,
-            status: normalizeStatus(booking[config.statusField]),
+            status: normalizeStatus(booking.statut),
             label: getClientName(booking),
             showLabel: false,
             connectLeft: true,
@@ -566,8 +564,7 @@ async function fetchData() {
     });
     bookings.value = bookingsRes.data.data;
 
-    // CORRECTION : Tri par -id car date_created n'existe pas sur la collection clients
-    const clientsRes = await api.get(`/items/clients`, {
+    const clientsRes = await api.get(`/items/${config.clientsCollection}`, {
       params: { fields: ['id', 'nom', 'prenom', 'email'], limit: -1, sort: '-id' }
     });
     clientsList.value = clientsRes.data.data;
@@ -579,7 +576,7 @@ async function fetchData() {
 
 function openCreateBookingModal() {
   manualForm.value = {
-    chambre_id: props.roomFilter ? (visibleRooms.value[0]?.id || '') : '',
+    chambre_id: props.roomFilter ? (String(visibleRooms.value[0]?.id) || '') : '',
     date_arrivee: '',
     date_depart: '',
     client_id: '',
@@ -606,8 +603,8 @@ async function submitManualReservation() {
     let finalClientId = manualForm.value.client_id;
 
     if (isNewClient.value) {
-      const cRes = await api.post(`/items/clients`, clientForm.value);
-      finalClientId = cRes.data.data.id;
+      const cRes = await api.post(`/items/${config.clientsCollection}`, clientForm.value);
+      finalClientId = String(cRes.data.data.id);
     }
 
     const payload = {
@@ -625,14 +622,11 @@ async function submitManualReservation() {
     window.dispatchEvent(new Event('hotel-booking-updated'));
 
   } catch (err) {
-    alert("Erreur lors de la création de la réservation.");
     console.error(err);
   } finally {
     submitting.value = false;
   }
 }
-
-// ----------------------------------------
 
 async function confirmBlockDates() {
   if (!selectionStart.value || !selectionEnd.value || !blockRoomId.value) return;
@@ -653,17 +647,17 @@ async function confirmBlockDates() {
   } catch (e: any) { console.error(e); } finally { submitting.value = false; }
 }
 
-async function updateBookingStatus(booking: any, newStatus: string) {
-  const old = booking[config.statusField];
-  booking[config.statusField] = newStatus;
+async function updateBookingStatus(booking: ReservationChambre, newStatus: string) {
+  const old = booking.statut;
+  booking.statut = newStatus as any;
   try {
     await api.patch(`/items/${config.roomBookingsCollection}/${booking.id}`, { [config.statusField]: newStatus });
     await fetchData();
     window.dispatchEvent(new Event('hotel-booking-updated'));
-  } catch { booking[config.statusField] = old; }
+  } catch { booking.statut = old; }
 }
 
-async function deleteBooking(booking: any) {
+async function deleteBooking(booking: ReservationChambre) {
   if (!confirm("Voulez-vous vraiment supprimer cette réservation ?")) return;
   try {
     await api.delete(`/items/${config.roomBookingsCollection}/${booking.id}`);

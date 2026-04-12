@@ -19,7 +19,7 @@
           <span class="mobile-hide">Nouveau créneau</span>
         </button>
         <div class="divider mobile-hide"></div>
-        <button class="refresh-btn" @click="fetchData" :disabled="loading">
+        <button class="refresh-btn" @click="fetchData" :disabled="loading" aria-label="Actualiser">
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" :class="{ spinning: loading }"><path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.3"/></svg>
         </button>
       </div>
@@ -73,7 +73,6 @@
               class="slot-card"
               @click="openSlot(slot)"
           >
-            <!-- Badge Date/Heure mis en évidence -->
             <div class="slot-datetime-badge">
               <div class="slot-date">
                 <svg class="date-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
@@ -103,7 +102,6 @@
                 </div>
               </div>
 
-              <!-- Badges de statut du créneau -->
               <div class="slot-badges">
                 <span v-if="getSlotPendingCount(slot.id) > 0" class="badge pending">
                   {{ getSlotPendingCount(slot.id) }} en attente
@@ -127,7 +125,7 @@
             <span class="drawer-surtitle">{{ formatFullDate(selectedSlot.date_heure_debut) }} à {{ formatTime(selectedSlot.date_heure_debut) }}</span>
             <h3>{{ selectedSlot[config.visiteRelationField]?.nom || 'Détails du créneau' }}</h3>
           </div>
-          <button class="close-btn" @click="closeDrawer">
+          <button class="close-btn" @click="closeDrawer" aria-label="Fermer">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
           </button>
         </div>
@@ -268,9 +266,7 @@
       </div>
     </transition>
 
-    <!-- Overlay sombre quand le tiroir est ouvert -->
     <div v-if="selectedSlot" class="drawer-backdrop" @click="closeDrawer"></div>
-
 
     <!-- === MODALS DE CRÉATION === -->
 
@@ -326,7 +322,6 @@
             <small class="form-hint" v-if="visitesList.length === 0">Vous devez d'abord créer un type de visite.</small>
           </div>
 
-          <!-- Remplacement du datetime-local par deux champs séparés -->
           <div class="form-row">
             <div class="form-group flex-1">
               <label>Date *</label>
@@ -361,27 +356,18 @@ import { useApi } from '@directus/extensions-sdk';
 import { ref, onMounted, computed } from 'vue';
 import { format, parseISO } from 'date-fns';
 import { fr } from 'date-fns/locale';
-
-const config = {
-  visitesCollection: 'visites',
-  slotsCollection: 'creneaux_visites',
-  bookingsCollection: 'reservations_visite',
-  clientsCollection: 'clients',
-  slotRelationField: 'creneau_visite',
-  visiteRelationField: 'visite_id',
-  statusField: 'statut',
-  defaultMaxCapacity: 20
-};
+import { config } from '../config';
+import type { Visite, CreneauVisite, ReservationVisite, Client } from '../types';
 
 const api = useApi();
 const loading = ref(false);
 const submitting = ref(false);
 const creatingData = ref(false);
 
-const slots = ref<any[]>([]);
-const allBookings = ref<any[]>([]);
-const clientsList = ref<any[]>([]);
-const visitesList = ref<any[]>([]);
+const slots = ref<CreneauVisite[]>([]);
+const allBookings = ref<ReservationVisite[]>([]);
+const clientsList = ref<Client[]>([]);
+const visitesList = ref<Visite[]>([]);
 
 const selectedSlot = ref<any | null>(null);
 
@@ -394,7 +380,6 @@ const showCreateVisiteModal = ref(false);
 const visiteForm = ref({ nom: '', description: '', duree_minutes: 60, prix_unitaire: 10 });
 
 const showCreateSlotModal = ref(false);
-// Modification de la structure du formulaire pour séparer date et time
 const slotForm = ref({ visite_id: '', date: '', time: '', capacite_max: 20 });
 
 
@@ -403,7 +388,7 @@ async function fetchData() {
   try {
     const today = new Date().toISOString().split('T')[0];
 
-    const slotsRes = await api.get(`/items/${config.slotsCollection}`, {
+    const slotsRes = await api.get(`/items/${config.tourSlotsCollection}`, {
       params: {
         filter: { date_heure_debut: { _gte: today } },
         sort: 'date_heure_debut',
@@ -415,7 +400,7 @@ async function fetchData() {
 
     if (slots.value.length > 0) {
       const slotIds = slots.value.map(s => s.id);
-      const bookingsRes = await api.get(`/items/${config.bookingsCollection}`, {
+      const bookingsRes = await api.get(`/items/${config.tourBookingsCollection}`, {
         params: {
           filter: { [config.slotRelationField]: { _in: slotIds } },
           fields: ['*', 'client.*'],
@@ -427,13 +412,12 @@ async function fetchData() {
       allBookings.value = [];
     }
 
-    // CORRECTION : Tri par -id car date_created n'existe pas sur la collection clients
     const clientsRes = await api.get(`/items/${config.clientsCollection}`, {
       params: { fields: ['id', 'nom', 'prenom', 'email'], limit: -1, sort: '-id' }
     });
     clientsList.value = clientsRes.data.data;
 
-    const visitesRes = await api.get(`/items/${config.visitesCollection}`, {
+    const visitesRes = await api.get(`/items/${config.toursCollection}`, {
       params: { fields: ['id', 'nom'], limit: -1 }
     });
     visitesList.value = visitesRes.data.data;
@@ -448,12 +432,11 @@ async function fetchData() {
 async function submitVisite() {
   creatingData.value = true;
   try {
-    await api.post(`/items/${config.visitesCollection}`, visiteForm.value);
+    await api.post(`/items/${config.toursCollection}`, visiteForm.value);
     showCreateVisiteModal.value = false;
     visiteForm.value = { nom: '', description: '', duree_minutes: 60, prix_unitaire: 10 };
     await fetchData();
   } catch (err) {
-    alert("Erreur lors de la création de la visite.");
     console.error(err);
   } finally {
     creatingData.value = false;
@@ -463,20 +446,17 @@ async function submitVisite() {
 async function submitSlot() {
   creatingData.value = true;
   try {
-    // Recombinaison de la date et de l'heure au format ISO pour Directus
     const payload = {
-      visite_id: slotForm.value.visite_id,
+      [config.visiteRelationField]: slotForm.value.visite_id,
       date_heure_debut: `${slotForm.value.date}T${slotForm.value.time}:00`,
       capacite_max: slotForm.value.capacite_max
     };
 
-    await api.post(`/items/${config.slotsCollection}`, payload);
+    await api.post(`/items/${config.tourSlotsCollection}`, payload);
     showCreateSlotModal.value = false;
-    // Réinitialisation du formulaire avec les nouveaux champs
     slotForm.value = { visite_id: '', date: '', time: '', capacite_max: 20 };
     await fetchData();
   } catch (err) {
-    alert("Erreur lors de la création du créneau.");
     console.error(err);
   } finally {
     creatingData.value = false;
@@ -485,9 +465,9 @@ async function submitSlot() {
 
 
 const groupedSlots = computed(() => {
-  const groups: Record<string, any[]> = {};
+  const groups: Record<string, CreneauVisite[]> = {};
   slots.value.forEach(slot => {
-    const visiteName = slot[config.visiteRelationField]?.nom || 'Visite Standard';
+    const visiteName = (slot[config.visiteRelationField as keyof CreneauVisite] as any)?.nom || 'Visite Standard';
     if (!groups[visiteName]) groups[visiteName] = [];
     groups[visiteName].push(slot);
   });
@@ -495,7 +475,7 @@ const groupedSlots = computed(() => {
 });
 
 const globalPendingBookings = computed(() => {
-  return allBookings.value.filter(b => normalizeStatus(b[config.statusField]) === 'en_attente');
+  return allBookings.value.filter(b => normalizeStatus(b[config.statusField as keyof ReservationVisite] as string) === 'en_attente');
 });
 
 const isManualFormValid = computed(() => {
@@ -505,33 +485,35 @@ const isManualFormValid = computed(() => {
   return !!manualForm.value.client_id;
 });
 
-function getSlotBookings(slotId: number | string) {
+function getSlotBookings(slotId: number) {
   return allBookings.value.filter(b => {
-    const sId = typeof b[config.slotRelationField] === 'object' ? b[config.slotRelationField]?.id : b[config.slotRelationField];
+    const sId = typeof b[config.slotRelationField as keyof ReservationVisite] === 'object' 
+      ? (b[config.slotRelationField as keyof ReservationVisite] as any)?.id 
+      : b[config.slotRelationField as keyof ReservationVisite];
     return sId === slotId;
   });
 }
 
-function getSlotMaxCapacity(slot: any) {
+function getSlotMaxCapacity(slot: CreneauVisite) {
   return slot.capacite_max || config.defaultMaxCapacity;
 }
 
-function getSlotReservedCount(slotId: number | string) {
+function getSlotReservedCount(slotId: number) {
   const bookings = getSlotBookings(slotId);
   const activeBookings = bookings.filter(b => {
-    const s = normalizeStatus(b[config.statusField]);
+    const s = normalizeStatus(b[config.statusField as keyof ReservationVisite] as string);
     return s === 'confirmee' || s === 'en_attente';
   });
 
   return activeBookings.reduce((total, b) => total + (b.quantite_billets || 1), 0);
 }
 
-function getSlotPendingCount(slotId: number | string) {
+function getSlotPendingCount(slotId: number) {
   const bookings = getSlotBookings(slotId);
-  return bookings.filter(b => normalizeStatus(b[config.statusField]) === 'en_attente').length;
+  return bookings.filter(b => normalizeStatus(b[config.statusField as keyof ReservationVisite] as string) === 'en_attente').length;
 }
 
-function getCapacityPercentage(slot: any) {
+function getCapacityPercentage(slot: CreneauVisite) {
   const max = getSlotMaxCapacity(slot);
   const reserved = getSlotReservedCount(slot.id);
   if (max === 0) return 0;
@@ -539,7 +521,7 @@ function getCapacityPercentage(slot: any) {
   return pct > 100 ? 100 : pct;
 }
 
-function getCapacityColorClass(slot: any) {
+function getCapacityColorClass(slot: CreneauVisite) {
   const pct = getCapacityPercentage(slot);
   if (pct >= 100) return 'is-full';
   if (pct >= 80) return 'is-warning';
@@ -547,7 +529,7 @@ function getCapacityColorClass(slot: any) {
   return 'is-empty';
 }
 
-function openSlot(slot: any) {
+function openSlot(slot: CreneauVisite) {
   selectedSlot.value = slot;
   isAddingManual.value = false;
   isNewClient.value = false;
@@ -560,22 +542,21 @@ function closeDrawer() {
   isAddingManual.value = false;
 }
 
-async function updateBookingStatus(booking: any, newStatus: string) {
-  const oldStatus = booking[config.statusField];
-  booking[config.statusField] = newStatus;
+async function updateBookingStatus(booking: ReservationVisite, newStatus: string) {
+  const oldStatus = booking.statut;
+  booking.statut = newStatus as any;
   try {
-    await api.patch(`/items/${config.bookingsCollection}/${booking.id}`, { [config.statusField]: newStatus });
+    await api.patch(`/items/${config.tourBookingsCollection}/${booking.id}`, { [config.statusField]: newStatus });
   } catch (e) {
-    booking[config.statusField] = oldStatus;
-    alert("Erreur lors de la mise à jour");
+    booking.statut = oldStatus;
   }
 }
 
-async function deleteBooking(booking: any) {
-  if(!confirm("Annuler définitivement cette réservation de visite ?")) return;
+async function deleteBooking(booking: ReservationVisite) {
+  if(!confirm("Annuler définitivement cette réservation ?")) return;
   try {
-    await api.patch(`/items/${config.bookingsCollection}/${booking.id}`, { [config.statusField]: 'annulee' });
-    booking[config.statusField] = 'annulee';
+    await api.patch(`/items/${config.tourBookingsCollection}/${booking.id}`, { [config.statusField]: 'annulee' });
+    booking.statut = 'annulee';
   } catch (e) {
     console.error(e);
   }
@@ -590,7 +571,7 @@ async function submitManualReservation() {
 
     if (isNewClient.value) {
       const cRes = await api.post(`/items/${config.clientsCollection}`, clientForm.value);
-      finalClientId = cRes.data.data.id;
+      finalClientId = String(cRes.data.data.id);
     }
 
     const payload = {
@@ -600,13 +581,12 @@ async function submitManualReservation() {
       [config.statusField]: 'confirmee',
     };
 
-    await api.post(`/items/${config.bookingsCollection}`, payload);
+    await api.post(`/items/${config.tourBookingsCollection}`, payload);
     await fetchData();
     isAddingManual.value = false;
     selectedSlot.value = slots.value.find(s => s.id === selectedSlot.value.id) || null;
 
   } catch (err) {
-    alert("Erreur lors de la création de la réservation.");
     console.error(err);
   } finally {
     submitting.value = false;
@@ -629,9 +609,9 @@ function getStatusLabel(val: string) {
   return val;
 }
 
-function getClientName(b: any) {
-  const c = b?.client;
-  if (typeof c === 'object' && c !== null) return `${c.prenom || ''} ${c.nom || ''}`.trim() || c.email || 'Client Inconnu';
+function getClientName(b: ReservationVisite) {
+  const c = b.client as Client;
+  if (typeof c === 'object' && c !== null) return `${c.prenom || ''} ${c.nom || ''}`.trim() || c.email || 'Inconnu';
   return 'Client';
 }
 
@@ -647,8 +627,7 @@ function formatFullDate(d: string) {
 
 function formatTime(d: string) {
   if(!d) return '--:--';
-  const dateObj = new Date(d);
-  return format(dateObj, 'HH:mm');
+  return format(parseISO(d), 'HH:mm');
 }
 
 onMounted(() => {

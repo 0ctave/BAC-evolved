@@ -5,7 +5,7 @@
         <h3>À Confirmer (Chambres)</h3>
         <span class="badge count" v-if="bookings.length > 0">{{ bookings.length }}</span>
       </div>
-      <button class="refresh-btn" @click="fetchData" :disabled="loading">
+      <button class="refresh-btn" @click="fetchData" :disabled="loading" aria-label="Actualiser">
         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" :class="{ spinning: loading }"><path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.3"/></svg>
       </button>
     </div>
@@ -29,9 +29,9 @@
             <span class="room-name">{{ getRoomName(booking) }}</span>
           </div>
           <div class="date-row">
-            <span class="date">{{ formatDate(booking[config.roomStartDateField]) }}</span>
+            <span class="date">{{ formatDate(booking[config.roomStartDateField as keyof ReservationChambre] as string) }}</span>
             <span class="arrow">→</span>
-            <span class="date">{{ formatDate(booking[config.roomEndDateField]) }}</span>
+            <span class="date">{{ formatDate(booking[config.roomEndDateField as keyof ReservationChambre] as string) }}</span>
             <span class="duration">({{ getDuration(booking) }} nuits)</span>
           </div>
         </div>
@@ -57,11 +57,12 @@ import { ref, onMounted, onUnmounted } from 'vue';
 import { format, parseISO, differenceInDays } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { config } from '../config';
+import type { ReservationChambre, Client, Chambre } from '../types';
 
 const api = useApi();
 const loading = ref(false);
 const processing = ref<string | number | null>(null);
-const bookings = ref<any[]>([]);
+const bookings = ref<ReservationChambre[]>([]);
 
 const STATUS_PENDING = 'en_attente';
 const STATUS_CONFIRMED = 'confirmee';
@@ -81,7 +82,7 @@ async function fetchData() {
   } catch (err) { console.error(err); } finally { loading.value = false; }
 }
 
-async function confirmBooking(booking: any) {
+async function confirmBooking(booking: ReservationChambre) {
   processing.value = booking.id;
   try {
     await api.patch(`/items/${config.roomBookingsCollection}/${booking.id}`, { [config.statusField]: STATUS_CONFIRMED });
@@ -92,18 +93,22 @@ async function confirmBooking(booking: any) {
 
 function handleGlobalUpdate() { fetchData(); }
 
-function getClientName(b: any) {
-  const client = b?.[config.clientField];
+function getClientName(b: ReservationChambre) {
+  const client = b.client as Client;
   if (typeof client === 'object' && client !== null) { return client.nom ? `${client.prenom || ''} ${client.nom}` : 'Client'; }
   return 'Client';
 }
-function getRoomName(b: any) {
-  const room = b?.[config.roomRelationField];
-  if (typeof room === 'object' && room !== null) { return room[config.roomNameField] || 'Chambre'; }
+function getRoomName(b: ReservationChambre) {
+  const room = b[config.roomRelationField as keyof ReservationChambre] as Chambre;
+  if (typeof room === 'object' && room !== null) { return room.nom || 'Chambre'; }
   return 'Chambre';
 }
 function formatDate(d: string) { return d ? format(parseISO(d), 'd MMM', { locale: fr }) : '-'; }
-function getDuration(b: any) { return (b[config.roomStartDateField] && b[config.roomEndDateField]) ? differenceInDays(parseISO(b[config.roomEndDateField]), parseISO(b[config.roomStartDateField])) : 0; }
+function getDuration(b: ReservationChambre) { 
+  const start = b.date_arrivee;
+  const end = b.date_depart;
+  return (start && end) ? differenceInDays(parseISO(end), parseISO(start)) : 0; 
+}
 
 onMounted(() => {
   fetchData();
@@ -143,12 +148,10 @@ onUnmounted(() => { window.removeEventListener('hotel-booking-updated', handleGl
 .refresh-btn:hover { color: var(--theme--primary); border-color: var(--theme--primary); }
 .spinning { animation: spin 1s linear infinite; }
 
-/* MODIFICATION ICI: Utilisation de Grid pour un affichage pleine largeur optimisé */
 .booking-list {
   flex: 1;
   overflow-y: auto;
   display: grid;
-  /* Crée automatiquement autant de colonnes que possible (min 320px par carte) */
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
   align-content: start;
   padding: 16px;
