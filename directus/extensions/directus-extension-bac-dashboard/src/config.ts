@@ -4,26 +4,31 @@ export const config = {
     roomsCollection: 'chambres',
     roomStartDateField: 'date_arrivee',
     roomEndDateField: 'date_depart',
-    roomRelationField: 'chambre', // Relation vers la collection chambres
+    roomRelationField: 'chambre',
     roomNameField: 'nom',
-    roomColorField: 'couleur', // 'bleu' ou 'orange' d'après votre schéma
+    roomColorField: 'couleur',
 
     // --- Visites ---
-    tourBookingsCollection: 'reservations_visite',
     toursCollection: 'visites',
     tourSlotsCollection: 'creneaux_visites',
+    tourBookingsCollection: 'reservations_visite',
+    visiteRelationField: 'visite_id',
+    slotRelationField: 'creneau_visite',
 
     // --- Commentaires ---
     commentsCollection: 'commentaires',
 
+    // --- Clients ---
+    clientsCollection: 'clients',
+
     // --- Partagé ---
-    clientField: 'client', // Relation vers clients (prenom, nom, email)
-    statusField: 'statut', // 'en_attente' | 'confirmee' | 'annulee' | 'indisponible'
+    clientField: 'client',
+    statusField: 'statut',
+    defaultMaxCapacity: 20
 };
 
-// Fonction utilitaire pour mapper les couleurs de la BDD vers des couleurs hexadécimales
 export function getRoomHexColor(couleur: string | null | undefined): string {
     if (couleur === 'bleu') return '#3498db';
     if (couleur === 'orange') return '#e67e22';
-    return '#95a5a6'; // Gris par défaut
+    return '#95a5a6';
 }
