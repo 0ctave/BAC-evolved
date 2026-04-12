@@ -19,7 +19,7 @@
             <span v-if="tab.count !== null" class="count-badge">{{ tab.count }}</span>
           </button>
         </div>
-        <button class="refresh-btn" @click="fetchData" :disabled="loading">
+        <button class="refresh-btn" @click="fetchData" :disabled="loading" aria-label="Actualiser">
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" :class="{ spinning: loading }"><path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.3"/></svg>
         </button>
       </div>
@@ -40,7 +40,7 @@
     <div v-else class="comments-list">
       <div v-for="comment in filteredComments" :key="comment.id" class="comment-item" :class="comment.status">
         <div class="comment-sidebar">
-          <div class="avatar">
+          <div class="avatar" :title="getAuthorName(comment)">
             {{ getInitials(comment) }}
           </div>
           <div v-if="comment.status === 'en_attente'" class="status-indicator warning" title="En attente de relecture"></div>
@@ -76,21 +76,21 @@
 
           <div class="comment-actions">
             <div class="main-actions">
-              <button v-if="comment.status === 'en_attente'" class="btn-approve" @click="updateStatus(comment, 'published')" :disabled="processing === comment.id">
+              <button v-if="comment.status === 'en_attente'" class="btn-approve" @click="updateStatus(comment, 'published')" :disabled="!!processing">
                 Approuver
               </button>
-              <button class="btn-reply" @click="toggleReply(comment.id)">
+              <button class="btn-reply" @click="toggleReply(comment.id)" :disabled="!!processing">
                 {{ activeReplyId === comment.id ? 'Annuler' : 'Répondre' }}
               </button>
             </div>
             <div class="secondary-actions">
-              <button v-if="comment.status !== 'archived'" class="btn-archive" @click="updateStatus(comment, 'archived')" :disabled="processing === comment.id">
+              <button v-if="comment.status !== 'archived'" class="btn-archive" @click="updateStatus(comment, 'archived')" :disabled="!!processing">
                 Archiver
               </button>
-              <button v-if="comment.status === 'archived'" class="btn-restore" @click="updateStatus(comment, 'en_attente')" :disabled="processing === comment.id">
+              <button v-if="comment.status === 'archived'" class="btn-restore" @click="updateStatus(comment, 'en_attente')" :disabled="!!processing">
                 Restaurer
               </button>
-              <button class="btn-delete" @click="deleteComment(comment)" :disabled="processing === comment.id">
+              <button class="btn-delete" @click="deleteComment(comment)" :disabled="!!processing">
                 Supprimer
               </button>
             </div>
@@ -104,6 +104,7 @@
                 placeholder="Votre réponse officielle..." 
                 class="reply-textarea"
                 rows="3"
+                :disabled="submitting"
               ></textarea>
               <div class="reply-form-actions">
                 <button class="btn-submit-reply" @click="submitReply(comment)" :disabled="!replyContent.trim() || submitting">
@@ -131,12 +132,13 @@ import { useApi } from '@directus/extensions-sdk';
 import { format, parseISO } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { config } from '../config';
+import type { Commentaire, Client } from '../types';
 
 const api = useApi();
 const loading = ref(false);
 const submitting = ref(false);
 const processing = ref<number | null>(null);
-const comments = ref<any[]>([]);
+const comments = ref<Commentaire[]>([]);
 const currentTab = ref('en_attente');
 const activeReplyId = ref<number | null>(null);
 const replyContent = ref('');
@@ -170,7 +172,7 @@ async function fetchData() {
 
 const filteredComments = computed(() => {
   // On ne montre que les commentaires "racines" dans la liste principale
-  let base = comments.value.filter(c => !c.parent);
+  const base = comments.value.filter(c => !c.parent);
   
   if (currentTab.value === 'all') return base;
   return base.filter(c => c.status === currentTab.value);
@@ -183,7 +185,7 @@ function getReplies(commentId: number) {
   }).sort((a, b) => new Date(a.date_created).getTime() - new Date(b.date_created).getTime());
 }
 
-async function updateStatus(comment: any, newStatus: string) {
+async function updateStatus(comment: Commentaire, newStatus: Commentaire['status']) {
   processing.value = comment.id;
   try {
     await api.patch(`/items/${config.commentsCollection}/${comment.id}`, { status: newStatus });
@@ -197,27 +199,17 @@ async function updateStatus(comment: any, newStatus: string) {
   }
 }
 
-async function deleteComment(comment: any) {
+async function deleteComment(comment: Commentaire) {
   if (!confirm("Voulez-vous vraiment supprimer définitivement ce commentaire et toutes ses réponses ?")) return;
   processing.value = comment.id;
   
   try {
-    /**
-     * Surgical recursive deletion:
-     * 1. Fetch current children of the node from the DB
-     * 2. Recursively delete those children
-     * 3. Delete the node itself
-     */
-    const performRecursiveDelete = async (id: any) => {
-      console.log(`[Delete] Checking children for comment ID: ${id}`);
-      
+    const performRecursiveDelete = async (id: number) => {
       // Find children from the already loaded comments state
       const children = comments.value.filter(c => {
         const pId = typeof c.parent === 'object' ? c.parent?.id : c.parent;
         return pId === id;
       });
-      
-      console.log(`[Delete] Found ${children.length} children for ID ${id}:`, children.map(c => c.id));
       
       // Delete children first (recursively)
       for (const child of children) {
@@ -225,14 +217,7 @@ async function deleteComment(comment: any) {
       }
       
       // Delete the comment itself now that its children are gone
-      console.log(`[Delete] Attempting to delete comment ID: ${id}`);
-      try {
-        await api.delete(`/items/${config.commentsCollection}/${id}`);
-        console.log(`[Delete] Successfully deleted comment ID: ${id}`);
-      } catch (err: any) {
-        console.error(`[Delete] Failed to delete comment ID: ${id}`, err.response?.data || err.message);
-        throw err; // Re-throw to stop the process
-      }
+      await api.delete(`/items/${config.commentsCollection}/${id}`);
     };
 
     // Start the process from the targeted comment
@@ -243,7 +228,7 @@ async function deleteComment(comment: any) {
     showNotification("Le commentaire et ses réponses ont été supprimés.");
   } catch (err: any) {
     console.error("Critical Deletion Error:", err);
-    showNotification("Erreur lors de la suppression complète.", "error");
+    showNotification("Erreur lors de la suppression.", "error");
     await fetchData();
   } finally {
     processing.value = null;
@@ -260,7 +245,7 @@ function toggleReply(id: number) {
   }
 }
 
-async function submitReply(parentComment: any) {
+async function submitReply(parentComment: Commentaire) {
   if (!replyContent.value.trim()) return;
   submitting.value = true;
   try {
@@ -292,22 +277,22 @@ async function submitReply(parentComment: any) {
   }
 }
 
-function getAuthorName(comment: any) {
+function getAuthorName(comment: Commentaire): string {
   if (comment.is_admin_reply) return "Bordeaux à Coeur (Admin)";
   if (comment.pseudonyme) return comment.pseudonyme;
-  const client = comment.client;
+  const client = comment.client as Client;
   if (typeof client === 'object' && client !== null) {
     return `${client.prenom || ''} ${client.nom || ''}`.trim() || client.email || 'Anonyme';
   }
   return 'Visiteur';
 }
 
-function getInitials(comment: any) {
+function getInitials(comment: Commentaire): string {
   const name = getAuthorName(comment);
   return name.split(' ').map((n: string) => n[0]).join('').substring(0, 2).toUpperCase();
 }
 
-function formatDate(date: string) {
+function formatDate(date: string): string {
   if (!date) return '';
   return format(parseISO(date), 'd MMM yyyy à HH:mm', { locale: fr });
 }

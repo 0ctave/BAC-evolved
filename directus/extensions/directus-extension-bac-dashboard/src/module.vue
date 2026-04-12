@@ -1,28 +1,15 @@
 <template>
   <private-view title="Gestion Bordeaux à Coeur">
-    <!-- Intégration des actions dans le header natif de Directus -->
     <template #actions>
       <div class="module-tabs">
         <button
-            @click="currentTab = 'rooms'"
-            :class="{ active: currentTab === 'rooms' }"
+            v-for="tab in tabOptions"
+            :key="tab.value"
+            @click="currentTab = tab.value"
+            :class="{ active: currentTab === tab.value }"
             class="tab-btn"
         >
-          Chambres d'Hôte
-        </button>
-        <button
-            @click="currentTab = 'tours'"
-            :class="{ active: currentTab === 'tours' }"
-            class="tab-btn"
-        >
-          Visites
-        </button>
-        <button
-            @click="currentTab = 'comments'"
-            :class="{ active: currentTab === 'comments' }"
-            class="tab-btn"
-        >
-          Commentaires
+          {{ tab.label }}
         </button>
       </div>
     </template>
@@ -31,28 +18,22 @@
       <main class="module-wrapper">
         <!-- VUE: CHAMBRES -->
         <div v-if="currentTab === 'rooms'" class="rooms-dashboard">
-
-          <!-- SECTION 1: CONFIRMATION (En haut, pleine largeur) -->
           <section class="confirmation-section">
             <PendingBookings />
           </section>
 
-          <!-- SECTION 2: CALENDRIERS (En dessous) -->
           <section class="calendars-section">
-            <!-- Calendrier Combiné -->
             <div class="calendar-card">
               <BookingCalendar title="Vue Combinée des Réservations" />
             </div>
 
-            <!-- Calendriers Séparés par Chambre (générés dynamiquement) -->
             <div class="split-calendars" v-if="rooms.length > 0">
               <div v-for="room in rooms" :key="room.id" class="calendar-card">
                 <BookingCalendar :title="room.nom" :room-filter="room.nom" />
               </div>
             </div>
-            <div v-else class="loading-rooms">Chargement des chambres...</div>
+            <div v-else-if="loading" class="loading-rooms">Chargement des chambres...</div>
           </section>
-
         </div>
 
         <!-- VUE: VISITES -->
@@ -73,22 +54,32 @@
 import { ref, onMounted } from 'vue';
 import { useApi } from '@directus/extensions-sdk';
 import { config } from './config';
-// Utilisez les bons noms de fichiers selon ce que vous avez configuré
 import PendingBookings from './components/room-confirmation.vue';
 import BookingCalendar from './components/room-calendar.vue';
 import TourDashboard from './components/tour-calendar.vue';
 import CommentManagement from './components/comment-management.vue';
+import type { Chambre } from './types';
 
 const api = useApi();
-const currentTab = ref('rooms');
-const rooms = ref<any[]>([]);
+const currentTab = ref<'rooms' | 'tours' | 'comments'>('rooms');
+const rooms = ref<Chambre[]>([]);
+const loading = ref(false);
+
+const tabOptions = [
+  { label: "Chambres d'Hôte", value: 'rooms' as const },
+  { label: "Visites", value: 'tours' as const },
+  { label: "Commentaires", value: 'comments' as const },
+];
 
 onMounted(async () => {
+  loading.value = true;
   try {
     const res = await api.get(`/items/${config.roomsCollection}`);
     rooms.value = res.data.data;
   } catch (err) {
     console.error("Erreur lors du chargement des chambres", err);
+  } finally {
+    loading.value = false;
   }
 });
 </script>
@@ -106,7 +97,6 @@ onMounted(async () => {
   margin: 0 auto;
 }
 
-/* Tabs dans le header de Directus */
 .module-tabs {
   display: flex;
   gap: 8px;
@@ -138,17 +128,16 @@ onMounted(async () => {
   box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 
-/* --- NOUVEAU LAYOUT VERTICAL --- */
 .rooms-dashboard {
   display: flex;
   flex-direction: column;
-  gap: 32px; /* Espace entre les confirmations et les calendriers */
+  gap: 32px;
   width: 100%;
 }
 
 .confirmation-section {
   width: 100%;
-  max-height: 450px; /* Limite la hauteur pour ne pas pousser les calendriers hors de l'écran */
+  max-height: 450px;
   display: flex;
   flex-direction: column;
 }
@@ -158,7 +147,7 @@ onMounted(async () => {
   flex-direction: column;
   gap: 32px;
   width: 100%;
-  min-width: 0; /* Empêche l'élargissement Flexbox */
+  min-width: 0;
 }
 
 .calendar-card {
@@ -168,14 +157,12 @@ onMounted(async () => {
   box-shadow: 0 4px 12px rgba(0,0,0,0.02);
   overflow: hidden;
   min-height: 500px;
-  min-width: 0; /* Crucial : Empêche le débordement natif */
+  min-width: 0;
   width: 100%;
 }
 
-/* Grille pour les calendriers individuels */
 .split-calendars {
   display: grid;
-  /* LA CORRECTION MAGIQUE : minmax(0, 1fr) permet à la grille de s'écraser */
   grid-template-columns: minmax(0, 1fr);
   gap: 24px;
   width: 100%;
@@ -184,14 +171,12 @@ onMounted(async () => {
 
 @media (min-width: 1000px) {
   .split-calendars {
-    /* Sur PC, on remet les colonnes dynamiques */
     grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
   }
 }
 
 .loading-rooms { padding: 24px; text-align: center; color: var(--theme--foreground-subdued); }
 
-/* Mobile Responsiveness */
 @media (max-width: 1000px) {
   .module-wrapper {
     padding: 12px;
