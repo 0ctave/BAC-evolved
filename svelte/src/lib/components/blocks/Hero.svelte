@@ -65,7 +65,7 @@
 					? layout === 'image_right'
 						? 'md:order-1'
 						: 'md:order-2'
-					: 'mx-auto max-w-4xl shadow-retro-primary md:shadow-retro-white',
+					: 'shadow-retro-primary md:shadow-retro-white mx-auto max-w-4xl',
 
 				isSideLayout ? 'items-start text-left' : 'items-center text-center'
 			)}
@@ -182,14 +182,12 @@
 						'flex items-center justify-center transition-transform duration-1000 ease-in-out',
 						// Rotation Logic for Mobile (Landscape rotated portrait)
 						isSideLayout
-							? 'max-md:absolute max-md:top-1/2 max-md:left-1/2 max-md:-translate-x-1/2 max-md:-translate-y-1/2 max-md:rotate-90 max-md:h-[calc(100%*521/375)] max-md:w-[calc(100%*375/521)]'
+							? 'max-md:absolute max-md:top-1/2 max-md:left-1/2 max-md:h-[calc(100%*521/375)] max-md:w-[calc(100%*375/521)] max-md:-translate-x-1/2 max-md:-translate-y-1/2 max-md:rotate-90'
 							: 'h-full w-full',
 
 						// Desktop Styling: Controlled height to avoid being "too big"
 						'md:rotate-0',
-						isSideLayout
-							? 'md:max-h-[750px] md:w-auto md:max-w-full'
-							: 'md:h-full md:w-full'
+						isSideLayout ? 'md:max-h-[750px] md:w-auto md:max-w-full' : 'md:h-full md:w-full'
 					)}
 				>
 					<DirectusImage

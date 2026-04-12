@@ -122,7 +122,7 @@
 
 						{#if description}
 							<div
-								class="text-body prose max-w-none text-base leading-relaxed md:prose-lg md:text-xl"
+								class="text-body prose md:prose-lg max-w-none text-base leading-relaxed md:text-xl"
 								in:fly={{ x: -20, duration: 600, delay: 650 }}
 							>
 								<Text content={description} />

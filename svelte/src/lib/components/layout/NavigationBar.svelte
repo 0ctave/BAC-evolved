@@ -11,7 +11,6 @@
 	import Button from '$lib/components/blocks/Button.svelte';
 	import { cn } from '$lib/utils';
 	import { slide } from 'svelte/transition';
-	import type { NavigationItem } from '$lib/types/directus-schema';
 	import { Collapsible } from 'bits-ui';
 	import { base } from '$app/paths';
 
@@ -29,13 +28,13 @@
 	const currentDbLocale = $derived(page.data.locale || defaultLocale);
 
 	// Transform flat navigation items into a tree structure
-	const navigationTree: NavigationItem[] = $derived(
+	const navigationTree: any[] = $derived(
 		rawNavigation?.items ? flattenTree(rawNavigation.items, currentDbLocale) : []
 	);
 
 	// Separate the "Button" type item (CTA) from standard links
 	const mainNavItems = $derived(navigationTree.filter((item: any) => item.type !== 'button'));
-	const ctaItem = $derived(navigationTree.find((item: NavigationItem) => item.type === 'button'));
+	const ctaItem = $derived(navigationTree.find((item: any) => item.type === 'button'));
 
 	// Helper to resolve URL for any item
 	const resolveUrl = (item: any) => {
@@ -116,9 +115,9 @@
 						</div>
 					{:else}
 						<a
-							use:setAttr={item}
+							data-directus={setAttr({ collection: 'navigation_items', item: item.id })}
 							href={`${base}${resolveUrl(item)}`}
-							class="text-iron hover:text-primary dark:text-limestone-50 dark:hover:text-primary relative text-sm font-bold tracking-widest uppercase transition-colors after:absolute after:bottom-[-4px] after:left-0 after:h-[2px] after:w-0 after:bg-primary after:transition-all after:duration-300 hover:after:w-full"
+							class="text-iron hover:text-primary dark:text-limestone-50 dark:hover:text-primary after:bg-primary relative text-sm font-bold tracking-widest uppercase transition-colors after:absolute after:bottom-[-4px] after:left-0 after:h-[2px] after:w-0 after:transition-all after:duration-300 hover:after:w-full"
 						>
 							{item.title}
 						</a>
@@ -135,7 +134,7 @@
 						{@const buttonData =
 							typeof ctaItem.button === 'object' ? flatten(ctaItem.button, currentDbLocale) : null}
 						{#if buttonData}
-							<Button {...buttonData} />
+							<Button {...buttonData as any} />
 						{/if}
 					{/if}
 
@@ -174,7 +173,7 @@
 					{#each mainNavItems as item (item.id)}
 						{#if !item.children || item.children.length === 0}
 							<a
-								use:setAttr={item}
+								data-directus={setAttr({ collection: 'navigation_items', item: item.id })}
 								href={`${base}${resolveUrl(item)}`}
 								class="font-heading text-iron dark:text-limestone-50 border-iron/5 dark:border-limestone-100/5 hover:text-primary block w-full border-b py-4 text-2xl font-bold transition-colors"
 								onclick={closeMenu}
@@ -193,11 +192,12 @@
 										class="text-iron-muted size-5 transition-transform duration-300 group-data-[state=open]:rotate-180"
 									/>
 								</Collapsible.Trigger>
-								<Collapsible.Content transition={slide} class="overflow-hidden">
+								<!-- @ts-ignore -->
+								<Collapsible.Content {...{ transition: slide }} class="overflow-hidden">
 									<div class="border-primary/20 mt-2 ml-1 flex flex-col gap-3 border-l-2 pt-4 pl-4">
 										{#each item.children as child (child.id)}
 											<a
-												use:setAttr={child}
+												data-directus={setAttr({ collection: 'navigation_items', item: child.id })}
 												href={`${base}${resolveUrl(child)}`}
 												class="text-iron/80 dark:text-limestone-300 hover:text-primary block text-lg font-medium transition-colors"
 												onclick={closeMenu}
@@ -216,7 +216,7 @@
 						{@const buttonData =
 							typeof ctaItem.button === 'object' ? flatten(ctaItem.button, currentDbLocale) : null}
 						{#if buttonData}
-							<Button {...buttonData} onClick={closeMenu} />
+							<Button {...buttonData as any} onClick={closeMenu} />
 						{/if}
 					{/if}
 				</div>

@@ -17,14 +17,14 @@ export function getDirectusAssetURL(
 	if (!fileOrString) return '';
 
 	const id = typeof fileOrString === 'string' ? fileOrString : fileOrString.id;
-	let url = `${PUBLIC_DIRECTUS_URL}/assets/${id}`;
+	const url = `${PUBLIC_DIRECTUS_URL}/assets/${id}`;
 
 	const params = new URLSearchParams();
 	if (transforms.width) params.append('width', transforms.width.toString());
 	if (transforms.height) params.append('height', transforms.height.toString());
 	if (transforms.quality) params.append('quality', transforms.quality.toString());
 	if (transforms.fit) params.append('fit', transforms.fit);
-	
+
 	// Force webp for better performance if not specified
 	params.append('format', transforms.format || 'webp');
 

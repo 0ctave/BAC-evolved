@@ -1,5 +1,5 @@
 import { createDirectus, rest, readItems } from '@directus/sdk';
-import { PUBLIC_API_URL } from '$env/static/public';
+import { PUBLIC_DIRECTUS_URL } from '$env/static/public';
 
 // Define the interface matching your 'langues' collection
 export interface LanguageConfig {
@@ -10,18 +10,18 @@ export interface LanguageConfig {
 }
 
 // In-memory cache variables
-let cachedLanguages: LanguageConfig | null = null;
+let cachedLanguages: LanguageConfig[] | null = null;
 let lastFetchTime = 0;
 const CACHE_TTL = 300000; // 5 minutes in milliseconds
 
 // Create a dedicated client for system operations
-const client = createDirectus(PUBLIC_API_URL).with(rest());
+const client = createDirectus(PUBLIC_DIRECTUS_URL).with(rest());
 
 /**
  * Fetches languages from Directus with caching.
  * This prevents hitting the API on every single request.
  */
-export async function getAppLanguages(): Promise<LanguageConfig> {
+export async function getAppLanguages(): Promise<LanguageConfig[] | null> {
 	const now = Date.now();
 
 	// Return cache if valid
@@ -42,7 +42,7 @@ export async function getAppLanguages(): Promise<LanguageConfig> {
 
 		cachedLanguages = response.map((l: any) => ({
 			code: l.code,
-			slug: l.slug || l.code.split('-'), // Fallback if slug missing
+			slug: l.slug || l.code.split('-')[0], // Fixed split usage
 			is_default: l.is_default || false,
 			direction: l.direction || 'ltr'
 		}));
@@ -51,6 +51,6 @@ export async function getAppLanguages(): Promise<LanguageConfig> {
 		return cachedLanguages;
 	} catch (error) {
 		console.error('Failed to load languages from Directus:', error);
-		return;
+		return null;
 	}
 }

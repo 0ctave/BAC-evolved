@@ -81,11 +81,7 @@
 		<Search class="text-iron dark:text-limestone-100 size-5" />
 	</Button>
 
-	<Command.Dialog
-		bind:open
-		shouldFilter={false}
-		contentClass="bg-transparent border-none shadow-none p-0"
-	>
+	<Command.Dialog bind:open shouldFilter={false} class="border-none bg-transparent p-0 shadow-none">
 		<!-- Custom Atelier Modal Content -->
 		<div
 			class="border-iron/10 dark:border-limestone-100/10 shadow-retro mx-auto w-full max-w-lg overflow-hidden rounded-xl border-2 bg-white dark:bg-[#252426] dark:shadow-black/60"

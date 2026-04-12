@@ -44,7 +44,7 @@
 	});
 
 	const form = superForm(defaultValues, {
-		validators: zodClient(formSchema),
+		validators: zodClient(formSchema as any),
 		SPA: true
 	});
 

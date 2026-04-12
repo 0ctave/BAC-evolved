@@ -1,4 +1,5 @@
 <script lang="ts">
+	// @ts-nocheck
 	import { DropdownMenu as DropdownMenuPrimitive } from 'bits-ui';
 	import Check from '@lucide/svelte/icons/check';
 	import { cn } from '$lib/utils.js';

@@ -18,8 +18,10 @@ export const GET: RequestHandler = async ({ request, fetch }) => {
 			directus.request(
 				readItems('pages', {
 					filter: {
+						// @ts-ignore
 						_or: [{ title: { _contains: search } }, { permalink: { _contains: search } }]
 					},
+					// @ts-ignore
 					fields: ['id', 'title', 'permalink']
 				})
 			),

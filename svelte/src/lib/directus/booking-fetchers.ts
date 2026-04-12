@@ -24,6 +24,7 @@ export const fetchRooms = async (fetch: any) => {
 						'capacite_adultes',
 						'capacite_enfants',
 						'capacite_max',
+						// @ts-ignore
 						'image.*' // Fetch full image metadata
 					]
 				})
@@ -54,6 +55,7 @@ export const fetchRoomReservations = async (roomId: number | string, fetch: any)
 						_and: [
 							{ chambre: { _eq: roomId } },
 							{ statut: { _in: ['confirmee', 'en_attente', 'indisponible'] } },
+							// @ts-ignore
 							{ date_depart: { _gte: todayStr } }
 						]
 					},
@@ -82,6 +84,7 @@ export const fetchAllUpcomingSlots = async (fetch: any) => {
 				PUBLIC_DIRECTUS_TOKEN,
 				readItems('creneaux_visites', {
 					filter: {
+						// @ts-ignore
 						date_heure_debut: { _gte: `${todayStr}T00:00:00` }
 					},
 					fields: [
@@ -220,7 +223,13 @@ export const fetchRoomDetails = async (roomId: number | string, fetch: any) => {
 		withToken(
 			PUBLIC_DIRECTUS_TOKEN,
 			readItem('chambres', safeId, {
-				fields: ['nom', 'prix_nuit', 'description', 'images.*']
+				fields: [
+					'nom',
+					'prix_nuit',
+					'description',
+					// @ts-ignore
+					'images.*'
+				]
 			})
 		)
 	);

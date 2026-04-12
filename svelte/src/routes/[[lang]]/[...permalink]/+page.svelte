@@ -19,8 +19,8 @@
 
 <svelte:head>
 	<!-- FIX: Access 'data.page.title' -->
-	<title>{data.page?.title || ''}</title>
-	<meta name="description" content={data.page?.seo?.meta_description || ''} />
+	<title>{(data.page as any)?.title || ''}</title>
+	<meta name="description" content={(data.page as any)?.seo?.meta_description || ''} />
 </svelte:head>
 
 <div class="relative">

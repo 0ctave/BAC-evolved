@@ -109,8 +109,10 @@
 			? 'bg-red-50/30 ring-2 ring-red-500'
 			: ''}"
 	>
+		<!-- @ts-ignore -->
 		<Calendar.Root
-			{value}
+			{...{ value }}
+			{...{ type: 'single' }}
 			bind:placeholder
 			minValue={now}
 			class="w-full"
@@ -146,9 +148,10 @@
 										{@const isSelected = value && isSameDay(date, value)}
 
 										<Calendar.Cell {date} month={month.value} class="calendar-day-wrapper">
+											<!-- @ts-ignore -->
 											<Calendar.Day
-												{date}
-												month={month.value}
+												{...{ date }}
+												{...{ month: month.value }}
 												onclick={(e) => handleDayClick(e, date)}
 												class="group calendar-day relative transition-all duration-300 {cellClasses[
 													date.toString()

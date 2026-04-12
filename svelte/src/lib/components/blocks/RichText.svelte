@@ -27,7 +27,7 @@
 </script>
 
 <div
-	class="panel-backdrop border rounded-none p-8 max-md:rounded-none md:p-16"
+	class="panel-backdrop rounded-none border p-8 max-md:rounded-none md:p-16"
 	use:reveal
 	onreveal={() => (visible = true)}
 >

@@ -150,7 +150,7 @@
 
 					{#if content}
 						<div
-							class="text-body prose max-w-none text-base leading-relaxed md:prose-lg md:text-xl"
+							class="text-body prose md:prose-lg max-w-none text-base leading-relaxed md:text-xl"
 							in:fly={{ x: -20, duration: 600, delay: 500 }}
 						>
 							<BaseText {content} />
@@ -213,7 +213,10 @@
 								style={`transform: translateX(-${currentIndex * 100}%);`}
 							>
 								{#each processedImages as img, i (img.id || i)}
-									<div class="relative h-full w-full flex-shrink-0" aria-hidden={currentIndex !== i}>
+									<div
+										class="relative h-full w-full flex-shrink-0"
+										aria-hidden={currentIndex !== i}
+									>
 										<DirectusImage
 											uuid={getImageUrl(img)}
 											alt={`Split carousel slide ${i + 1}`}

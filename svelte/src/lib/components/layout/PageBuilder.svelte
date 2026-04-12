@@ -1,7 +1,6 @@
 <script lang="ts">
 	import type { PageBlock } from '$lib/types/directus-schema';
 	import BaseBlock from '../blocks/BaseBlock.svelte';
-	import { cn } from '$lib/utils';
 
 	interface PageBuilderProps {
 		sections: PageBlock[];

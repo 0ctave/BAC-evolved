@@ -1,5 +1,11 @@
 import { z } from 'zod';
-import type { FormField } from '$lib/types/directus-schema';
+import type { FormField as BaseFormField } from '$lib/types/directus-schema';
+
+type FormField = BaseFormField & {
+	label?: string | null;
+	help?: string | null;
+	placeholder?: string | null;
+};
 
 export const buildZodSchema = (fields: FormField[]) => {
 	const schema: Record<string, z.ZodTypeAny> = {};

@@ -48,7 +48,7 @@
 
 <div class="flex items-center gap-3">
 	{#each displayLanguages as lang (lang.dbCode)}
-		{@const url = getSwitchUrl(lang.dbCode, lang.urlCode, lang.isDefault)}
+		{@const url = getSwitchUrl(lang.dbCode, lang.urlCode)}
 		{@const isActive = currentDbLocale === lang.dbCode}
 
 		<a

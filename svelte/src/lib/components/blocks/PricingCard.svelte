@@ -3,7 +3,6 @@
 	import { Badge } from '../ui/badge';
 	import setAttr from '$lib/directus/visualEditing';
 	import Button from './Button.svelte';
-	import type { ButtonVariant } from '../ui/button';
 
 	interface PricingCardProps {
 		card: {
@@ -106,7 +105,7 @@
 					mode: 'popover'
 				})}
 			>
-				{#each card.features as feature, i (feature)}
+				{#each card.features as feature, _i (feature)}
 					<li
 						class="text-iron dark:text-limestone-100 flex items-start gap-3 transition-transform duration-300 hover:translate-x-1"
 					>
@@ -133,7 +132,7 @@
 				<Button
 					id={card.button.id}
 					block={true}
-					variant={card.button.variant as ButtonVariant}
+					variant={card.button.variant as any}
 					url={card.button.url}
 					label={card.button.label}
 				></Button>

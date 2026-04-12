@@ -96,7 +96,10 @@
 						mode: 'popover'
 					})}
 				/>
-				<div class="bg-primary mx-auto mt-4 h-1 w-16" in:scale={{ duration: 600, delay: 400 }}></div>
+				<div
+					class="bg-primary mx-auto mt-4 h-1 w-16"
+					in:scale={{ duration: 600, delay: 400 }}
+				></div>
 			{/if}
 		</div>
 
@@ -111,7 +114,10 @@
 		>
 			{#each paginatedPosts as post, i (post.id)}
 				<div in:fly={{ y: 30, duration: 600, delay: i * 100, easing: cubicOut }}>
-					<a href={`${base}/blog/${post.slug}`} class="surface-interactive group flex h-full flex-col p-0">
+					<a
+						href={`${base}/blog/${post.slug}`}
+						class="surface-interactive group flex h-full flex-col p-0"
+					>
 						<div
 							class="border-iron/10 dark:border-limestone-100/10 relative h-64 w-full overflow-hidden border-b-2"
 						>

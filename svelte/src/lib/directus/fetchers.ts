@@ -4,18 +4,12 @@ import {
 	type DirectusUser,
 	type Langue,
 	type Page,
+	type PageBlock,
 	type Post,
 	type Schema
 } from '../types/directus-schema';
 import { useDirectus } from './directus';
-import {
-	aggregate,
-	type QueryFilter,
-	readItem,
-	readItems,
-	readSingleton,
-	withToken
-} from '@directus/sdk';
+import { aggregate, readItem, readItems, readSingleton, withToken } from '@directus/sdk';
 
 // --- TYPES ---
 export interface SiteConfig {
@@ -374,8 +368,11 @@ export const fetchPageData = async (
 	// Parallelize Block Enhancements
 	if (Array.isArray(page.blocks)) {
 		const postBlocks = page.blocks.filter(
-			(b): b is PageBlock & { item: BlockPost } => 
-				typeof b === 'object' && b.collection === 'block_posts' && !!b.item && typeof b.item === 'object'
+			(b): b is PageBlock & { item: BlockPost } =>
+				typeof b === 'object' &&
+				b.collection === 'block_posts' &&
+				!!b.item &&
+				typeof b.item === 'object'
 		);
 
 		if (postBlocks.length > 0) {

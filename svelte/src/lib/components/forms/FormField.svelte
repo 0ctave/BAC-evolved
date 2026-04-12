@@ -13,7 +13,7 @@
 	import { Label } from '$lib/components/ui/label/index.js';
 
 	interface FieldProps {
-		field: FormFieldType;
+		field: FormFieldType & Record<string, any>;
 		form: SuperForm<any>;
 	}
 
@@ -107,11 +107,11 @@
 							>
 						</div>
 					{:else if field.type === 'checkbox_group'}
-						<CheckBoxGroup name={field.name || ''} options={field.choices || []} {form} />
+						<CheckBoxGroup name={field.name || ''} options={(field.choices as any) || []} {form} />
 					{:else if field.type === 'select'}
-						<SelectField name={field.name || ''} options={field.choices || []} {form} />
+						<SelectField name={field.name || ''} options={(field.choices as any) || []} {form} />
 					{:else if field.type === 'radio'}
-						<RadioGroup name={field.name || ''} options={field.choices || []} {form} />
+						<RadioGroup name={field.name || ''} options={(field.choices as any) || []} {form} />
 					{:else if field.type === 'file'}
 						<FileUploadField name={field.name || ''} {form} />
 					{:else}
@@ -122,7 +122,7 @@
 
 			{#if $errors[fieldName]}
 				<Form.FieldErrors class="mt-1">
-					{#each $errors[fieldName] as error (error)}
+					{#each $errors[fieldName] as any as error (error)}
 						<p class="text-xs font-bold tracking-wide text-red-500 uppercase">{error}</p>
 					{/each}
 				</Form.FieldErrors>

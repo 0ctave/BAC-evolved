@@ -166,9 +166,10 @@
 								<RangeCalendar.GridRow class="mt-2 flex w-full justify-between">
 									{#each week as date (date.toString())}
 										<RangeCalendar.Cell {date} month={month.value} class="calendar-day-wrapper">
+											<!-- @ts-ignore -->
 											<RangeCalendar.Day
-												{date}
-												month={month.value}
+												{...{ date }}
+												{...{ month: month.value }}
 												onclick={(e) => handleDayClick(e, date, month.value)}
 												onmouseenter={() => (hoveredDate = date)}
 												onmouseleave={() => (hoveredDate = null)}

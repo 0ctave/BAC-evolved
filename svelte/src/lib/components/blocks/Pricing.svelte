@@ -3,7 +3,7 @@
 	import Headline from '../ui/Headline.svelte';
 	import Tagline from '../ui/Tagline.svelte';
 	import PricingCard from './PricingCard.svelte';
-	import { fade, fly } from 'svelte/transition';
+	import { fly } from 'svelte/transition';
 	import { reveal } from '$lib/actions';
 
 	interface PricingCardType {

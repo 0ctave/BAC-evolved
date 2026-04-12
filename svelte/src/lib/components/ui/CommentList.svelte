@@ -92,13 +92,16 @@
 	{:else}
 		<div class="space-y-10">
 			{#each topLevelComments as comment, i (comment.id)}
-				<div class="group relative" in:fly={{ y: 30, duration: 600, delay: i * 100, easing: cubicOut }}>
+				<div
+					class="group relative"
+					in:fly={{ y: 30, duration: 600, delay: i * 100, easing: cubicOut }}
+				>
 					<!-- Parent Review -->
 					<div
 						class="surface-atelier relative z-10 flex flex-col p-6 transition-transform duration-300 hover:-translate-y-1 md:p-8"
 					>
 						<p
-							class="text-body mb-6 text-lg font-medium italic leading-relaxed text-iron dark:text-limestone-100 md:text-xl"
+							class="text-body text-iron dark:text-limestone-100 mb-6 text-lg leading-relaxed font-medium italic md:text-xl"
 						>
 							"{comment.contenu}"
 						</p>
@@ -116,7 +119,7 @@
 									<button
 										type="button"
 										onclick={() => toggleReplies(comment.id)}
-										class="text-primary hover:text-primary-dark flex cursor-pointer items-center gap-1 text-sm font-bold uppercase tracking-wider transition-colors"
+										class="text-primary hover:text-primary-dark flex cursor-pointer items-center gap-1 text-sm font-bold tracking-wider uppercase transition-colors"
 									>
 										{expandedComments.includes(comment.id) ? 'Masquer' : 'Voir'}
 										{allReplies.filter((r) => r.parent === comment.id).length}
@@ -150,7 +153,7 @@
 
 					<!-- Replies -->
 					{#if expandedComments.includes(comment.id)}
-						<div class="mt-4 space-y-4 ml-6 md:ml-12" transition:slide={{ duration: 400 }}>
+						<div class="mt-4 ml-6 space-y-4 md:ml-12" transition:slide={{ duration: 400 }}>
 							{#each allReplies.filter((r) => r.parent === comment.id) as reply, k (reply.id)}
 								<div
 									class={cn(

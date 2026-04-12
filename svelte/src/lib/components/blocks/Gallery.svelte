@@ -13,7 +13,7 @@
 	import Headline from '../ui/Headline.svelte';
 	import Tagline from '../ui/Tagline.svelte';
 	import setAttr from '$lib/directus/visualEditing';
-	import { fade, fly, scale } from 'svelte/transition';
+	import { fly, scale } from 'svelte/transition';
 	import { cubicOut } from 'svelte/easing';
 	import { reveal } from '$lib/actions';
 

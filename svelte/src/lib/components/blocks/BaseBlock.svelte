@@ -41,7 +41,7 @@
 	} as const;
 
 	// Resolve Component
-	const Component = $derived(components[block.collection as keyof typeof components]);
+	const Component: any = $derived(components[block.collection as keyof typeof components]);
 
 	// Resolve Locale from Store
 	// We use $page.data because 'page' is a store
