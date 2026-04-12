@@ -201,12 +201,14 @@ async function deleteComment(comment: any) {
   if (!confirm("Voulez-vous vraiment supprimer définitivement ce commentaire ?")) return;
   processing.value = comment.id;
   try {
-    const idsToDelete: number[] = [];
+    const idsToDelete: any[] = [];
     
-    const collectIdsRecursive = (id: number) => {
+    // Recursive function to collect all descendant IDs in leaf-to-root order
+    const collectIdsRecursive = (id: any) => {
       const children = comments.value.filter(c => {
-        const pId = typeof c.parent === 'object' ? c.parent?.id : c.parent;
-        return pId === id;
+        const pVal = typeof c.parent === 'object' ? c.parent?.id : c.parent;
+        // Use robust comparison to handle potential string/number mismatches
+        return pVal != null && String(pVal) === String(id);
       });
       
       for (const child of children) {
@@ -218,14 +220,21 @@ async function deleteComment(comment: any) {
     
     collectIdsRecursive(comment.id);
     
-    // Delete in batch. Order in idsToDelete is leaf-to-root which helps if Directus deletes sequentially.
-    await api.delete(`/items/${config.commentsCollection}`, { data: idsToDelete });
+    // Sequential deletion to strictly respect foreign key constraints (delete children before parents)
+    for (const idToDelete of idsToDelete) {
+      await api.delete(`/items/${config.commentsCollection}/${idToDelete}`);
+    }
     
-    comments.value = comments.value.filter(c => !idsToDelete.includes(c.id));
+    // Update local state by filtering out all deleted IDs
+    const stringifiedDeletedIds = idsToDelete.map(id => String(id));
+    comments.value = comments.value.filter(c => !stringifiedDeletedIds.includes(String(c.id)));
+    
     showNotification("Commentaire supprimé");
   } catch (err) {
     console.error("Erreur lors de la suppression:", err);
     showNotification("Erreur lors de la suppression", "error");
+    // Refresh data to ensure UI is in sync with DB after a partial or failed deletion
+    await fetchData();
   } finally {
     processing.value = null;
   }
