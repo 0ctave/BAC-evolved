@@ -198,60 +198,58 @@ async function updateStatus(comment: any, newStatus: string) {
 }
 
 async function deleteComment(comment: any) {
-  if (!confirm("Voulez-vous vraiment supprimer définitivement ce commentaire ?")) return;
+  if (!confirm("Voulez-vous vraiment supprimer définitivement ce commentaire et toutes ses réponses ?")) return;
   processing.value = comment.id;
+  
   try {
-    // 1. Fetch all descendants from the database to be sure we don't miss anything (professional approach)
-    // We fetch recursively by getting all items that have this comment as a root or parent
-    const response = await api.get(`/items/${config.commentsCollection}`, {
-      params: {
-        fields: ['id', 'parent'],
-        filter: {
-          // This matches the current comment or any of its descendants
-          // Directus doesn't have a native recursive delete, so we collect them
-          _or: [
-            { id: { _eq: comment.id } },
-            { parent: { id: { _eq: comment.id } } }
-          ],
+    // 1. Robust Descendant Discovery (Level-order traversal)
+    // We crawl level by level to ensure we get ALL descendants regardless of depth
+    const allIdsToDelete: any[] = [comment.id];
+    let currentLevelIds = [comment.id];
+    
+    while (currentLevelIds.length > 0) {
+      const response = await api.get(`/items/${config.commentsCollection}`, {
+        params: {
+          filter: { 
+            parent: { 
+              id: { _in: currentLevelIds } 
+            } 
+          },
+          fields: ['id'],
           limit: -1
         }
-      }
-    });
-
-    const allRelated = response.data.data;
-    const idsToDelete: any[] = [];
-    
-    // 2. Build a local tree from fetched data to determine deletion order
-    const buildDeletionOrder = (id: any) => {
-      const children = allRelated.filter((item: any) => {
-        const pId = typeof item.parent === 'object' ? item.parent?.id : item.parent;
-        return pId != null && String(pId) === String(id);
       });
       
-      for (const child of children) {
-        buildDeletionOrder(child.id);
-      }
+      const foundChildren = response.data.data;
+      if (!foundChildren || foundChildren.length === 0) break;
       
-      if (!idsToDelete.includes(id)) {
-        idsToDelete.push(id);
-      }
-    };
-    
-    buildDeletionOrder(comment.id);
-
-    // 3. Sequential deletion: leaf to root
-    for (const id of idsToDelete) {
-      await api.delete(`/items/${config.commentsCollection}/${id}`);
+      const nextLevelIds = foundChildren.map((c: any) => c.id);
+      allIdsToDelete.push(...nextLevelIds);
+      currentLevelIds = nextLevelIds;
     }
+
+    // 2. Break Database Constraints (Professional Link-Breaking)
+    // By nullifying the parent field for all items in the set, we satisfy the RESTRICT constraint
+    // and prevent any "still referenced" errors during the subsequent delete.
+    await api.patch(`/items/${config.commentsCollection}`, 
+      { parent: null }, 
+      { params: { filter: { id: { _in: allIdsToDelete } } } }
+    );
+
+    // 3. Batch Deletion
+    // Now that they are no longer linked, we can delete them all safely in one go.
+    await api.delete(`/items/${config.commentsCollection}`, { data: allIdsToDelete });
     
-    // 4. Update UI
-    const stringIds = idsToDelete.map(id => String(id));
-    comments.value = comments.value.filter(c => !stringIds.includes(String(c.id)));
+    // 4. State Synchronization
+    const stringifiedIds = allIdsToDelete.map(id => String(id));
+    comments.value = comments.value.filter(c => !stringifiedIds.includes(String(c.id)));
     
-    showNotification("Commentaire et ses réponses supprimés");
-  } catch (err) {
-    console.error("Erreur lors de la suppression:", err);
-    showNotification("Erreur lors de la suppression", "error");
+    showNotification("Le fil de discussion a été supprimé avec succès");
+  } catch (err: any) {
+    console.error("Critical error during recursive deletion:", err);
+    const detail = err.response?.data?.errors?.[0]?.extensions?.detail || err.message;
+    showNotification(`Erreur: ${detail}`, "error");
+    // Force refresh to keep UI consistent with DB state
     await fetchData();
   } finally {
     processing.value = null;
