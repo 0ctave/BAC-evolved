@@ -202,57 +202,45 @@ async function deleteComment(comment: any) {
   processing.value = comment.id;
   
   try {
-    // 1. Fetch the entire hierarchy structure from the DB. 
-    // We ignore status and other filters to ensure we don't miss hidden records that would block deletion.
-    const response = await api.get(`/items/${config.commentsCollection}`, {
-      params: {
-        fields: ['id', 'parent'],
-        limit: -1 // Fetch all to build an accurate local tree
-      }
-    });
-    
-    const allComments = response.data.data || [];
-    const deleteSequence: any[] = [];
-    const visited = new Set();
-
-    // 2. Post-order traversal helper to build a safe deletion sequence (children before parents)
-    const buildSequence = (currentId: any) => {
-      // Find all items that point to this currentId as parent
-      const children = allComments.filter((item: any) => {
-        const pId = typeof item.parent === 'object' ? item.parent?.id : item.parent;
-        return pId != null && String(pId) === String(currentId);
+    /**
+     * Surgical recursive deletion:
+     * 1. Fetch current children of the node from the DB
+     * 2. Recursively delete those children
+     * 3. Delete the node itself
+     */
+    const performRecursiveDelete = async (id: any) => {
+      // Search for any entries that have THIS comment as a parent
+      const response = await api.get(`/items/${config.commentsCollection}`, {
+        params: {
+          filter: {
+            parent: { _eq: id }
+          },
+          fields: ['id'],
+          limit: -1
+        }
       });
-
-      // Recurse into children first
+      
+      const children = response.data.data || [];
+      
+      // Delete children first
       for (const child of children) {
-        buildSequence(child.id);
+        await performRecursiveDelete(child.id);
       }
-
-      // Add self to sequence only after all descendants are processed
-      if (!visited.has(currentId)) {
-        deleteSequence.push(currentId);
-        visited.add(currentId);
-      }
+      
+      // Delete the comment itself now that its children are gone
+      await api.delete(`/items/${config.commentsCollection}/${id}`);
     };
 
-    // Initialize sequence building from the targeted comment
-    buildSequence(comment.id);
-
-    // 3. Execution: Delete one by one in the strict sequence
-    // Sequential deletion is necessary here to satisfy the database's RESTRICT constraints.
-    for (const id of deleteSequence) {
-      await api.delete(`/items/${config.commentsCollection}/${id}`);
-    }
+    // Start the process from the targeted comment
+    await performRecursiveDelete(comment.id);
     
-    // 4. Update local state
-    const deletedIdsStrings = Array.from(visited).map(id => String(id));
-    comments.value = comments.value.filter(c => !deletedIdsStrings.includes(String(c.id)));
-    
+    // Refresh all data to ensure UI is clean
+    await fetchData();
     showNotification("Le commentaire et ses réponses ont été supprimés.");
   } catch (err: any) {
-    console.error("Recursive Deletion Error:", err);
-    showNotification("Erreur lors de la suppression. Certains éléments peuvent être protégés.", "error");
-    await fetchData(); // Resync UI with DB
+    console.error("Critical Deletion Error:", err);
+    showNotification("Erreur lors de la suppression complète.", "error");
+    await fetchData();
   } finally {
     processing.value = null;
   }
