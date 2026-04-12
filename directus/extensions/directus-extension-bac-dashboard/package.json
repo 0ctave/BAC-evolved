@@ -2,7 +2,7 @@
 	"name": "directus-extension-bac-dashboard",
 	"description": "Please enter a description for your extension",
 	"icon": "extension",
-	"version": "1.0.50",
+	"version": "1.0.51",
 	"keywords": [
 		"directus",
 		"directus-extension",
