@@ -209,20 +209,14 @@ async function deleteComment(comment: any) {
      * 3. Delete the node itself
      */
     const performRecursiveDelete = async (id: any) => {
-      // Search for any entries that have THIS comment as a parent
-      const response = await api.get(`/items/${config.commentsCollection}`, {
-        params: {
-          filter: {
-            parent: { _eq: id }
-          },
-          fields: ['id'],
-          limit: -1
-        }
+      // Find children from the already loaded comments state
+      // This is more reliable than a separate API call which might be subject to status filtering
+      const children = comments.value.filter(c => {
+        const pId = typeof c.parent === 'object' ? c.parent?.id : c.parent;
+        return pId === id;
       });
       
-      const children = response.data.data || [];
-      
-      // Delete children first
+      // Delete children first (recursively)
       for (const child of children) {
         await performRecursiveDelete(child.id);
       }
