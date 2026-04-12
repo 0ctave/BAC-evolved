@@ -2,48 +2,85 @@
   <div class="pending-container">
     <div class="header">
       <div class="title-group">
-        <h3>À Confirmer (Visites)</h3>
+        <v-icon name="pending_actions" class="header-icon" />
+        <div class="text-group">
+          <h3>À Confirmer</h3>
+          <span class="subtitle">Réservations de visites en attente</span>
+        </div>
         <span class="badge count" v-if="bookings.length > 0">{{ bookings.length }}</span>
       </div>
-      <button class="refresh-btn" @click="fetchData" :disabled="loading" aria-label="Actualiser">
-        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" :class="{ spinning: loading }"><path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.3"/></svg>
-      </button>
+      <v-button secondary icon @click="fetchData" :loading="loading" title="Actualiser">
+        <v-icon name="refresh" />
+      </v-button>
     </div>
 
     <div v-if="loading && bookings.length === 0" class="loading-state">
-      Chargement...
+      <v-progress-circular indeterminate />
+      <p>Chargement des réservations...</p>
     </div>
 
     <div v-else-if="bookings.length === 0" class="no-data">
       <div class="icon-wrapper">
-        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="check-icon"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        <v-icon name="check_circle" size="large" />
       </div>
-      <p>Aucune réservation de visite en attente.</p>
+      <p>Aucune réservation en attente</p>
+      <span class="subtext">Tout est à jour !</span>
     </div>
 
     <div v-else class="booking-list">
       <div v-for="booking in bookings" :key="booking.id" class="booking-item">
-        <div class="booking-details">
-          <div class="client-row">
+        <div class="status-indicator" :class="booking.statut"></div>
+        
+        <div class="booking-content">
+          <div class="client-info">
             <span class="client-name">{{ getClientName(booking) }}</span>
-            <span class="tour-name">{{ getTourName(booking) }}</span>
+            <div class="tour-tag">
+              <v-icon name="confirmation_number" size="x-small" />
+              <span>{{ getTourName(booking) }}</span>
+            </div>
           </div>
-          <div class="info-row">
-            <span class="date">{{ formatDate(getSlotDate(booking)) }}</span>
-            <span class="time">{{ formatTime(getSlotDate(booking)) }}</span>
-            <span class="tickets"><strong>{{ booking.quantite_billets }}</strong> billets</span>
+
+          <div class="appointment-details">
+            <div class="detail-item">
+              <v-icon name="calendar_today" size="x-small" />
+              <span>{{ formatDate(getSlotDate(booking)) }}</span>
+            </div>
+            <div class="detail-item">
+              <v-icon name="schedule" size="x-small" />
+              <span>{{ formatTime(getSlotDate(booking)) }}</span>
+            </div>
+            <div class="detail-item tickets">
+              <v-icon name="groups" size="x-small" />
+              <span><strong>{{ booking.quantite_billets }}</strong> pers.</span>
+            </div>
           </div>
         </div>
 
         <div class="actions">
-          <button
-              class="btn-confirm"
+          <v-button
+              v-tooltip="'Confirmer la réservation'"
+              secondary
+              rounded
+              icon
+              class="confirm-btn"
               @click="confirmBooking(booking)"
+              :loading="processing === booking.id"
+          >
+            <v-icon name="check" />
+          </v-button>
+          
+          <v-button
+              v-tooltip="'Annuler/Rejeter'"
+              secondary
+              rounded
+              icon
+              danger
+              class="reject-btn"
+              @click="rejectBooking(booking)"
               :disabled="processing === booking.id"
           >
-            <span v-if="processing === booking.id">...</span>
-            <span v-else>Confirmer</span>
-          </button>
+            <v-icon name="close" />
+          </v-button>
         </div>
       </div>
     </div>
@@ -56,7 +93,7 @@ import { ref, onMounted, onUnmounted } from 'vue';
 import { format, parseISO } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { config } from '../config';
-import type { ReservationVisite, Client, Visite, CreneauVisite } from '../types';
+import type { ReservationVisite, Client, CreneauVisite } from '../types';
 
 const api = useApi();
 const loading = ref(false);
@@ -70,7 +107,8 @@ async function fetchData() {
       params: {
         filter: { [config.statusField]: { _eq: 'en_attente' } },
         fields: ['*', 'client.*', `${config.slotRelationField}.*`, `${config.slotRelationField}.${config.visiteRelationField}.*`],
-        limit: 20
+        limit: 50,
+        sort: 'date_created'
       }
     });
     bookings.value = response.data.data;
@@ -88,7 +126,21 @@ async function confirmBooking(booking: ReservationVisite) {
     bookings.value = bookings.value.filter(b => b.id !== booking.id);
     window.dispatchEvent(new Event('tour-booking-updated'));
   } catch (err: any) {
-    alert("Erreur lors de la confirmation");
+    console.error(err);
+  } finally {
+    processing.value = null;
+  }
+}
+
+async function rejectBooking(booking: ReservationVisite) {
+  if (!confirm("Voulez-vous vraiment annuler cette demande de réservation ?")) return;
+  processing.value = booking.id;
+  try {
+    await api.patch(`/items/${config.tourBookingsCollection}/${booking.id}`, { [config.statusField]: 'annulee' });
+    bookings.value = bookings.value.filter(b => b.id !== booking.id);
+    window.dispatchEvent(new Event('tour-booking-updated'));
+  } catch (err: any) {
+    console.error(err);
   } finally {
     processing.value = null;
   }
@@ -148,48 +200,149 @@ onUnmounted(() => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20px;
+  padding: 16px 20px;
   border-bottom: 1px solid var(--theme--border-color-subdued);
   background: var(--theme--background-subdued);
 }
 
-.title-group { display: flex; align-items: center; gap: 10px; }
-.title-group h3 { margin: 0; font-size: 1.1rem; font-weight: 800; color: var(--theme--foreground); }
+.title-group { display: flex; align-items: center; gap: 12px; }
+.header-icon { color: var(--theme--primary); }
+.text-group { display: flex; flex-direction: column; }
+.text-group h3 { margin: 0; font-size: 1.1rem; font-weight: 800; color: var(--theme--foreground); line-height: 1.2; }
+.subtitle { font-size: 0.75rem; color: var(--theme--foreground-subdued); font-weight: 600; }
 
 .badge.count { background: var(--theme--primary); color: white; font-weight: 800; padding: 2px 10px; border-radius: 12px; font-size: 0.85rem; }
-
-.refresh-btn { background: var(--theme--background); border: 1px solid var(--theme--border-color); cursor: pointer; color: var(--theme--foreground-subdued); padding: 6px; border-radius: 8px; display: flex; align-items: center; transition: all 0.2s; }
-.refresh-btn:hover { color: var(--theme--primary); border-color: var(--theme--primary); }
-.spinning { animation: spin 1s linear infinite; }
 
 .booking-list {
   flex: 1;
   overflow-y: auto;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
   align-content: start;
   padding: 16px;
-  gap: 16px;
+  gap: 12px;
 }
 
-.booking-item { background: var(--theme--background); border: 1px solid var(--theme--border-color-subdued); border-radius: 10px; padding: 16px; display: flex; justify-content: space-between; align-items: center; transition: all 0.2s; border-left: 4px solid var(--theme--primary); }
-.booking-item:hover { transform: translateY(-2px); box-shadow: 0 6px 12px rgba(0,0,0,0.06); }
+.booking-item { 
+  background: var(--theme--background); 
+  border: 1px solid var(--theme--border-color-subdued); 
+  border-radius: 10px; 
+  display: flex; 
+  align-items: stretch; 
+  transition: all 0.2s; 
+  position: relative;
+  overflow: hidden;
+}
 
-.booking-details { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
-.client-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-.client-name { font-weight: 800; font-size: 1.05rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.tour-name { font-size: 0.75rem; color: var(--theme--primary); background: var(--theme--primary-subdued); padding: 4px 8px; border-radius: 6px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.booking-item:hover { 
+  border-color: var(--theme--primary);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.06); 
+}
 
-.info-row { font-size: 0.85rem; color: var(--theme--foreground-subdued); display: flex; gap: 12px; align-items: center; font-weight: 600; }
-.tickets { color: var(--theme--foreground); }
+.status-indicator {
+  width: 4px;
+  background: var(--theme--primary);
+}
 
-.btn-confirm { background: var(--success); color: white; border: none; padding: 10px 16px; border-radius: 8px; font-weight: 700; font-size: 0.9rem; cursor: pointer; transition: background 0.2s; }
-.btn-confirm:hover { filter: brightness(1.1); }
-.btn-confirm:disabled { opacity: 0.7; cursor: wait; }
+.booking-content {
+  flex: 1;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
 
-.no-data { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--theme--foreground-subdued); padding: 32px; text-align: center; }
-.icon-wrapper { background: var(--theme--background-subdued); padding: 16px; border-radius: 50%; margin-bottom: 16px; color: var(--success); opacity: 0.8; }
-.loading-state { padding: 32px; text-align: center; color: var(--theme--foreground-subdued); font-weight: 600; }
+.client-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
 
-@keyframes spin { to { transform: rotate(360deg); } }
+.client-name { 
+  font-weight: 800; 
+  font-size: 1rem; 
+  color: var(--theme--foreground);
+  white-space: nowrap; 
+  overflow: hidden; 
+  text-overflow: ellipsis; 
+}
+
+.tour-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.7rem;
+  color: var(--theme--primary);
+  background: var(--theme--primary-subdued);
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-weight: 700;
+  width: fit-content;
+}
+
+.appointment-details {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.detail-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+  color: var(--theme--foreground-subdued);
+  font-weight: 600;
+}
+
+.detail-item.tickets {
+  color: var(--theme--foreground);
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-right: 16px;
+}
+
+.no-data { 
+  flex: 1; 
+  display: flex; 
+  flex-direction: column; 
+  align-items: center; 
+  justify-content: center; 
+  color: var(--theme--foreground-subdued); 
+  padding: 40px; 
+  text-align: center; 
+}
+
+.icon-wrapper { 
+  color: var(--theme--success); 
+  background: var(--theme--success-subdued);
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.subtext {
+  font-size: 0.85rem;
+  opacity: 0.7;
+}
+
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  gap: 16px;
+  color: var(--theme--foreground-subdued);
+}
 </style>
+
