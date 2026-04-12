@@ -201,39 +201,57 @@ async function deleteComment(comment: any) {
   if (!confirm("Voulez-vous vraiment supprimer définitivement ce commentaire ?")) return;
   processing.value = comment.id;
   try {
+    // 1. Fetch all descendants from the database to be sure we don't miss anything (professional approach)
+    // We fetch recursively by getting all items that have this comment as a root or parent
+    const response = await api.get(`/items/${config.commentsCollection}`, {
+      params: {
+        fields: ['id', 'parent'],
+        filter: {
+          // This matches the current comment or any of its descendants
+          // Directus doesn't have a native recursive delete, so we collect them
+          _or: [
+            { id: { _eq: comment.id } },
+            { parent: { id: { _eq: comment.id } } }
+          ],
+          limit: -1
+        }
+      }
+    });
+
+    const allRelated = response.data.data;
     const idsToDelete: any[] = [];
     
-    // Recursive function to collect all descendant IDs in leaf-to-root order
-    const collectIdsRecursive = (id: any) => {
-      const children = comments.value.filter(c => {
-        const pVal = typeof c.parent === 'object' ? c.parent?.id : c.parent;
-        // Use robust comparison to handle potential string/number mismatches
-        return pVal != null && String(pVal) === String(id);
+    // 2. Build a local tree from fetched data to determine deletion order
+    const buildDeletionOrder = (id: any) => {
+      const children = allRelated.filter((item: any) => {
+        const pId = typeof item.parent === 'object' ? item.parent?.id : item.parent;
+        return pId != null && String(pId) === String(id);
       });
       
       for (const child of children) {
-        collectIdsRecursive(child.id);
+        buildDeletionOrder(child.id);
       }
       
-      idsToDelete.push(id);
+      if (!idsToDelete.includes(id)) {
+        idsToDelete.push(id);
+      }
     };
     
-    collectIdsRecursive(comment.id);
-    
-    // Sequential deletion to strictly respect foreign key constraints (delete children before parents)
-    for (const idToDelete of idsToDelete) {
-      await api.delete(`/items/${config.commentsCollection}/${idToDelete}`);
+    buildDeletionOrder(comment.id);
+
+    // 3. Sequential deletion: leaf to root
+    for (const id of idsToDelete) {
+      await api.delete(`/items/${config.commentsCollection}/${id}`);
     }
     
-    // Update local state by filtering out all deleted IDs
-    const stringifiedDeletedIds = idsToDelete.map(id => String(id));
-    comments.value = comments.value.filter(c => !stringifiedDeletedIds.includes(String(c.id)));
+    // 4. Update UI
+    const stringIds = idsToDelete.map(id => String(id));
+    comments.value = comments.value.filter(c => !stringIds.includes(String(c.id)));
     
-    showNotification("Commentaire supprimé");
+    showNotification("Commentaire et ses réponses supprimés");
   } catch (err) {
     console.error("Erreur lors de la suppression:", err);
     showNotification("Erreur lors de la suppression", "error");
-    // Refresh data to ensure UI is in sync with DB after a partial or failed deletion
     await fetchData();
   } finally {
     processing.value = null;
