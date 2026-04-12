@@ -1,12 +1,13 @@
-@import "tailwindcss";
+@import 'tailwindcss';
+@plugin '@tailwindcss/typography';
 
 /* FIX: Force Tailwind v4 to use class-based dark mode */
 @variant dark (&:where(.dark, .dark *));
 
 @theme {
 	/* --- FONTS --- */
-	--font-heading: "Playfair Display", serif;
-	--font-sans: "Lato", sans-serif;
+	--font-heading: 'Playfair Display', serif;
+	--font-sans: 'Lato', sans-serif;
 
 	/* --- COLORS --- */
 	/* Limestone */
@@ -55,7 +56,12 @@
 		@apply bg-[var(--background-color)] text-[var(--foreground-color)] antialiased transition-colors duration-300;
 	}
 
-	h1, h2, h3, h4, h5, h6 {
+	h1,
+	h2,
+	h3,
+	h4,
+	h5,
+	h6 {
 		@apply font-heading text-iron dark:text-limestone-50;
 	}
 
@@ -65,7 +71,7 @@
 	}
 
 	body::before {
-		content: "";
+		content: '';
 		position: fixed;
 		top: 0;
 		left: 0;
@@ -78,7 +84,7 @@
 	}
 
 	body::after {
-		content: "";
+		content: '';
 		position: fixed;
 		top: 0;
 		left: 0;
@@ -94,145 +100,105 @@
 }
 
 @utility btn-base {
-	@apply inline-flex items-center justify-center gap-2 transition-all duration-200
-	outline-none font-heading font-bold tracking-widest uppercase text-sm cursor-pointer
-	rounded-none border-0;
+	@apply font-heading inline-flex cursor-pointer items-center justify-center gap-2 rounded-none border-0 text-sm font-bold tracking-widest uppercase transition-all duration-200 outline-none;
 }
 
 @utility btn-atelier-primary {
-	@apply btn-base px-6 py-3 md:px-10 md:py-4 bg-primary text-white
-	border-2 border-black dark:border-white
-	shadow-[4px_4px_0px_0px_#000] dark:shadow-[4px_4px_0px_0px_#fff]
-	hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_#000] dark:hover:shadow-[6px_6px_0px_0px_#fff] hover:brightness-110
-	active:translate-y-0 active:shadow-none
-	disabled:opacity-70 disabled:cursor-wait disabled:translate-y-0 disabled:shadow-none;
+	@apply btn-base bg-primary border-2 border-black px-6 py-3 text-white shadow-[4px_4px_0px_0px_#000] hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_#000] hover:brightness-110 active:translate-y-0 active:shadow-none disabled:translate-y-0 disabled:cursor-wait disabled:opacity-70 disabled:shadow-none md:px-10 md:py-4 dark:border-white dark:shadow-[4px_4px_0px_0px_#fff] dark:hover:shadow-[6px_6px_0px_0px_#fff];
 }
 
 @utility surface-atelier {
-	@apply bg-white dark:bg-[#252426]
-	border-2 border-black dark:border-white
-	shadow-[4px_4px_0px_0px_#000] dark:shadow-[4px_4px_0px_0px_#fff]
-	rounded-lg transition-all duration-300;
+	@apply rounded-lg border-2 border-black bg-white shadow-[4px_4px_0px_0px_#000] transition-all duration-300 dark:border-white dark:bg-[#252426] dark:shadow-[4px_4px_0px_0px_#fff];
 }
 
 @layer components {
 	/* --- GLASS PANEL (Strong Borders) --- */
 	.panel-backdrop {
-		@apply transition-all duration-300
-			/* Background & Blur on desktop only */
-		bg-limestone-50/80 dark:bg-[#181719]/80 backdrop-blur-md
-			/* Borders on desktop only */
-		border-2 md:border-black md:dark:border-white
-			/* Shadow on desktop only */
-		md:shadow-[4px_4px_0px_0px_#000] md:dark:shadow-[4px_4px_0px_0px_#fff];
+		@apply /* Background & Blur on desktop only */ bg-limestone-50/80 /* Borders on desktop only */ /* Shadow on desktop only */ border-2 backdrop-blur-md transition-all duration-300 md:border-black md:shadow-[4px_4px_0px_0px_#000] dark:bg-[#181719]/80 md:dark:border-white md:dark:shadow-[4px_4px_0px_0px_#fff];
 	}
 
 	/* --- TYPOGRAPHY --- */
 	.heading-page {
-		@apply text-4xl md:text-7xl font-heading italic text-iron dark:text-limestone-50 mb-4 md:mb-6 tracking-tight;
+		@apply font-heading text-iron dark:text-limestone-50 mb-4 text-4xl tracking-tight italic md:mb-6 md:text-7xl;
 	}
 
 	.heading-section {
-		@apply text-2xl md:text-4xl font-bold font-heading text-iron dark:text-limestone-50 mb-3 md:mb-4;
+		@apply font-heading text-iron dark:text-limestone-50 mb-3 text-2xl font-bold md:mb-4 md:text-4xl;
 	}
 
 	.text-body {
-		@apply text-base md:text-lg text-iron-muted dark:text-limestone-300 leading-relaxed font-sans;
+		@apply text-iron-muted dark:text-limestone-300 font-sans text-base leading-relaxed md:text-lg;
 	}
 
 	.btn-atelier-dark {
-		@apply btn-base px-6 py-3 md:px-8 md:py-4 bg-iron dark:bg-limestone-100 text-white dark:text-iron
-		border-2 border-black dark:border-white
-		shadow-[4px_4px_0px_0px_#f55677] dark:shadow-[4px_4px_0px_0px_#2d2a2e]
-		hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_#f55677] dark:hover:shadow-[6px_6px_0px_0px_#2d2a2e] hover:brightness-110
-		active:translate-y-0 active:shadow-none
-		disabled:bg-iron/20 disabled:text-iron/40 disabled:shadow-none
-		dark:disabled:bg-limestone-50/10 dark:disabled:text-limestone-50/40;
+		@apply btn-base bg-iron dark:bg-limestone-100 dark:text-iron disabled:bg-iron/20 disabled:text-iron/40 dark:disabled:bg-limestone-50/10 dark:disabled:text-limestone-50/40 border-2 border-black px-6 py-3 text-white shadow-[4px_4px_0px_0px_#f55677] hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_#f55677] hover:brightness-110 active:translate-y-0 active:shadow-none disabled:shadow-none md:px-8 md:py-4 dark:border-white dark:shadow-[4px_4px_0px_0px_#2d2a2e] dark:hover:shadow-[6px_6px_0px_0px_#2d2a2e];
 	}
 
 	.btn-atelier-outline {
-		@apply btn-base px-6 py-3 md:px-8 md:py-4 bg-transparent text-iron dark:text-limestone-50
-		border-2 border-iron dark:border-limestone-50
-		shadow-[4px_4px_0px_0px_#000] dark:shadow-[4px_4px_0px_0px_#fff]
-		hover:-translate-y-1 hover:bg-iron hover:text-white dark:hover:bg-limestone-50 dark:hover:text-iron
-		active:translate-y-0 active:shadow-none
-		disabled:opacity-50;
+		@apply btn-base text-iron dark:text-limestone-50 border-iron dark:border-limestone-50 hover:bg-iron dark:hover:bg-limestone-50 dark:hover:text-iron border-2 bg-transparent px-6 py-3 shadow-[4px_4px_0px_0px_#000] hover:-translate-y-1 hover:text-white active:translate-y-0 active:shadow-none disabled:opacity-50 md:px-8 md:py-4 dark:shadow-[4px_4px_0px_0px_#fff];
 	}
 
 	.btn-atelier-ghost {
-		@apply btn-base px-4 py-2 md:px-6 md:py-3 bg-transparent text-iron-muted dark:text-limestone-400
-		hover:text-primary dark:hover:text-white hover:bg-iron/5 dark:hover:bg-limestone-50/10
-		disabled:opacity-0;
+		@apply btn-base text-iron-muted dark:text-limestone-400 hover:text-primary hover:bg-iron/5 dark:hover:bg-limestone-50/10 bg-transparent px-4 py-2 disabled:opacity-0 md:px-6 md:py-3 dark:hover:text-white;
 	}
 
-	.btn-atelier { @apply btn-atelier-primary; }
+	.btn-atelier {
+		@apply btn-atelier-primary;
+	}
 
 	.surface-interactive,
 	.card-interactive {
-		@apply surface-atelier cursor-pointer text-left outline-none relative p-6 md:p-8
-		hover:border-primary hover:-translate-y-1
-		hover:shadow-[6px_6px_0px_0px_#000] dark:hover:shadow-[6px_6px_0px_0px_#fff];
+		@apply surface-atelier hover:border-primary relative cursor-pointer p-6 text-left outline-none hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_#000] md:p-8 dark:hover:shadow-[6px_6px_0px_0px_#fff];
 	}
 
 	.surface-interactive[data-state='active'],
 	.card-interactive[data-state='active'] {
-		@apply border-primary shadow-none translate-y-0 bg-primary/5;
+		@apply border-primary bg-primary/5 translate-y-0 shadow-none;
 	}
 
 	/* --- IMAGES & MEDIA FRAMES --- */
 	.frame-atelier {
-		@apply relative p-2 bg-white dark:bg-[#252426]
-		border-2 border-black dark:border-white
-		shadow-[4px_4px_0px_0px_#000] dark:shadow-[4px_4px_0px_0px_#fff]
-		transition-transform duration-500;
+		@apply relative border-2 border-black bg-white p-2 shadow-[4px_4px_0px_0px_#000] transition-transform duration-500 dark:border-white dark:bg-[#252426] dark:shadow-[4px_4px_0px_0px_#fff];
 	}
 
 	.frame-icon {
-		@apply flex items-center justify-center border-2 rounded-lg transition-colors duration-300;
+		@apply flex items-center justify-center rounded-lg border-2 transition-colors duration-300;
 	}
 
 	/* --- FORMS --- */
 	.input-atelier {
-		@apply w-full bg-transparent border-b-2 border-black/20 dark:border-white/20
-		px-2 py-3 text-base md:text-lg font-medium outline-none transition-all duration-300
-		text-iron dark:text-limestone-50
-		placeholder:text-iron-muted/40 dark:placeholder:text-limestone-400/40
-		focus:border-primary focus:bg-limestone-50/50 dark:focus:bg-iron-light/20;
+		@apply text-iron dark:text-limestone-50 placeholder:text-iron-muted/40 dark:placeholder:text-limestone-400/40 focus:border-primary focus:bg-limestone-50/50 dark:focus:bg-iron-light/20 w-full border-b-2 border-black/20 bg-transparent px-2 py-3 text-base font-medium transition-all duration-300 outline-none md:text-lg dark:border-white/20;
 	}
 
 	/* --- WIZARD STEPS --- */
 	.step-indicator {
-		@apply w-8 h-8 sm:w-12 sm:h-12 rounded-full flex items-center justify-center text-xs sm:text-sm font-bold transition-all duration-300 border-2;
+		@apply flex h-8 w-8 items-center justify-center rounded-full border-2 text-xs font-bold transition-all duration-300 sm:h-12 sm:w-12 sm:text-sm;
 	}
 	.step-indicator.active {
-		@apply bg-iron text-white border-black shadow-[2px_2px_0px_0px_#000] dark:shadow-[2px_2px_0px_0px_#fff] translate-y-[-2px] scale-105 dark:bg-limestone-100 dark:text-iron;
+		@apply bg-iron dark:bg-limestone-100 dark:text-iron translate-y-[-2px] scale-105 border-black text-white shadow-[2px_2px_0px_0px_#000] dark:shadow-[2px_2px_0px_0px_#fff];
 	}
 	.step-indicator.inactive {
-		@apply bg-white dark:bg-[#252426] border-iron/20 text-iron/40 dark:border-iron-light dark:text-iron-muted;
+		@apply border-iron/20 text-iron/40 dark:border-iron-light dark:text-iron-muted bg-white dark:bg-[#252426];
 	}
 	.step-indicator.completed {
-		@apply bg-primary text-white border-primary;
+		@apply bg-primary border-primary text-white;
 	}
 
 	/* --- CALENDAR COMPONENTS --- */
 	.calendar-container {
-		@apply select-none relative z-10 w-full;
+		@apply relative z-10 w-full select-none;
 	}
 
 	.calendar-header-row {
-		@apply flex items-center justify-between pb-8 pt-2;
+		@apply flex items-center justify-between pt-2 pb-8;
 	}
 
 	.calendar-nav-btn {
-		@apply w-9 h-9 rounded-full flex items-center justify-center
-		border border-iron/20 text-iron dark:text-limestone-300 dark:border-limestone-100/20
-		hover:bg-iron hover:text-white hover:scale-110 active:scale-95
-		dark:hover:bg-limestone-100 dark:hover:text-iron
-		transition-all duration-300 cursor-pointer;
+		@apply border-iron/20 text-iron dark:text-limestone-300 dark:border-limestone-100/20 hover:bg-iron dark:hover:bg-limestone-100 dark:hover:text-iron flex h-9 w-9 cursor-pointer items-center justify-center rounded-full border transition-all duration-300 hover:scale-110 hover:text-white active:scale-95;
 	}
 
 	.calendar-heading {
-		@apply text-xl font-heading font-bold text-iron dark:text-limestone-50 capitalize select-none tabular-nums;
+		@apply font-heading text-iron dark:text-limestone-50 text-xl font-bold capitalize tabular-nums select-none;
 	}
 
 	.calendar-grid {
@@ -240,17 +206,16 @@
 	}
 
 	.calendar-weekday-header {
-		@apply w-10 text-[10px] uppercase tracking-widest font-bold text-center select-none;
+		@apply w-10 text-center text-[10px] font-bold tracking-widest uppercase select-none;
 	}
 
 	.calendar-day-wrapper {
-		@apply relative p-0 m-0;
+		@apply relative m-0 p-0;
 	}
 
 	/* The animated day cell base */
 	.calendar-day {
-		@apply w-10 h-10 flex items-center justify-center relative z-10 font-sans cursor-pointer
-		rounded-lg overflow-hidden;
+		@apply relative z-10 flex h-10 w-10 cursor-pointer items-center justify-center overflow-hidden rounded-lg font-sans;
 		transition: all 0.3s ease;
 		backface-visibility: hidden;
 	}
@@ -259,7 +224,7 @@
 
 	/* 1. Endpoint Selected (Start/End) - Pink Background, White Text */
 	.cal-day-selected-endpoint {
-		@apply bg-primary text-white font-bold opacity-100 scale-105 shadow-md z-20;
+		@apply bg-primary z-20 scale-105 font-bold text-white opacity-100 shadow-md;
 	}
 
 	/* 2. Range Selected (Middle) - Light Pink Background, Primary Pink Text */
@@ -269,7 +234,7 @@
 
 	/* 3. Restricted (Past dates) - Grayed out */
 	.cal-day-restricted {
-		@apply text-iron-muted/40 cursor-not-allowed line-through decoration-iron-muted/40;
+		@apply text-iron-muted/40 decoration-iron-muted/40 cursor-not-allowed line-through;
 	}
 
 	/* 4. Blocked (By Booking Logic/Barriers) - Faded */
@@ -279,21 +244,39 @@
 
 	/* 5. Booked (Striped Pattern) - Red */
 	.cal-day-booked {
-		@apply text-red-700 dark:text-red-300 line-through decoration-red-300 dark:decoration-red-700 cursor-not-allowed;
-		background-image: linear-gradient(45deg, rgba(220, 38, 38, 0.15) 25%, transparent 25%, transparent 50%, rgba(220, 38, 38, 0.15) 50%, rgba(245, 86, 119, 0.15) 75%, transparent 75%, transparent);
+		@apply cursor-not-allowed text-red-700 line-through decoration-red-300 dark:text-red-300 dark:decoration-red-700;
+		background-image: linear-gradient(
+			45deg,
+			rgba(220, 38, 38, 0.15) 25%,
+			transparent 25%,
+			transparent 50%,
+			rgba(220, 38, 38, 0.15) 50%,
+			rgba(245, 86, 119, 0.15) 75%,
+			transparent 75%,
+			transparent
+		);
 		background-size: 8px 8px;
 	}
 
 	/* 6. Invalid Selection (Booked date inside a selection range) - Red BG */
 	.cal-day-invalid-selection {
-		@apply bg-red-100 text-red-900 dark:bg-red-900/40 dark:text-red-200 line-through decoration-red-400;
-		background-image: linear-gradient(45deg, rgba(220, 38, 38, 0.15) 25%, transparent 25%, transparent 50%, rgba(220, 38, 38, 0.15) 50%, rgba(245, 86, 119, 0.15) 75%, transparent 75%, transparent);
+		@apply bg-red-100 text-red-900 line-through decoration-red-400 dark:bg-red-900/40 dark:text-red-200;
+		background-image: linear-gradient(
+			45deg,
+			rgba(220, 38, 38, 0.15) 25%,
+			transparent 25%,
+			transparent 50%,
+			rgba(220, 38, 38, 0.15) 50%,
+			rgba(245, 86, 119, 0.15) 75%,
+			transparent 75%,
+			transparent
+		);
 		background-size: 8px 8px;
 	}
 
 	/* 7. Partial Availability (Amber) - FIXED CONTRAST */
 	.cal-day-partial {
-		@apply bg-amber-100 text-amber-900 dark:bg-amber-900/50 dark:text-amber-100 font-medium;
+		@apply bg-amber-100 font-medium text-amber-900 dark:bg-amber-900/50 dark:text-amber-100;
 	}
 
 	/* Dimmed (Outside month) */
@@ -303,12 +286,12 @@
 
 	/* Selection Info Box */
 	.calendar-info-box {
-		@apply flex items-center gap-4 p-4 border-l-4 border-primary bg-primary/5 dark:bg-primary/10 rounded-r-lg;
+		@apply border-primary bg-primary/5 dark:bg-primary/10 flex items-center gap-4 rounded-r-lg border-l-4 p-4;
 	}
 
 	/* --- CALENDAR LEGEND --- */
 	.calendar-legend {
-		@apply flex flex-wrap items-center gap-x-6 gap-y-2 mt-6 pt-4 border-t-2 border-iron/5 dark:border-limestone-100/5 text-sm font-medium text-iron/60 dark:text-limestone-300;
+		@apply border-iron/5 dark:border-limestone-100/5 text-iron/60 dark:text-limestone-300 mt-6 flex flex-wrap items-center gap-x-6 gap-y-2 border-t-2 pt-4 text-sm font-medium;
 	}
 
 	.calendar-legend-item {
@@ -316,21 +299,30 @@
 	}
 
 	.legend-indicator {
-		@apply w-4 h-4 rounded-md border;
+		@apply h-4 w-4 rounded-md border;
 	}
 
 	.legend-indicator.available {
-		@apply border-iron/20 bg-transparent dark:border-limestone-100/20;
+		@apply border-iron/20 dark:border-limestone-100/20 bg-transparent;
 	}
 
 	.legend-indicator.booked {
-		@apply bg-red-100 dark:bg-red-900/20 border-red-200 dark:border-red-900/30;
-		background-image: linear-gradient(45deg, rgba(245, 86, 119, 0.15) 25%, transparent 25%, transparent 50%, rgba(245, 86, 119, 0.15) 50%, rgba(245, 86, 119, 0.15) 75%, transparent 75%, transparent);
+		@apply border-red-200 bg-red-100 dark:border-red-900/30 dark:bg-red-900/20;
+		background-image: linear-gradient(
+			45deg,
+			rgba(245, 86, 119, 0.15) 25%,
+			transparent 25%,
+			transparent 50%,
+			rgba(245, 86, 119, 0.15) 50%,
+			rgba(245, 86, 119, 0.15) 75%,
+			transparent 75%,
+			transparent
+		);
 		background-size: 6px 6px;
 	}
 
 	.legend-indicator.partial {
-		@apply bg-amber-100 dark:bg-amber-900/50 border-amber-200 dark:border-amber-700/30;
+		@apply border-amber-200 bg-amber-100 dark:border-amber-700/30 dark:bg-amber-900/50;
 	}
 
 	.legend-indicator.past {

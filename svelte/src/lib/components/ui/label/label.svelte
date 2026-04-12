@@ -10,10 +10,10 @@
 </script>
 
 <LabelPrimitive.Root
-		bind:ref
-		class={cn(
-		'text-xs font-bold uppercase tracking-widest text-iron-muted dark:text-limestone-400 leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 font-sans',
+	bind:ref
+	class={cn(
+		'text-iron-muted dark:text-limestone-400 font-sans text-xs leading-none font-bold tracking-widest uppercase peer-disabled:cursor-not-allowed peer-disabled:opacity-70',
 		className
 	)}
-		{...restProps}
+	{...restProps}
 />

@@ -11,9 +11,12 @@
 </script>
 
 <SelectPrimitive.ScrollUpButton
-		bind:ref
-		class={cn('flex cursor-default items-center justify-center py-1 text-iron-muted dark:text-limestone-400', className)}
-		{...restProps}
+	bind:ref
+	class={cn(
+		'text-iron-muted dark:text-limestone-400 flex cursor-default items-center justify-center py-1',
+		className
+	)}
+	{...restProps}
 >
 	<ChevronUp class="size-4" />
 </SelectPrimitive.ScrollUpButton>

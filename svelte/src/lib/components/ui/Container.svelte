@@ -6,15 +6,15 @@
 	import type { Snippet } from 'svelte';
 
 	type SemanticElement =
-			| 'div'
-			| 'section'
-			| 'main'
-			| 'article'
-			| 'aside'
-			| 'nav'
-			| 'header'
-			| 'footer'
-			| 'form';
+		| 'div'
+		| 'section'
+		| 'main'
+		| 'article'
+		| 'aside'
+		| 'nav'
+		| 'header'
+		| 'footer'
+		| 'form';
 
 	interface ContainerProps {
 		class?: string;
@@ -27,8 +27,8 @@
 </script>
 
 <svelte:element
-		this={Component}
-		class={cn('mx-auto max-w-7xl px-6 sm:px-8 lg:px-16 transition-all duration-300', className)}
+	this={Component}
+	class={cn('mx-auto max-w-7xl px-6 transition-all duration-300 sm:px-8 lg:px-16', className)}
 >
 	{@render children()}
 </svelte:element>

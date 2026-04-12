@@ -3,8 +3,8 @@ import { PUBLIC_API_URL } from '$env/static/public';
 
 // Define the interface matching your 'langues' collection
 export interface LanguageConfig {
-	code: string;       // e.g., 'fr-FR'
-	slug: string;       // e.g., 'fr' (or 'en')
+	code: string; // e.g., 'fr-FR'
+	slug: string; // e.g., 'fr' (or 'en')
 	is_default: boolean;
 	direction: 'ltr' | 'rtl';
 }
@@ -25,7 +25,7 @@ export async function getAppLanguages(): Promise<LanguageConfig> {
 	const now = Date.now();
 
 	// Return cache if valid
-	if (cachedLanguages && (now - lastFetchTime < CACHE_TTL)) {
+	if (cachedLanguages && now - lastFetchTime < CACHE_TTL) {
 		return cachedLanguages;
 	}
 
@@ -39,7 +39,6 @@ export async function getAppLanguages(): Promise<LanguageConfig> {
 				}
 			})
 		);
-
 
 		cachedLanguages = response.map((l: any) => ({
 			code: l.code,

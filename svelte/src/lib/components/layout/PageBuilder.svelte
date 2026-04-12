@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { PageBlock } from '$lib/types/directus-schema';
 	import BaseBlock from '../blocks/BaseBlock.svelte';
+	import { cn } from '$lib/utils';
 
 	interface PageBuilderProps {
 		sections: PageBlock[];
@@ -16,14 +17,12 @@
 	});
 
 	const validBlocks = $derived(
-			(sections || []).filter(
-					(block): block is PageBlock & { collection: string; item: object } => {
-						const hasCollection = !!block.collection && typeof block.collection === 'string';
-						const hasItem = !!block.item && typeof block.item === 'object';
-						const isNotHidden = block.hide_block !== true;
-						return hasCollection && hasItem && isNotHidden;
-					}
-			)
+		(sections || []).filter((block): block is PageBlock & { collection: string; item: object } => {
+			const hasCollection = !!block.collection && typeof block.collection === 'string';
+			const hasItem = !!block.item && typeof block.item === 'object';
+			const isNotHidden = block.hide_block !== true;
+			return hasCollection && hasItem && isNotHidden;
+		})
 	);
 </script>
 

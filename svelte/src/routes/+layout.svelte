@@ -13,12 +13,12 @@
 
 	let { children, data } = $props();
 
-	const siteTitle = $derived(data.globals?.title || 'Chambre d\'Hôte');
+	const siteTitle = $derived(data.globals?.title || "Chambre d'Hôte");
 	const siteDescription = $derived(
-			page.data.globals?.description || 'Réservation de séjour et visites.'
+		page.data.globals?.description || 'Réservation de séjour et visites.'
 	);
 	const faviconURL = $derived(
-			data.globals?.favicon ? getDirectusAssetURL(data.globals.favicon) : '/favicon.ico'
+		data.globals?.favicon ? getDirectusAssetURL(data.globals.favicon) : '/favicon.ico'
 	);
 
 	// Default to your Pink if CMS data is missing
@@ -31,7 +31,7 @@
 		}
 	});
 
-	afterNavigate(async (_navigation) => {
+	afterNavigate(async () => {
 		// FIX: Guard the apply function
 		if (data.visualEditingEnabled) {
 			apply({
@@ -53,15 +53,18 @@
 	{@html `<style>:root{ --accent-color: ${accentColor} !important }</style>`}
 
 	<!-- Load Elegant Fonts -->
-	<link rel="preconnect" href="https://fonts.googleapis.com">
-	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-	<link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+	<link rel="preconnect" href="https://fonts.googleapis.com" />
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+	<link
+		href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap"
+		rel="stylesheet"
+	/>
 </svelte:head>
 
 <ModeWatcher />
 <NavigationBar />
 
-<main class="flex-grow bg-background transition-colors duration-500">
+<main class="bg-background flex-grow transition-colors duration-500">
 	{@render children()}
 </main>
 <Footer />

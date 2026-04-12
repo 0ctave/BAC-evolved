@@ -14,18 +14,18 @@
 </script>
 
 <SelectPrimitive.Item
-		bind:ref
-		{value}
-		class={cn(
-		'relative flex w-full cursor-default select-none items-center rounded-lg py-2 pl-8 pr-2 text-sm outline-none transition-colors data-[highlighted]:bg-limestone-50 dark:data-[highlighted]:bg-iron-light/30 data-[highlighted]:text-primary data-[disabled]:pointer-events-none data-[disabled]:opacity-50',
+	bind:ref
+	{value}
+	class={cn(
+		'data-[highlighted]:bg-limestone-50 dark:data-[highlighted]:bg-iron-light/30 data-[highlighted]:text-primary relative flex w-full cursor-default items-center rounded-lg py-2 pr-2 pl-8 text-sm transition-colors outline-none select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50',
 		className
 	)}
-		{...restProps}
+	{...restProps}
 >
 	{#snippet children({ selected, highlighted })}
 		<span class="absolute left-2 flex size-3.5 items-center justify-center">
 			{#if selected}
-				<Check class="size-4 text-primary" />
+				<Check class="text-primary size-4" />
 			{/if}
 		</span>
 		{#if childrenProp}

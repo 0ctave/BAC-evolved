@@ -12,10 +12,13 @@
 </script>
 
 <span
-		bind:this={ref}
-		aria-hidden="true"
-		class={cn('flex size-9 items-center justify-center text-iron-muted dark:text-limestone-400', className)}
-		{...restProps}
+	bind:this={ref}
+	aria-hidden="true"
+	class={cn(
+		'text-iron-muted dark:text-limestone-400 flex size-9 items-center justify-center',
+		className
+	)}
+	{...restProps}
 >
 	<Ellipsis class="size-4" />
 	<span class="sr-only">More pages</span>

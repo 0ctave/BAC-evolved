@@ -14,7 +14,7 @@
 </script>
 
 <CommandPrimitive.Group
-	class={cn('overflow-hidden p-1 text-foreground', className)}
+	class={cn('text-foreground overflow-hidden p-1', className)}
 	bind:ref
 	{...restProps}
 >

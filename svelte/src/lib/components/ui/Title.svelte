@@ -10,8 +10,8 @@
 
 {#if title}
 	<svelte:element
-			this={as}
-			class="font-heading font-bold text-iron dark:text-limestone-100 {props.class}
+		this={as}
+		class="font-heading text-iron dark:text-limestone-100 font-bold {props.class}
          text-lg md:text-xl lg:text-2xl"
 	>
 		{title}

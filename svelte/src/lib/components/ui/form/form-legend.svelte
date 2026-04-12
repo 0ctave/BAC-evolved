@@ -11,7 +11,10 @@
 </script>
 
 <FormPrimitive.Legend
-		bind:ref
-		class={cn('data-[fs-error]:text-red-600 dark:data-[fs-error]:text-red-400 font-heading font-bold text-lg text-iron dark:text-limestone-50 mb-3 block', className)}
-		{...restProps}
+	bind:ref
+	class={cn(
+		'font-heading text-iron dark:text-limestone-50 mb-3 block text-lg font-bold data-[fs-error]:text-red-600 dark:data-[fs-error]:text-red-400',
+		className
+	)}
+	{...restProps}
 />

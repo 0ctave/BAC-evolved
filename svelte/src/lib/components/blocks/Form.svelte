@@ -28,42 +28,42 @@
 	const { tagline, headline, form } = $derived(data);
 </script>
 
-<section class="mx-auto panel-backdrop max-w-4xl p-8 md:p-16 relative">
-	<div class="text-center mb-10">
+<section class="panel-backdrop relative mx-auto max-w-4xl p-8 md:p-16">
+	<div class="mb-10 text-center">
 		{#if tagline}
 			<Tagline
-					{tagline}
-					class="tagline-base border-b-2 border-primary/30 pb-1 inline-block"
-					data-directus={setAttr({
-                    collection: 'block_form',
-                    item: data.id,
-                    fields: 'tagline',
-                    mode: 'popover'
-                })}
+				{tagline}
+				class="tagline-base border-primary/30 inline-block border-b-2 pb-1"
+				data-directus={setAttr({
+					collection: 'block_form',
+					item: data.id,
+					fields: 'tagline',
+					mode: 'popover'
+				})}
 			/>
 		{/if}
 		{#if headline}
 			<Headline
-					{headline}
-					class="heading-page mt-4"
-					data-directus={setAttr({
-                    collection: 'block_form',
-                    item: data.id,
-                    fields: 'headline',
-                    mode: 'popover'
-                })}
+				{headline}
+				class="heading-page mt-4"
+				data-directus={setAttr({
+					collection: 'block_form',
+					item: data.id,
+					fields: 'headline',
+					mode: 'popover'
+				})}
 			/>
 		{/if}
 	</div>
 
 	<!-- The form sits directly on the glass panel provided by PageBuilder -->
 	<div
-			data-directus={setAttr({
-            collection: 'block_form',
-            item: data.id,
-            fields: ['form'],
-            mode: 'popover'
-        })}
+		data-directus={setAttr({
+			collection: 'block_form',
+			item: data.id,
+			fields: ['form'],
+			mode: 'popover'
+		})}
 	>
 		<FormBuilder {form} class="mt-4" />
 	</div>

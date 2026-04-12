@@ -16,9 +16,9 @@
 
 {#if tagline}
 	<svelte:element
-			this={as}
-			class={`font-sans text-xs font-bold uppercase tracking-[0.2em] text-primary mb-3 block ${className}`}
-			data-directus={dataDirectus}
+		this={as}
+		class={`text-primary mb-3 block font-sans text-xs font-bold tracking-[0.2em] uppercase ${className}`}
+		data-directus={dataDirectus}
 	>
 		{tagline}
 	</svelte:element>

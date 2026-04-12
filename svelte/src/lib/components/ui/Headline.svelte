@@ -11,10 +11,10 @@
 
 {#if headline}
 	<svelte:element
-			this={as}
-			class="font-heading font-bold text-iron dark:text-limestone-50 {props.class}
-         text-3xl md:text-4xl lg:text-5xl leading-tight"
-			data-directus={dataDirectus}
+		this={as}
+		class="font-heading text-iron dark:text-limestone-50 font-bold {props.class}
+         text-3xl leading-tight md:text-4xl lg:text-5xl"
+		data-directus={dataDirectus}
 	>
 		{headline}
 	</svelte:element>

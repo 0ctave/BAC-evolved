@@ -127,9 +127,14 @@
             <span class="drawer-surtitle">{{ formatFullDate(selectedSlot.date_heure_debut) }} à {{ formatTime(selectedSlot.date_heure_debut) }}</span>
             <h3>{{ selectedSlot[config.visiteRelationField]?.nom || 'Détails du créneau' }}</h3>
           </div>
-          <button class="close-btn" @click="closeDrawer">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-          </button>
+          <div class="drawer-actions">
+            <button class="delete-btn" @click="deleteSlot(selectedSlot)" title="Supprimer le créneau">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+            </button>
+            <button class="close-btn" @click="closeDrawer">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+          </div>
         </div>
 
         <div class="drawer-stats">
@@ -483,6 +488,25 @@ async function submitSlot() {
   }
 }
 
+async function deleteSlot(slot: any) {
+  if (!slot) return;
+  const reservedCount = getSlotReservedCount(slot.id);
+  let message = "Voulez-vous vraiment supprimer ce créneau ?";
+  if (reservedCount > 0) {
+    message = `Attention : Ce créneau contient ${reservedCount} réservation(s) active(s). La suppression du créneau peut entraîner des erreurs si les réservations ne sont pas d'abord annulées. Continuer ?`;
+  }
+
+  if (!confirm(message)) return;
+
+  try {
+    await api.delete(`/items/${config.slotsCollection}/${slot.id}`);
+    closeDrawer();
+    await fetchData();
+  } catch (err) {
+    alert("Erreur lors de la suppression du créneau. Il est possible que des réservations y soient liées.");
+    console.error(err);
+  }
+}
 
 const groupedSlots = computed(() => {
   const groups: Record<string, any[]> = {};
@@ -833,6 +857,9 @@ onMounted(() => {
 .side-drawer { position: fixed; top: 0; right: 0; bottom: 0; width: 480px; max-width: 100vw; background: var(--theme--background); z-index: 100; border-left: 1px solid var(--theme--border-color); display: flex; flex-direction: column; box-shadow: -15px 0 45px rgba(0,0,0,0.15); }
 
 .drawer-header { padding: 24px; border-bottom: 1px solid var(--theme--border-color-subdued); display: flex; justify-content: space-between; align-items: flex-start; }
+.drawer-actions { display: flex; align-items: center; gap: 8px; }
+.delete-btn { background: transparent; border: none; width: 36px; height: 36px; border-radius: 50%; cursor: pointer; color: var(--danger); display: flex; align-items: center; justify-content: center; transition: background 0.2s; }
+.delete-btn:hover { background: rgba(var(--danger-rgb), 0.1); }
 .drawer-surtitle { font-size: 0.85rem; color: var(--theme--primary); font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; display: block; margin-bottom: 4px; }
 .drawer-header h3 { margin: 0; font-size: 1.4rem; font-weight: 900; line-height: 1.2; }
 .close-btn { background: var(--theme--background-subdued); border: none; width: 36px; height: 36px; border-radius: 50%; font-size: 1.5rem; cursor: pointer; color: var(--theme--foreground); display: flex; align-items: center; justify-content: center; transition: background 0.2s; }

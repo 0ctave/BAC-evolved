@@ -5,6 +5,7 @@
 	import { CheckCircle, AlertCircle, Mail } from '@lucide/svelte';
 	import DynamicForm from './DynamicForm.svelte';
 	import { goto } from '$app/navigation';
+	import { base } from '$app/paths';
 
 	interface FormBuilderProps {
 		class?: string;
@@ -37,7 +38,7 @@
 
 			if (form.on_success === 'redirect' && form.success_redirect_url) {
 				if (form.success_redirect_url.startsWith('/')) {
-					goto(form.success_redirect_url);
+					goto(`${base}${form.success_redirect_url}`);
 				} else {
 					window.location.href = form.success_redirect_url;
 				}
@@ -53,34 +54,54 @@
 
 {#if form.is_active}
 	{#if isSubmitted}
-		<div class="flex flex-col items-center justify-center space-y-8 py-12 px-4 text-center animate-in fade-in zoom-in-95 duration-500">
+		<div
+			class="animate-in fade-in zoom-in-95 flex flex-col items-center justify-center space-y-8 px-4 py-12 text-center duration-500"
+		>
 			<!-- Stamp Effect Circle -->
-			<div class="relative w-24 h-24 flex items-center justify-center">
-				<div class="absolute inset-0 border-4 border-primary rounded-full opacity-20 animate-pulse"></div>
-				<div class="w-20 h-20 bg-primary text-white rounded-full flex items-center justify-center shadow-retro-primary border-2 border-iron">
+			<div class="relative flex h-24 w-24 items-center justify-center">
+				<div
+					class="border-primary absolute inset-0 animate-pulse rounded-full border-4 opacity-20"
+				></div>
+				<div
+					class="bg-primary shadow-retro-primary border-iron flex h-20 w-20 items-center justify-center rounded-full border-2 text-white"
+				>
 					<Mail class="size-10" />
 				</div>
 				<!-- Checkmark Badge -->
-				<div class="absolute -bottom-2 -right-2 bg-white dark:bg-[#252426] text-green-600 rounded-full p-1 border-2 border-green-600 shadow-sm">
+				<div
+					class="absolute -right-2 -bottom-2 rounded-full border-2 border-green-600 bg-white p-1 text-green-600 shadow-sm dark:bg-[#252426]"
+				>
 					<CheckCircle class="size-6 fill-current" />
 				</div>
 			</div>
 
-			<div class="space-y-4 max-w-md">
-				<h3 class="font-heading font-bold text-3xl text-iron dark:text-limestone-50 uppercase tracking-wide">Bien reçu !</h3>
-				<p class="text-iron-muted dark:text-limestone-300 font-serif italic text-xl leading-relaxed">
-					"{form.success_message || 'Votre message a bien été envoyé. Nous vous répondrons très vite.'}"
+			<div class="max-w-md space-y-4">
+				<h3
+					class="font-heading text-iron dark:text-limestone-50 text-3xl font-bold tracking-wide uppercase"
+				>
+					Bien reçu !
+				</h3>
+				<p
+					class="text-iron-muted dark:text-limestone-300 font-serif text-xl leading-relaxed italic"
+				>
+					"{form.success_message ||
+						'Votre message a bien été envoyé. Nous vous répondrons très vite.'}"
 				</p>
 			</div>
 
-			<button onclick={() => isSubmitted = false} class="text-xs font-bold uppercase tracking-widest text-iron-muted hover:text-primary transition-colors border-b border-transparent hover:border-primary">
+			<button
+				onclick={() => (isSubmitted = false)}
+				class="text-iron-muted hover:text-primary hover:border-primary border-b border-transparent text-xs font-bold tracking-widest uppercase transition-colors"
+			>
 				Envoyer un autre message
 			</button>
 		</div>
 	{:else}
 		<div class={cn('w-full', className)}>
 			{#if error}
-				<div class="mb-8 rounded-lg bg-red-50 border-l-4 border-red-500 p-4 text-red-700 flex items-center gap-3 shadow-sm">
+				<div
+					class="mb-8 flex items-center gap-3 rounded-lg border-l-4 border-red-500 bg-red-50 p-4 text-red-700 shadow-sm"
+				>
 					<AlertCircle class="size-5 shrink-0" />
 					<p class="text-sm font-medium">{error}</p>
 				</div>
@@ -88,16 +109,16 @@
 
 			<!-- Intro text for the form -->
 			<div class="mb-8 text-center md:text-left">
-				<p class="font-serif italic text-iron-muted dark:text-limestone-400 text-lg">
+				<p class="text-iron-muted dark:text-limestone-400 font-serif text-lg italic">
 					Remplissez ce formulaire comme un livre d'or.
 				</p>
 			</div>
 
 			<DynamicForm
-					fields={form.fields}
-					onSubmit={handleSubmit}
-					submitLabel={form.submit_label || 'Envoyer'}
-					id={form.id}
+				fields={form.fields}
+				onSubmit={handleSubmit}
+				submitLabel={form.submit_label || 'Envoyer'}
+				id={form.id}
 			/>
 		</div>
 	{/if}

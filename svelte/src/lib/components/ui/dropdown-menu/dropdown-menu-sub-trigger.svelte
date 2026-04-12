@@ -6,7 +6,6 @@
 	type $$Props = DropdownMenuPrimitive.SubTriggerProps & {
 		inset?: boolean;
 	};
-	type $$Events = DropdownMenuPrimitive.SubTriggerEvents;
 
 	let className: $$Props['class'] = undefined;
 	export let inset: $$Props['inset'] = undefined;
@@ -15,7 +14,7 @@
 
 <DropdownMenuPrimitive.SubTrigger
 	class={cn(
-		'data-[highlighted]:text-accent-foreground data-[state=open]:text-accent-foreground data-[highlighted]:bg-accent data-[state=open]:bg-accent flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none',
+		'data-[highlighted]:text-accent-foreground data-[state=open]:text-accent-foreground data-[highlighted]:bg-accent data-[state=open]:bg-accent flex cursor-default items-center rounded-sm px-2 py-1.5 text-sm outline-none select-none',
 		inset && 'pl-8',
 		className
 	)}

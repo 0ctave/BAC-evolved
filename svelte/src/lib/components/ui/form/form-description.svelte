@@ -11,7 +11,10 @@
 </script>
 
 <FormPrimitive.Description
-		bind:ref
-		class={cn('text-xs text-iron-muted/60 dark:text-limestone-400/60 font-serif italic mt-1.5', className)}
-		{...restProps}
+	bind:ref
+	class={cn(
+		'text-iron-muted/60 dark:text-limestone-400/60 mt-1.5 font-serif text-xs italic',
+		className
+	)}
+	{...restProps}
 />

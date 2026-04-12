@@ -10,7 +10,10 @@
 </script>
 
 <SelectPrimitive.GroupHeading
-		bind:ref
-		class={cn('py-1.5 pl-8 pr-2 text-xs font-bold uppercase tracking-widest text-iron-muted dark:text-limestone-400', className)}
-		{...restProps}
+	bind:ref
+	class={cn(
+		'text-iron-muted dark:text-limestone-400 py-1.5 pr-2 pl-8 text-xs font-bold tracking-widest uppercase',
+		className
+	)}
+	{...restProps}
 />

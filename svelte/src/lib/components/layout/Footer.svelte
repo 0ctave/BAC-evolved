@@ -5,6 +5,7 @@
 	import Container from '../ui/Container.svelte';
 	import LightSwitch from './LightSwitch.svelte';
 	import { getPageLink } from '$lib/directus/directus-utils';
+	import { base } from '$app/paths';
 
 	const directusURL = PUBLIC_DIRECTUS_URL;
 
@@ -13,53 +14,57 @@
 	const currentLocale = $derived(page.params.lang || 'fr');
 
 	const lightLogoUrl = $derived(
-			globals?.logo ? `${directusURL}/assets/${globals.logo}` : '/images/logo.svg'
+		globals?.logo ? `${directusURL}/assets/${globals.logo}` : '/images/logo.svg'
 	);
 	const darkLogoUrl = $derived(
-			globals?.logo_dark_mode ? `${directusURL}/assets/${globals.logo_dark_mode}` : ''
+		globals?.logo_dark_mode ? `${directusURL}/assets/${globals.logo_dark_mode}` : ''
 	);
 </script>
 
-<footer class="bg-limestone-50 dark:bg-[#181719] py-16 border-t-2 border-iron/5 dark:border-limestone-100/5 transition-colors duration-300">
+<footer
+	class="bg-limestone-50 border-iron/5 dark:border-limestone-100/5 border-t-2 py-16 transition-colors duration-300 dark:bg-[#181719]"
+>
 	<Container class="text-iron dark:text-limestone-100">
 		<div class="flex flex-col items-start justify-between gap-12 pt-8 md:flex-row">
 			<div class="flex-1 space-y-4">
-				<a href="/" class="block transition-transform hover:-translate-y-1 duration-300">
+				<a href="{base}/" class="block transition-transform duration-300 hover:-translate-y-1">
 					{#if lightLogoUrl}
 						<img
-								src={lightLogoUrl}
-								alt="Logo"
-								class={darkLogoUrl ? 'h-auto w-[120px] dark:hidden' : 'h-auto w-[120px]'}
+							src={lightLogoUrl}
+							alt="Logo"
+							class={darkLogoUrl ? 'h-auto w-[120px] dark:hidden' : 'h-auto w-[120px]'}
 						/>
 					{/if}
 					{#if darkLogoUrl}
 						<img
-								src={darkLogoUrl}
-								alt="Logo (Dark Mode)"
-								class="hidden h-auto w-[120px] dark:block"
+							src={darkLogoUrl}
+							alt="Logo (Dark Mode)"
+							class="hidden h-auto w-[120px] dark:block"
 						/>
 					{/if}
 				</a>
 				{#if globals?.description}
-					<p class="text-iron-muted dark:text-limestone-400 font-serif italic max-w-sm">{globals.description}</p>
+					<p class="text-iron-muted dark:text-limestone-400 max-w-sm font-serif italic">
+						{globals.description}
+					</p>
 				{/if}
 
 				<!-- {/* Social Links */} -->
 				{#if globals?.social_links}
 					<div class="flex space-x-4 pt-2">
-						{#each globals.social_links as social}
+						{#each globals.social_links as social (social.service)}
 							<a
-									href={social.url}
-									target="_blank"
-									rel="noopener noreferrer"
-									class="hover:text-primary transition-all duration-200 hover:-translate-y-1"
+								href={social.url}
+								target="_blank"
+								rel="noopener noreferrer"
+								class="hover:text-primary transition-all duration-200 hover:-translate-y-1"
 							>
 								<img
-										src={`/icons/social/${social.service === 'x' ? 'twitter' : social.service}.svg`}
-										alt={`${social.service} icon`}
-										width={24}
-										height={24}
-										class="size-6 dark:invert opacity-80 hover:opacity-100"
+									src={`/icons/social/${social.service === 'x' ? 'twitter' : social.service}.svg`}
+									alt={`${social.service} icon`}
+									width={24}
+									height={24}
+									class="size-6 opacity-80 hover:opacity-100 dark:invert"
 								/>
 							</a>
 						{/each}
@@ -75,13 +80,19 @@
 								<li>
 									{#if group.children && group.children.length > 0}
 										<!-- Handle Group Headers if they are links -->
-										<span class="font-heading font-bold text-lg">{group.title}</span>
+										<span class="font-heading text-lg font-bold">{group.title}</span>
 									{:else if group.page}
-										<a href={getPageLink(group.page, currentLocale)} class="font-heading font-bold text-lg hover:text-primary transition-colors hover:underline decoration-2 underline-offset-4">
+										<a
+											href={`${base}${getPageLink(group.page, currentLocale)}`}
+											class="font-heading hover:text-primary text-lg font-bold decoration-2 underline-offset-4 transition-colors hover:underline"
+										>
 											{group.title}
 										</a>
 									{:else}
-										<a href={group?.url || '#'} class="font-heading font-bold text-lg hover:text-primary transition-colors hover:underline decoration-2 underline-offset-4">
+										<a
+											href={group?.url?.startsWith('/') ? `${base}${group.url}` : group?.url || '#'}
+											class="font-heading hover:text-primary text-lg font-bold decoration-2 underline-offset-4 transition-colors hover:underline"
+										>
 											{group.title}
 										</a>
 									{/if}
@@ -96,7 +107,9 @@
 			</div>
 		</div>
 
-		<div class="mt-12 pt-8 border-t border-iron/10 dark:border-limestone-100/10 flex justify-center md:justify-between items-center text-xs font-bold uppercase tracking-widest text-iron-muted/60 dark:text-limestone-400/50">
+		<div
+			class="border-iron/10 dark:border-limestone-100/10 text-iron-muted/60 dark:text-limestone-400/50 mt-12 flex items-center justify-center border-t pt-8 text-xs font-bold tracking-widest uppercase md:justify-between"
+		>
 			<span>© {new Date().getFullYear()} Octets Computing.</span>
 			<span class="hidden md:block">Fait avec passion.</span>
 		</div>

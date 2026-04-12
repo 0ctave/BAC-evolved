@@ -12,7 +12,7 @@
 	const blocks: PageBlock[] = $derived.by(() => {
 		if (!data.page?.blocks) return [];
 		return data.page.blocks.filter(
-				(block: any): block is PageBlock => typeof block === 'object' && block.collection
+			(block: any): block is PageBlock => typeof block === 'object' && block.collection
 		);
 	});
 </script>
@@ -31,10 +31,10 @@
 		<div class="fixed inset-x-0 bottom-4 z-50 flex w-full items-center justify-center gap-2 p-4">
 			<!-- If you're not using the visual editor it's safe to remove this element. Just a helper to let editors add edit / add new blocks to a page. -->
 			<Button
-					id="visual-editing-button"
-					variant="secondary"
-					class="visual-editing-button-class"
-					data-directus={setAttr({
+				id="visual-editing-button"
+				variant="secondary"
+				class="visual-editing-button-class"
+				data-directus={setAttr({
 					collection: 'pages',
 					item: data.page.id,
 					fields: ['blocks', 'meta_m2a_button'],

@@ -18,17 +18,17 @@
 
 <SelectPrimitive.Portal {...portalProps}>
 	<SelectPrimitive.Content
-			bind:ref
-			{sideOffset}
-			class={cn(
-			'relative z-50 max-h-96 min-w-[8rem] overflow-hidden rounded-xl border-2 border-iron/10 dark:border-limestone-100/10 bg-white dark:bg-[#252426] text-iron dark:text-limestone-100 shadow-retro dark:shadow-black/50 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2',
+		bind:ref
+		{sideOffset}
+		class={cn(
+			'border-iron/10 dark:border-limestone-100/10 text-iron dark:text-limestone-100 shadow-retro data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 relative z-50 max-h-96 min-w-[8rem] overflow-hidden rounded-xl border-2 bg-white dark:bg-[#252426] dark:shadow-black/50',
 			className
 		)}
-			{...restProps}
+		{...restProps}
 	>
 		<SelectScrollUpButton />
 		<SelectPrimitive.Viewport
-				class={cn(
+			class={cn(
 				'h-[var(--bits-select-anchor-height)] w-full min-w-[var(--bits-select-anchor-width)] p-1'
 			)}
 		>

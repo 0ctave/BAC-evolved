@@ -1,14 +1,7 @@
-import { useDirectus } from './directus';
-interface SubmissionValue {
-	field: string;
-	value?: string;
-	file?: string;
-}
-
 export const submitForm = async (
-	formId: string,
-	fields: { id: string; name: string; type: string }[],
-	data: Record<string, any>
+	_formId: string,
+	_fields: { id: string; name: string; type: string }[],
+	_data: Record<string, any>
 ) => {
 	/*const { getDirectus, uploadFiles, createItem, withToken } = useDirectus();
 	const TOKEN = PUBLIC_DIRECTUS_FORM_TOKEN;

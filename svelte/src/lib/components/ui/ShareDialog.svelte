@@ -3,7 +3,6 @@
 	import { Copy, Share, X } from '@lucide/svelte';
 	import Button from './button/button.svelte';
 	import { Label } from './label';
-	import { Input } from './input';
 
 	let copied = $state(false);
 
@@ -36,52 +35,66 @@
 <Dialog.Root>
 	<Dialog.Trigger>
 		<Button
-				variant="outline"
-				class="flex items-center gap-2 border-2 border-iron/10 hover:border-primary hover:text-primary transition-colors text-iron-muted font-bold text-xs uppercase tracking-widest"
+			variant="outline"
+			class="border-iron/10 hover:border-primary hover:text-primary text-iron-muted flex items-center gap-2 border-2 text-xs font-bold tracking-widest uppercase transition-colors"
 		>
 			<Share class="size-4" />
 			<span>Partager</span>
 		</Button>
 	</Dialog.Trigger>
 
-	<Dialog.Content class="sm:max-w-md bg-white dark:bg-[#252426] border-2 border-iron/10 dark:border-limestone-100/10 shadow-retro dark:shadow-black/60 rounded-xl p-0 overflow-hidden">
-		<div class="p-6 border-b-2 border-iron/5 dark:border-limestone-100/5 flex justify-between items-center bg-limestone-50/50 dark:bg-iron-light/10">
-			<Dialog.Title class="font-heading font-bold text-xl text-iron dark:text-limestone-50">Partager cet article</Dialog.Title>
-			<Dialog.Close class="p-1 hover:bg-iron/10 rounded-full transition-colors cursor-pointer">
-				<X class="size-5 text-iron-muted" />
+	<Dialog.Content
+		class="border-iron/10 dark:border-limestone-100/10 shadow-retro overflow-hidden rounded-xl border-2 bg-white p-0 sm:max-w-md dark:bg-[#252426] dark:shadow-black/60"
+	>
+		<div
+			class="border-iron/5 dark:border-limestone-100/5 bg-limestone-50/50 dark:bg-iron-light/10 flex items-center justify-between border-b-2 p-6"
+		>
+			<Dialog.Title class="font-heading text-iron dark:text-limestone-50 text-xl font-bold"
+				>Partager cet article</Dialog.Title
+			>
+			<Dialog.Close class="hover:bg-iron/10 cursor-pointer rounded-full p-1 transition-colors">
+				<X class="text-iron-muted size-5" />
 			</Dialog.Close>
 		</div>
 
-		<div class="p-6 space-y-6">
+		<div class="space-y-6 p-6">
 			<!-- Social Icons -->
 			<div class="flex justify-center gap-6">
 				{#each socialLinks as social (social.service)}
 					<a
-							href={social.url}
-							target="_blank"
-							rel="noopener noreferrer"
-							class="group flex flex-col items-center gap-2"
+						href={social.url}
+						target="_blank"
+						rel="noopener noreferrer"
+						class="group flex flex-col items-center gap-2"
 					>
-						<div class="w-12 h-12 rounded-full border-2 border-iron/10 flex items-center justify-center transition-all duration-300 group-hover:border-primary group-hover:shadow-retro-sm group-hover:-translate-y-1 bg-white dark:bg-iron-light/20">
+						<div
+							class="border-iron/10 group-hover:border-primary group-hover:shadow-retro-sm dark:bg-iron-light/20 flex h-12 w-12 items-center justify-center rounded-full border-2 bg-white transition-all duration-300 group-hover:-translate-y-1"
+						>
 							<img
-									src={social.icon}
-									alt={`${social.service} icon`}
-									width={24}
-									height={24}
-									class="size-6 dark:invert opacity-70 group-hover:opacity-100"
+								src={social.icon}
+								alt={`${social.service} icon`}
+								width={24}
+								height={24}
+								class="size-6 opacity-70 group-hover:opacity-100 dark:invert"
 							/>
 						</div>
-						<span class="text-[10px] font-bold uppercase tracking-wider text-iron-muted group-hover:text-primary transition-colors">{social.service}</span>
+						<span
+							class="text-iron-muted group-hover:text-primary text-[10px] font-bold tracking-wider uppercase transition-colors"
+							>{social.service}</span
+						>
 					</a>
 				{/each}
 			</div>
 
 			<div class="relative">
 				<div class="absolute inset-0 flex items-center">
-					<span class="w-full border-t border-iron/10 dark:border-limestone-100/10"></span>
+					<span class="border-iron/10 dark:border-limestone-100/10 w-full border-t"></span>
 				</div>
 				<div class="relative flex justify-center text-xs uppercase">
-					<span class="bg-white dark:bg-[#252426] px-2 text-iron-muted dark:text-limestone-400 font-bold tracking-widest">Ou copier le lien</span>
+					<span
+						class="text-iron-muted dark:text-limestone-400 bg-white px-2 font-bold tracking-widest dark:bg-[#252426]"
+						>Ou copier le lien</span
+					>
 				</div>
 			</div>
 
@@ -90,21 +103,21 @@
 					<Label for="link" class="sr-only">Link</Label>
 					<!-- Atelier Input Style -->
 					<input
-							id="link"
-							value={postUrl}
-							readonly
-							class="w-full bg-limestone-50 dark:bg-iron-light/10 border-b-2 border-iron/20 px-3 py-3 text-sm font-mono text-iron dark:text-limestone-100 outline-none focus:border-primary transition-colors rounded-t-md"
+						id="link"
+						value={postUrl}
+						readonly
+						class="bg-limestone-50 dark:bg-iron-light/10 border-iron/20 text-iron dark:text-limestone-100 focus:border-primary w-full rounded-t-md border-b-2 px-3 py-3 font-mono text-sm transition-colors outline-none"
 					/>
 				</div>
 				<Button
-						type="button"
-						size="icon"
-						class="mb-[2px] rounded-lg border-2 border-iron/10 hover:border-primary hover:text-primary hover:shadow-retro-sm transition-all active:translate-y-0.5"
-						onclick={handleCopy}
+					type="button"
+					size="icon"
+					class="border-iron/10 hover:border-primary hover:text-primary hover:shadow-retro-sm mb-[2px] rounded-lg border-2 transition-all active:translate-y-0.5"
+					onclick={handleCopy}
 				>
 					<span class="sr-only">Copy</span>
 					{#if copied}
-						<span class="text-green-500 font-bold text-xs">OK</span>
+						<span class="text-xs font-bold text-green-500">OK</span>
 					{:else}
 						<Copy class="size-4" />
 					{/if}

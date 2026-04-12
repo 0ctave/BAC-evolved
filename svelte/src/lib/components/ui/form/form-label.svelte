@@ -15,8 +15,8 @@
 <FormPrimitive.Label {...restProps} bind:ref>
 	{#snippet child({ props })}
 		<Label
-				{...props}
-				class={cn('data-[fs-error]:text-red-600 dark:data-[fs-error]:text-red-400', className)}
+			{...props}
+			class={cn('data-[fs-error]:text-red-600 dark:data-[fs-error]:text-red-400', className)}
 		>
 			{@render children?.()}
 		</Label>

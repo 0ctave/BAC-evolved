@@ -2,16 +2,34 @@ import { PUBLIC_DIRECTUS_URL } from '$env/static/public';
 import { type DirectusFile } from '../types/directus-schema';
 import { defaultLocale } from '$lib/i18n';
 
+export interface ImageTransform {
+	width?: number;
+	height?: number;
+	quality?: number;
+	format?: 'webp' | 'jpg' | 'png' | 'avif';
+	fit?: 'cover' | 'contain' | 'inside' | 'outside';
+}
+
 export function getDirectusAssetURL(
-	fileOrString: string | DirectusFile | null | undefined
+	fileOrString: string | DirectusFile | null | undefined,
+	transforms: ImageTransform = {}
 ): string {
 	if (!fileOrString) return '';
 
-	if (typeof fileOrString === 'string') {
-		return `${PUBLIC_DIRECTUS_URL}/assets/${fileOrString}`;
-	}
+	const id = typeof fileOrString === 'string' ? fileOrString : fileOrString.id;
+	let url = `${PUBLIC_DIRECTUS_URL}/assets/${id}`;
 
-	return `${PUBLIC_DIRECTUS_URL}/assets/${fileOrString.id}`;
+	const params = new URLSearchParams();
+	if (transforms.width) params.append('width', transforms.width.toString());
+	if (transforms.height) params.append('height', transforms.height.toString());
+	if (transforms.quality) params.append('quality', transforms.quality.toString());
+	if (transforms.fit) params.append('fit', transforms.fit);
+	
+	// Force webp for better performance if not specified
+	params.append('format', transforms.format || 'webp');
+
+	const queryString = params.toString();
+	return queryString ? `${url}?${queryString}` : url;
 }
 
 /**

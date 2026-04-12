@@ -345,6 +345,58 @@ export interface BlockPricingTranslation {
 	headline?: string | null;
 }
 
+export interface BlockReview {
+	/** @primaryKey */
+	id: number;
+	user_created?: DirectusUser | string | null;
+	date_created?: string | null;
+	user_updated?: DirectusUser | string | null;
+	date_updated?: string | null;
+	limit?: number | null;
+	traductions?: BlockReviewTranslation[] | null;
+}
+
+export interface BlockReviewSubmit {
+	/** @primaryKey */
+	id: number;
+	traductions?: BlockReviewSubmitTranslation[] | null;
+}
+
+export interface BlockReviewSubmitTranslation {
+	/** @primaryKey */
+	id: number;
+	block_review_submit_id?: BlockReviewSubmit | string | null;
+	langues_code?: Langue | string | null;
+	headline?: string | null;
+	tagline?: string | null;
+	intro_text?: string | null;
+	label_pseudonyme?: string | null;
+	placeholder_pseudonyme?: string | null;
+	help_pseudonyme?: string | null;
+	label_content?: string | null;
+	placeholder_content?: string | null;
+	button_submit?: string | null;
+	button_loading?: string | null;
+	msg_success_title?: string | null;
+	msg_success_desc?: string | null;
+	msg_already_submitted?: string | null;
+	msg_error_uuid?: string | null;
+	msg_error_min_content?: string | null;
+	msg_error_min_pseudo?: string | null;
+	button_home?: string | null;
+	msg_already_submitted_desc?: string | null;
+	msg_error_uuid_desc?: string | null;
+}
+
+export interface BlockReviewTranslation {
+	/** @primaryKey */
+	id: number;
+	block_review_id?: BlockReview | string | null;
+	langues_code?: Langue | string | null;
+	headline?: string | null;
+	tagline?: string | null;
+}
+
 export interface BlockRichtext {
 	/** @primaryKey */
 	id: string;
@@ -444,6 +496,21 @@ export interface Client {
 	numero?: string | null;
 	/** @required */
 	langue: string;
+}
+
+export interface Commentaire {
+	/** @primaryKey */
+	id: number;
+	status?: 'published' | 'en_attente' | 'archived';
+	sort?: number | null;
+	date_created?: string | null;
+	contenu?: string | null;
+	client?: Client | string | null;
+	parent?: Commentaire | string | null;
+	is_admin_reply?: boolean | null;
+	wp_comment_id?: number | null;
+	wp_post_id?: number | null;
+	pseudonyme?: string | null;
 }
 
 export interface CreneauxVisite {
@@ -687,7 +754,7 @@ export interface PageBlock {
 	/** @description The id of the page that this block belongs to. */
 	page?: Page | string | null;
 	/** @description The data for the block. */
-	item?: BlockHero | BlockRichtext | BlockForm | BlockPost | BlockGallery | BlockPricing | BlockBooking | BlockSplit | BlockMap | string | null;
+	item?: BlockHero | BlockRichtext | BlockForm | BlockPost | BlockGallery | BlockPricing | BlockBooking | BlockSplit | BlockMap | BlockReview | BlockReviewSubmit | string | null;
 	/** @description The collection (type of block). */
 	collection?: string | null;
 	/** @description Temporarily hide this block on the website without having to remove it from your page. */
@@ -713,9 +780,9 @@ export interface Page {
 	user_created?: DirectusUser | string | null;
 	date_updated?: string | null;
 	user_updated?: DirectusUser | string | null;
+	traductions?: PagesTranslation[] | null;
 	/** @description Create and arrange different content blocks (like text, images, or videos) to build your page. */
 	blocks?: PageBlock[] | string[];
-	traductions?: PagesTranslation[] | null;
 }
 
 export interface PagesTranslation {
@@ -791,6 +858,8 @@ export interface ReservationsChambre {
 	adulte: number;
 	/** @required */
 	enfant: number;
+	avis?: boolean | null;
+	avis_uuid?: string;
 }
 
 export interface ReservationsVisite {
@@ -804,6 +873,8 @@ export interface ReservationsVisite {
 	/** @required */
 	quantite_billets: number;
 	statut?: 'en_attente' | 'confirmee' | 'annulee' | null;
+	avis?: boolean | null;
+	avis_uuid?: string;
 }
 
 export interface TarifsSpeciaux {
@@ -1318,6 +1389,10 @@ export interface Schema {
 	block_pricing_cards: BlockPricingCard[];
 	block_pricing_cards_translations: BlockPricingCardsTranslation[];
 	block_pricing_translations: BlockPricingTranslation[];
+	block_review: BlockReview[];
+	block_review_submit: BlockReviewSubmit[];
+	block_review_submit_translations: BlockReviewSubmitTranslation[];
+	block_review_translations: BlockReviewTranslation[];
 	block_richtext: BlockRichtext[];
 	block_richtext_translations: BlockRichtextTranslation[];
 	block_split: BlockSplit[];
@@ -1327,6 +1402,7 @@ export interface Schema {
 	chambres: Chambre[];
 	chambres_files: ChambresFile[];
 	clients: Client[];
+	commentaires: Commentaire[];
 	creneaux_visites: CreneauxVisite[];
 	form_field_choices: FormFieldChoice[];
 	form_field_choices_translations: FormFieldChoicesTranslation[];
@@ -1405,6 +1481,10 @@ export enum CollectionNames {
 	block_pricing_cards = 'block_pricing_cards',
 	block_pricing_cards_translations = 'block_pricing_cards_translations',
 	block_pricing_translations = 'block_pricing_translations',
+	block_review = 'block_review',
+	block_review_submit = 'block_review_submit',
+	block_review_submit_translations = 'block_review_submit_translations',
+	block_review_translations = 'block_review_translations',
 	block_richtext = 'block_richtext',
 	block_richtext_translations = 'block_richtext_translations',
 	block_split = 'block_split',
@@ -1414,6 +1494,7 @@ export enum CollectionNames {
 	chambres = 'chambres',
 	chambres_files = 'chambres_files',
 	clients = 'clients',
+	commentaires = 'commentaires',
 	creneaux_visites = 'creneaux_visites',
 	form_field_choices = 'form_field_choices',
 	form_field_choices_translations = 'form_field_choices_translations',

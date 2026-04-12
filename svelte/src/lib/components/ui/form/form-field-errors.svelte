@@ -15,15 +15,18 @@
 </script>
 
 <FormPrimitive.FieldErrors
-		bind:ref
-		class={cn('text-red-600 dark:text-red-400 text-[10px] font-bold uppercase tracking-widest mt-1.5', className)}
-		{...restProps}
+	bind:ref
+	class={cn(
+		'mt-1.5 text-[10px] font-bold tracking-widest text-red-600 uppercase dark:text-red-400',
+		className
+	)}
+	{...restProps}
 >
 	{#snippet children({ errors, errorProps })}
 		{#if childrenProp}
 			{@render childrenProp({ errors, errorProps })}
 		{:else}
-			{#each errors as error}
+			{#each errors as error (error)}
 				<div {...errorProps} class={cn(errorClasses)}>{error}</div>
 			{/each}
 		{/if}

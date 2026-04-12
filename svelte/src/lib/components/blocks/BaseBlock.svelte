@@ -12,7 +12,9 @@
 	// CHANGED: Use the standard store for maximum compatibility
 	import { flatten } from '$lib/directus/directus-utils';
 	import { defaultLocale } from '$lib/i18n';
-	import {page} from "$app/state";
+	import { page } from '$app/state';
+	import Review from '$lib/components/blocks/Review.svelte';
+	import ReviewSubmit from '$lib/components/blocks/ReviewSubmit.svelte';
 
 	interface BaseBlockProps {
 		block: {
@@ -33,6 +35,8 @@
 		block_form: Form,
 		block_split: Split,
 		block_map: Carte,
+		block_review: Review,
+		block_review_submit: ReviewSubmit,
 		block_booking: WizardContainer
 	} as const;
 
@@ -49,10 +53,14 @@
 	// DEBUG: Check why a block might not render
 	$effect(() => {
 		if (!Component) {
-			console.error(`[BaseBlock] Component NOT FOUND for collection: "${block.collection}". Check imports and mapping.`);
+			console.error(
+				`[BaseBlock] Component NOT FOUND for collection: "${block.collection}". Check imports and mapping.`
+			);
 		}
 		if (!localizedItem) {
-			console.error(`[BaseBlock] Data flattening FAILED for block: "${block.collection}". Item might be null.`);
+			console.error(
+				`[BaseBlock] Data flattening FAILED for block: "${block.collection}". Item might be null.`
+			);
 		}
 		if (Component && localizedItem) {
 			// console.log(`[BaseBlock] Rendering ${block.collection} OK`);
@@ -65,9 +73,10 @@
 	<Component data={localizedItem} />
 {:else}
 	<!-- Visual Debugger for failed blocks (Hidden in production via CSS usually, or remove in prod) -->
-	<div class="border-2 border-red-500 p-4 m-4 text-red-600 bg-red-50">
-		<strong>Block Error:</strong> {block.collection} <br/>
-		Has Component: {!!Component} <br/>
+	<div class="m-4 border-2 border-red-500 bg-red-50 p-4 text-red-600">
+		<strong>Block Error:</strong>
+		{block.collection} <br />
+		Has Component: {!!Component} <br />
 		Has Data: {!!localizedItem}
 	</div>
 {/if}

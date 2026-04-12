@@ -4,11 +4,11 @@
 	import DirectusImage from '$lib/components/shared/DirectusImage.svelte';
 	import Container from '$lib/components/ui/Container.svelte';
 	import Headline from '$lib/components/ui/Headline.svelte';
-	import { Separator } from '$lib/components/ui/separator/index.js';
 	import type { PageData } from './$types';
 	import BaseText from '$lib/components/ui/Text.svelte';
 	import ShareDialog from '$lib/components/ui/ShareDialog.svelte';
 	import setAttr from '$lib/directus/visualEditing';
+	import { base } from '$app/paths';
 
 	let { data }: { data: PageData } = $props();
 
@@ -18,91 +18,102 @@
 	const postUrl = `${PUBLIC_SITE_URL}/blog/${page.params.slug}`;
 </script>
 
-<div class="min-h-screen bg-limestone-50 dark:bg-[#181719] text-iron dark:text-limestone-100 font-sans transition-colors duration-500">
-	<Container class="py-16 relative z-10">
+<div
+	class="bg-limestone-50 text-iron dark:text-limestone-100 min-h-screen font-sans transition-colors duration-500 dark:bg-[#181719]"
+>
+	<Container class="relative z-10 py-16">
 		<!-- Main Image -->
 		{#if post?.image}
-			<div class="mb-12 group">
+			<div class="group mb-12">
 				<div
-						class="relative h-[400px] md:h-[500px] w-full overflow-hidden rounded-xl border-2 border-iron/10 dark:border-limestone-100/10 shadow-retro dark:shadow-black/60 transition-transform duration-500 group-hover:-translate-y-1"
-						data-directus={setAttr({
-                        collection: 'posts',
-                        item: post.id,
-                        fields: ['image', 'meta_header_image'],
-                        mode: 'modal'
-                    })}
+					class="border-iron/10 dark:border-limestone-100/10 shadow-retro relative h-[400px] w-full overflow-hidden rounded-xl border-2 transition-transform duration-500 group-hover:-translate-y-1 md:h-[500px] dark:shadow-black/60"
+					data-directus={setAttr({
+						collection: 'posts',
+						item: post.id,
+						fields: ['image', 'meta_header_image'],
+						mode: 'modal'
+					})}
 				>
 					<DirectusImage
-							uuid={post.image as string}
-							alt={post.title || 'post header image'}
-							class="object-cover w-full h-full"
-							fill
-							sizes="(max-width: 768px) 100vw, (max-width: 1200px) 100vw, 1200px"
+						uuid={post.image as string}
+						alt={post.title || 'post header image'}
+						class="h-full w-full object-cover"
+						fill
+						sizes="(max-width: 768px) 100vw, (max-width: 1200px) 100vw, 1200px"
 					/>
 				</div>
 			</div>
 		{/if}
 
 		<div class="max-w-4xl">
-            <span class="inline-block py-1 px-3 border-2 border-primary text-primary text-[10px] font-bold uppercase tracking-[0.2em] mb-6">
-                Editorial
-            </span>
+			<span
+				class="border-primary text-primary mb-6 inline-block border-2 px-3 py-1 text-[10px] font-bold tracking-[0.2em] uppercase"
+			>
+				Editorial
+			</span>
 			<Headline
-					as="h2"
-					headline={post.title}
-					class="mb-6 !text-5xl md:!text-6xl !font-heading !font-bold !text-iron dark:!text-limestone-50 leading-tight"
-					data-directus={setAttr({
-                    collection: 'posts',
-                    item: post.id,
-                    fields: ['title', 'slug'],
-                    mode: 'popover'
-                })}
+				as="h2"
+				headline={post.title}
+				class="!font-heading !text-iron dark:!text-limestone-50 mb-6 !text-5xl leading-tight !font-bold md:!text-6xl"
+				data-directus={setAttr({
+					collection: 'posts',
+					item: post.id,
+					fields: ['title', 'slug'],
+					mode: 'popover'
+				})}
 			/>
 		</div>
 
-		<div class="w-24 h-1.5 bg-primary mb-12"></div>
+		<div class="bg-primary mb-12 h-1.5 w-24"></div>
 
 		<div class="grid grid-cols-1 gap-16 lg:grid-cols-[minmax(0,_2fr)_400px]">
 			<!-- Content -->
-			<main class="text-left font-sans text-lg leading-relaxed text-iron-muted dark:text-limestone-300">
+			<main
+				class="text-iron-muted dark:text-limestone-300 text-left font-sans text-lg leading-relaxed"
+			>
 				<BaseText
-						content={post.content || ''}
-						data-directus={setAttr({
-                        collection: 'posts',
-                        item: post.id,
-                        fields: ['content', 'meta_header_content'],
-                        mode: 'drawer'
-                    })}
+					content={post.content || ''}
+					data-directus={setAttr({
+						collection: 'posts',
+						item: post.id,
+						fields: ['content', 'meta_header_content'],
+						mode: 'drawer'
+					})}
 				/>
 			</main>
 
 			<!-- Sidebar Card -->
-			<aside class="h-fit max-w-[496px] space-y-8 rounded-xl bg-white dark:bg-[#252426] p-8 border-2 border-iron/10 dark:border-limestone-100/10 shadow-retro dark:shadow-black/50">
+			<aside
+				class="border-iron/10 dark:border-limestone-100/10 shadow-retro h-fit max-w-[496px] space-y-8 rounded-xl border-2 bg-white p-8 dark:bg-[#252426] dark:shadow-black/50"
+			>
 				{#if author}
 					<div
-							class="flex items-center space-x-5 border-b-2 border-iron/5 dark:border-limestone-100/5 pb-6"
-							data-directus={setAttr({
-                            collection: 'posts',
-                            item: post.id,
-                            fields: ['author'],
-                            mode: 'popover'
-                        })}
+						class="border-iron/5 dark:border-limestone-100/5 flex items-center space-x-5 border-b-2 pb-6"
+						data-directus={setAttr({
+							collection: 'posts',
+							item: post.id,
+							fields: ['author'],
+							mode: 'popover'
+						})}
 					>
 						{#if author.avatar}
-							<div class="p-1 border-2 border-iron/10 rounded-full">
+							<div class="border-iron/10 rounded-full border-2 p-1">
 								<DirectusImage
-										uuid={author.avatar as string}
-										alt={authorName || 'author avatar'}
-										class="size-[56px] rounded-full object-cover"
-										width={56}
-										height={56}
+									uuid={author.avatar as string}
+									alt={authorName || 'author avatar'}
+									class="size-[56px] rounded-full object-cover"
+									width={56}
+									height={56}
 								/>
 							</div>
 						{/if}
 						<div>
-							<span class="block text-xs font-bold uppercase tracking-widest text-iron-muted/60 mb-1">Auteur</span>
+							<span
+								class="text-iron-muted/60 mb-1 block text-xs font-bold tracking-widest uppercase"
+								>Auteur</span
+							>
 							{#if authorName}
-								<p class="font-heading font-bold text-xl text-iron dark:text-limestone-50">
+								<p class="font-heading text-iron dark:text-limestone-50 text-xl font-bold">
 									{authorName}
 								</p>
 							{/if}
@@ -111,14 +122,16 @@
 				{/if}
 
 				{#if post.description}
-					<div class="italic text-iron-muted dark:text-limestone-400 font-serif border-l-4 border-primary/30 pl-4 py-2">
+					<div
+						class="text-iron-muted dark:text-limestone-400 border-primary/30 border-l-4 py-2 pl-4 font-serif italic"
+					>
 						<p
-								data-directus={setAttr({
-                                collection: 'posts',
-                                item: post.id,
-                                fields: 'description',
-                                mode: 'popover'
-                            })}
+							data-directus={setAttr({
+								collection: 'posts',
+								item: post.id,
+								fields: 'description',
+								mode: 'popover'
+							})}
 						>
 							{post.description}
 						</p>
@@ -129,29 +142,32 @@
 					<ShareDialog {postUrl} postTitle={post.title} />
 				</div>
 
-				<div class="pt-6 border-t-2 border-iron/5 dark:border-limestone-100/5">
-					<h3 class="mb-6 font-bold font-heading text-xl text-iron dark:text-limestone-50">Articles liés</h3>
+				<div class="border-iron/5 dark:border-limestone-100/5 border-t-2 pt-6">
+					<h3 class="font-heading text-iron dark:text-limestone-50 mb-6 text-xl font-bold">
+						Articles liés
+					</h3>
 					<div class="space-y-6">
 						{#each data.relatedPosts as relatedPost (relatedPost.id)}
-							<a
-									href={`/blog/${relatedPost.slug}`}
-									class="group flex items-start space-x-4"
-							>
+							<a href={`${base}/blog/${relatedPost.slug}`} class="group flex items-start space-x-4">
 								{#if relatedPost.image}
-									<div class="relative h-[80px] w-[100px] shrink-0 overflow-hidden rounded-lg border border-iron/10">
+									<div
+										class="border-iron/10 relative h-[80px] w-[100px] shrink-0 overflow-hidden rounded-lg border"
+									>
 										<DirectusImage
-												uuid={relatedPost.image as string}
-												alt={relatedPost.title || 'related posts'}
-												class="object-cover transition-transform duration-500 group-hover:scale-110 grayscale group-hover:grayscale-0"
-												fill
-												sizes="(max-width: 768px) 100px, (max-width: 1024px) 150px, 150px"
+											uuid={relatedPost.image as string}
+											alt={relatedPost.title || 'related posts'}
+											class="object-cover grayscale transition-transform duration-500 group-hover:scale-110 group-hover:grayscale-0"
+											fill
+											sizes="(max-width: 768px) 100px, (max-width: 1024px) 150px, 150px"
 										/>
 									</div>
 								{/if}
 								<div>
-                                    <span class="font-heading font-bold text-lg leading-tight text-iron dark:text-limestone-100 group-hover:text-primary transition-colors">
-                                        {relatedPost.title}
-                                    </span>
+									<span
+										class="font-heading text-iron dark:text-limestone-100 group-hover:text-primary text-lg leading-tight font-bold transition-colors"
+									>
+										{relatedPost.title}
+									</span>
 								</div>
 							</a>
 						{/each}

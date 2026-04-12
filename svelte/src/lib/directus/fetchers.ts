@@ -45,6 +45,34 @@ const pageFields = [
 			'hide_block',
 			{
 				item: {
+					block_review: ['id', 'limit', { traductions: ['langues_code', 'headline', 'tagline'] }],
+					block_review_submit: [
+						'id',
+						{
+							traductions: [
+								'langues_code',
+								'headline',
+								'tagline',
+								'intro_text',
+								'label_pseudonyme',
+								'placeholder_pseudonyme',
+								'help_pseudonyme',
+								'label_content',
+								'placeholder_content',
+								'button_submit',
+								'button_loading',
+								'msg_success_title',
+								'msg_success_desc',
+								'msg_already_submitted',
+								'msg_already_submitted_desc',
+								'msg_error_uuid',
+								'msg_error_uuid_desc',
+								'msg_error_min_content',
+								'msg_error_min_pseudo',
+								'button_home'
+							]
+						}
+					],
 					block_booking: [
 						'id',
 						{
@@ -258,7 +286,7 @@ export const fetchSiteData = (fetch: RequestEvent['fetch']): Promise<SiteConfig>
 							}
 						]
 					}
-				],
+				]
 			})
 		),
 		directus.request(
@@ -316,68 +344,61 @@ export const fetchPageData = async (
 	const directus = getDirectus(fetch);
 	const shortLocale = dbLocaleCode.split('-')[0];
 
-	try {
-		const filter = {
-			_and: [
-				preview && token ? {} : { status: { _eq: 'published' } },
-				{
-					traductions: {
-						_and: [
-							{ permalink: { _eq: permalink } },
-							{ langues_code: { _starts_with: shortLocale } }
-						]
-					}
+	const filter = {
+		_and: [
+			preview && token ? {} : { status: { _eq: 'published' as const } },
+			{
+				traductions: {
+					_and: [{ permalink: { _eq: permalink } }, { langues_code: { _starts_with: shortLocale } }]
 				}
-			]
-		};
-
-		const pageData = (await directus.request(
-			withToken(
-				token as string,
-				readItems('pages', {
-					filter,
-					limit: 1,
-					fields: pageFields,
-					deep: { blocks: { _sort: ['sort'], _filter: { hide_block: { _neq: true } } } }
-				})
-			)
-		)) as Page[];
-
-		if (!pageData.length) throw new Error('Page not found');
-
-		const page = pageData[0];
-
-		// Parallelize Block Enhancements
-		if (Array.isArray(page.blocks)) {
-			const postBlocks = page.blocks.filter(
-				(b) => b.collection === 'block_posts' && b.item && typeof b.item === 'object'
-			);
-
-			if (postBlocks.length > 0) {
-				await Promise.all(
-					postBlocks.map(async (block) => {
-						const blockPost = block.item as BlockPost;
-						const limit = blockPost.limit ?? 6;
-
-						const posts = await directus.request(
-							readItems('posts', {
-								fields: ['id', 'title', 'description', 'slug', 'image', 'published_at'],
-								filter: { status: { _eq: 'published' } },
-								sort: ['-published_at'],
-								limit
-							})
-						);
-
-						(block.item as BlockPost & { posts: Post[] }).posts = posts as Post[];
-					})
-				);
 			}
-		}
+		]
+	};
 
-		return page;
-	} catch (error) {
-		throw error;
+	const pageData = (await directus.request(
+		withToken(
+			token as string,
+			readItems('pages', {
+				filter: filter as any,
+				limit: 1,
+				fields: pageFields,
+				deep: { blocks: { _sort: ['sort'], _filter: { hide_block: { _neq: true } } } }
+			})
+		)
+	)) as Page[];
+
+	if (!pageData.length) throw new Error('Page not found');
+
+	const page = pageData[0];
+
+	// Parallelize Block Enhancements
+	if (Array.isArray(page.blocks)) {
+		const postBlocks = page.blocks.filter(
+			(b): b is PageBlock & { item: BlockPost } => 
+				typeof b === 'object' && b.collection === 'block_posts' && !!b.item && typeof b.item === 'object'
+		);
+
+		if (postBlocks.length > 0) {
+			await Promise.all(
+				postBlocks.map(async (block) => {
+					const limit = block.item.limit ?? 6;
+
+					const posts = await directus.request(
+						readItems('posts', {
+							fields: ['id', 'title', 'description', 'slug', 'image', 'published_at'],
+							filter: { status: { _eq: 'published' as const } },
+							sort: ['-published_at'],
+							limit
+						})
+					);
+
+					(block.item as BlockPost & { posts: Post[] }).posts = posts as Post[];
+				})
+			);
+		}
 	}
+
+	return page;
 };
 
 export const fetchPageDataById = async (
@@ -428,7 +449,7 @@ export const getPageIdByPermalink = async (
 			)
 		)) as Pick<Page, 'id'>[];
 		return pageData.length > 0 ? pageData[0].id : null;
-	} catch (e) {
+	} catch {
 		return null;
 	}
 };
@@ -444,10 +465,10 @@ export const fetchPaginatedPosts = async (limit: number, page: number): Promise<
 				page,
 				sort: ['-published_at'],
 				fields: ['id', 'title', 'description', 'slug', 'image'],
-				filter: { status: { _eq: 'published' } }
+				filter: { status: { _eq: 'published' as const } }
 			})
 		)) as Post[];
-	} catch (error) {
+	} catch {
 		throw new Error('Failed to fetch paginated posts');
 	}
 };
@@ -459,11 +480,11 @@ export const fetchTotalPostCount = async (): Promise<number> => {
 		const response = await directus.request(
 			aggregate('posts', {
 				aggregate: { count: '*' },
-				filter: { status: { _eq: 'published' } }
+				filter: { status: { _eq: 'published' as const } }
 			})
 		);
 		return Number(response[0]?.count) || 0;
-	} catch (error) {
+	} catch {
 		return 0;
 	}
 };
@@ -477,10 +498,10 @@ export const fetchPostBySlug = async (
 	const directus = getDirectus(fetch);
 	const { draft, token } = options || {};
 	try {
-		const filter: QueryFilter<Schema, Post> =
+		const filter: any =
 			token || draft
 				? { slug: { _eq: slug } }
-				: { slug: { _eq: slug }, status: { _eq: 'published' } };
+				: { slug: { _eq: slug }, status: { _eq: 'published' as const } };
 		const [posts, relatedPosts] = await Promise.all([
 			directus.request<Post[]>(
 				withToken(
@@ -492,7 +513,7 @@ export const fetchPostBySlug = async (
 				withToken(
 					token as string,
 					readItems<Schema, 'posts', any>('posts', {
-						filter: { slug: { _neq: slug }, status: { _eq: 'published' } },
+						filter: { slug: { _neq: slug }, status: { _eq: 'published' as const } } as any,
 						limit: 2,
 						fields: ['id', 'title', 'slug', 'image']
 					})
@@ -500,7 +521,7 @@ export const fetchPostBySlug = async (
 			)
 		]);
 		return { post: posts.length > 0 ? (posts[0] as Post) : null, relatedPosts };
-	} catch (error) {
+	} catch {
 		throw new Error('Failed to fetch blog post and related posts');
 	}
 };
@@ -524,7 +545,7 @@ export const getPostIdBySlug = async (
 			)
 		)) as Pick<Post, 'id'>[];
 		return postData.length > 0 ? postData[0].id : null;
-	} catch (error) {
+	} catch {
 		return null;
 	}
 };
@@ -552,7 +573,7 @@ export const fetchPostByIdAndVersion = async (
 			)
 		]);
 		return { post: postData as Post, relatedPosts: relatedPosts as Post[] };
-	} catch (error) {
+	} catch {
 		throw new Error('Failed to fetch versioned post');
 	}
 };
@@ -568,7 +589,7 @@ export const fetchRelatedPosts = async (excludeId: string, fetch: RequestEvent['
 				limit: 2
 			})
 		)) as Post[];
-	} catch (error) {
+	} catch {
 		throw new Error('Failed to fetch related posts');
 	}
 };
@@ -580,7 +601,7 @@ export const fetchAuthorById = async (authorId: string, fetch: RequestEvent['fet
 		return (await directus.request(
 			readUser(authorId, { fields: ['first_name', 'last_name', 'avatar'] })
 		)) as DirectusUser;
-	} catch (error) {
+	} catch {
 		throw new Error(`Failed to fetch author with ID "${authorId}"`);
 	}
 };

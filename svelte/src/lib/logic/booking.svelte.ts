@@ -1,4 +1,4 @@
-import { CalendarDate, today, getLocalTimeZone, parseDate } from '@internationalized/date';
+import { CalendarDate, parseDate } from '@internationalized/date';
 
 export type BookingType = 'CHAMBRE' | 'VISITE' | null;
 
@@ -71,7 +71,7 @@ class BookingMachine {
 		if (checkin) {
 			try {
 				this.roomSelection.date_arrivee = parseDate(checkin);
-			} catch (e) {
+			} catch {
 				console.warn('Invalid checkin URL format (use YYYY-MM-DD)');
 			}
 		}
@@ -80,7 +80,7 @@ class BookingMachine {
 		if (checkout) {
 			try {
 				this.roomSelection.date_depart = parseDate(checkout);
-			} catch (e) {
+			} catch {
 				console.warn('Invalid checkout URL format (use YYYY-MM-DD)');
 			}
 		}

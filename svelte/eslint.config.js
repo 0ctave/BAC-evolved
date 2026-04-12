@@ -24,7 +24,7 @@ export default ts.config(
 		}
 	},
 	{
-		files: ['**/*.svelte'],
+		files: ['**/*.svelte', '**/*.svelte.ts', '**/*.svelte.js'],
 
 		languageOptions: {
 			parserOptions: {
@@ -38,6 +38,16 @@ export default ts.config(
 			'@typescript-eslint/no-explicit-any': 'off',
 			'@typescript-eslint/no-empty-object-type': 'off',
 			'@typescript-eslint/ban-ts-comment': 'off',
+			'@typescript-eslint/no-unused-vars': [
+				'error',
+				{
+					argsIgnorePattern: '^_',
+					varsIgnorePattern: '^_',
+					caughtErrorsIgnorePattern: '^_'
+				}
+			],
+			'svelte/no-navigation-without-resolve': 'off',
+			'svelte/no-at-html-tags': 'off',
 			'tailwindcss/no-unnecessary-arbitrary-value': 'off',
 			'tailwindcss/classnames-order': 'off',
 			'import/named': 'off',

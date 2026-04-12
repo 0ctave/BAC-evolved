@@ -5,7 +5,7 @@
 	import { buildZodSchema } from '$lib/zodSchemaBuilder';
 	import Button from '../blocks/Button.svelte';
 	import Field from './FormField.svelte';
-	import { superForm } from 'sveltekit-superforms';	// import SuperDebug from 'sveltekit-superforms';
+	import { superForm } from 'sveltekit-superforms'; // import SuperDebug from 'sveltekit-superforms';
 
 	import { zodClient } from 'sveltekit-superforms/adapters';
 
@@ -48,7 +48,7 @@
 		SPA: true
 	});
 
-	const { enhance, submit, form: formData, errors, validateForm } = $derived(form);
+	const { form: formData, errors, validateForm } = $derived(form);
 
 	const onsubmit = async (e: Event) => {
 		e.preventDefault();
@@ -61,9 +61,9 @@
 </script>
 
 <form
-		class="flex flex-wrap gap-x-8 gap-y-4 w-full"
-		{onsubmit}
-		data-directus={setAttr({
+	class="flex w-full flex-wrap gap-x-8 gap-y-4"
+	{onsubmit}
+	data-directus={setAttr({
 		collection: 'forms',
 		item: id,
 		fields: 'fields',
@@ -74,10 +74,12 @@
 		<Field {field} {form} />
 	{/each}
 
-	<div class="w-full mt-10 flex justify-end border-t-2 border-iron/5 dark:border-limestone-100/5 pt-8">
+	<div
+		class="border-iron/5 dark:border-limestone-100/5 mt-10 flex w-full justify-end border-t-2 pt-8"
+	>
 		<div
-				class="w-full md:w-auto"
-				data-directus={setAttr({
+			class="w-full md:w-auto"
+			data-directus={setAttr({
 				collection: 'forms',
 				item: id,
 				fields: 'submit_label',
@@ -85,14 +87,14 @@
 			})}
 		>
 			<Button
-					type="submit"
-					icon="arrow"
-					label={submitLabel}
-					iconPosition="right"
-					variant="default"
-					size="lg"
-					class="w-full md:w-auto shadow-retro-primary hover:shadow-retro-hover transition-all duration-300 transform hover:-translate-y-1"
-					id={`submit-${submitLabel.replace(/\s+/g, '-').toLowerCase()}`}
+				type="submit"
+				icon="arrow"
+				label={submitLabel}
+				iconPosition="right"
+				variant="default"
+				size="lg"
+				class="shadow-retro-primary hover:shadow-retro-hover w-full transform transition-all duration-300 hover:-translate-y-1 md:w-auto"
+				id={`submit-${submitLabel.replace(/\s+/g, '-').toLowerCase()}`}
 			></Button>
 		</div>
 	</div>

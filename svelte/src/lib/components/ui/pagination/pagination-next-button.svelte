@@ -17,15 +17,15 @@
 {/snippet}
 
 <PaginationPrimitive.NextButton
-		bind:ref
-		class={cn(
+	bind:ref
+	class={cn(
 		buttonVariants({
 			variant: 'outline',
 			class: 'gap-1 pr-2.5'
 		}),
-        "border-2 border-iron/10 dark:border-limestone-100/10 text-iron dark:text-limestone-100",
+		'border-iron/10 dark:border-limestone-100/10 text-iron dark:text-limestone-100 border-2',
 		className
 	)}
-		children={children || Fallback}
-		{...restProps}
+	children={children || Fallback}
+	{...restProps}
 />

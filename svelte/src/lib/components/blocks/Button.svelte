@@ -2,8 +2,9 @@
 	import { Icon as Icontype, ArrowLeft, ArrowRight, Plus } from '@lucide/svelte';
 	import { cn } from '$lib/utils';
 	import { page as pageStore } from '$app/state';
-	import {getNavUrl, getPageLink} from '$lib/directus/directus-utils';
-	import {defaultLocale} from "$lib/i18n";
+	import { getNavUrl, getPageLink } from '$lib/directus/directus-utils';
+	import { defaultLocale } from '$lib/i18n';
+	import { base } from '$app/paths';
 
 	export interface ButtonProps {
 		id: string;
@@ -63,27 +64,32 @@
 
 		// 2. If it's an internal link, check if the URL field has parameters to append
 		if (basePath) {
+			let fullPath = basePath;
 			if (url) {
 				// Automatically prefix with '?' if the user forgot it (unless it's an anchor link starting with '#')
 				const prefix = url.startsWith('?') || url.startsWith('#') ? '' : '?';
-				return `${basePath}${prefix}${url}`;
+				fullPath = `${basePath}${prefix}${url}`;
 			}
-			return basePath;
+			return `${base}${fullPath}`;
 		}
 
 		// 3. Fallback: Standard URL linking logic with locale protection
 		if (url) {
-			return getNavUrl(url, currentDbLocale);
+			const resolvedUrl = getNavUrl(url, currentDbLocale);
+			return resolvedUrl.startsWith('/') ? `${base}${resolvedUrl}` : resolvedUrl;
 		}
 
 		return undefined;
 	});
 
-	const buttonClasses = $derived(cn(
+	const buttonClasses = $derived(
+		cn(
 			variant === 'default' && 'btn-atelier-primary',
 			variant === 'outline' && 'btn-atelier-outline',
 			variant === 'ghost' && 'btn-atelier-ghost',
 			variant === 'dark' && 'btn-atelier-dark',
+
+			'active:scale-[0.98] transition-all duration-200',
 
 			size === 'sm' && 'px-6 py-2 text-xs',
 			size === 'lg' && 'px-12 py-5 text-base',
@@ -91,11 +97,12 @@
 
 			block && 'w-full flex',
 			className
-	));
+		)
+	);
 </script>
 
 {#snippet content()}
-	<span class="flex items-center gap-3 relative z-10">
+	<span class="relative z-10 flex items-center gap-3">
 		{#if icon && iconPosition === 'left' && Icon}
 			<Icon class="size-4 shrink-0" />
 		{/if}
@@ -111,7 +118,17 @@
 {/snippet}
 
 {#if href}
-	<a {href} class={buttonClasses} onclick={onClick} target={href.startsWith('/') || href.startsWith('#') || href.startsWith('?') ? undefined : '_blank'} rel={href.startsWith('/') || href.startsWith('#') || href.startsWith('?') ? undefined : 'noopener noreferrer'}>
+	<a
+		{href}
+		class={buttonClasses}
+		onclick={onClick}
+		target={href.startsWith('/') || href.startsWith('#') || href.startsWith('?')
+			? undefined
+			: '_blank'}
+		rel={href.startsWith('/') || href.startsWith('#') || href.startsWith('?')
+			? undefined
+			: 'noopener noreferrer'}
+	>
 		{@render content()}
 	</a>
 {:else}
